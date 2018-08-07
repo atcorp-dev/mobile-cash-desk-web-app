@@ -17,12 +17,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/atcorp-dev/mobile-cash-desk.git"
+    "url": "git+https://github.com/atcorp-dev/mobile-cash-desk-web-app.git"
   },
   "author": "",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/atcorp-dev/mobile-cash-desk/issues"
+    "url": "https://github.com/atcorp-dev/mobile-cash-desk-web-app/issues"
   },
-  "homepage": "https://github.com/atcorp-dev/mobile-cash-desk#readme"
+  "homepage": "https://github.com/atcorp-dev/mobile-cash-desk-web-app#readme"
 }
