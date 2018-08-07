@@ -1,19 +1,9 @@
 {
-  "name": "angular-starter",
-  "version": "7.0.0",
-  "description": "An Angular Webpack Starter kit featuring Angular (Router, Http, Forms, Services, Tests, E2E, Coverage), Karma, Protractor, Jasmine, Istanbul, TypeScript, and Webpack by AngularClass",
-  "keywords": [
-    "angular",
-    "angular2",
-    "angular4",
-    "angular5",
-    "webpack",
-    "typescript",
-    "tipe",
-    "tipe.io"
-  ],
-  "author": "Patrick Stapleton <patrick@tipe.io>",
-  "homepage": "https://github.com/gdi2290/angular-starter",
+  "name": "angular-ui",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [],
+  "author": "",
   "license": "MIT",
   "scripts": {
     "build:aot:prod": "npm run clean:dist && npm run clean:aot && cross-env BUILD_AOT=1 npm run webpack -- --config config/webpack.prod.js  --progress --profile --bail",
@@ -164,16 +154,5 @@
     "webpack-dev-server": "~2.7.1",
     "webpack-dll-bundles-plugin": "^1.0.0-beta.5",
     "webpack-merge": "~4.1.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gdi2290/angular-starter.git"
-  },
-  "bugs": {
-    "url": "https://github.com/gdi2290/angular-starter/issues"
-  },
-  "engines": {
-    "node": ">= 4.2.1",
-    "npm": ">= 3"
   }
 }
