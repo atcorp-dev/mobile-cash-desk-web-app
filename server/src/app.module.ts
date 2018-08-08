@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
+import { ContragentModule } from './contragents/contragent.module';
 
 @Module({
-  imports: [],
+  imports: [
+    ContragentModule
+  ],
   controllers: [AppController],
-  components: [],
+  providers: [],
 })
 export class ApplicationModule {}
