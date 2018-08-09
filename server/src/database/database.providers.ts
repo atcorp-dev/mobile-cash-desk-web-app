@@ -1,6 +1,6 @@
-import { Item } from '../inventory/item.model';
+import { Item } from './../api/inventory/item.model';
+import { Company } from './../api/companies/company.model';
 import { Sequelize } from 'sequelize-typescript';
-import { Company } from '../companies/company.model';
 
 const config = require('../../config/sequelize-config.json');
 const connectionConfig = process.env.DATABASE_URL || config.development;
@@ -14,7 +14,7 @@ export const databaseProviders = [
         Company,
         Item
       ]);
-      await sequelize.sync({ force: true });
+      await sequelize.sync({ force: false });
       return sequelize;
     },
   },

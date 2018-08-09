@@ -4,12 +4,11 @@ import { CreateCompanyDto } from './create-company.dto';
 import { Observable } from 'rxjs';
 import { CompanyService } from './company.service';
 import { Controller, Get, Post, Param, Body } from '@nestjs/common';
-import { Guid } from 'guid-typescript';
 import { ApiUseTags } from '@nestjs/swagger';
 import { Company } from './company.model';
 
 @ApiUseTags('Companies')
-@Controller('Companies')
+@Controller('api/companies')
 export class CompanyController {
 
   constructor(private companyService: CompanyService) {}
