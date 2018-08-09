@@ -12,7 +12,7 @@ export class ContragentService {
 
   public constructor(
     @Inject('ContragentRepository') private readonly contragentRepository: typeof Contragent,
-    @Inject('ItemRepository') private readonly itemRepository: typeof Contragent
+    @Inject('ItemRepository') private readonly itemRepository: typeof Item
   ) {}
 
   getAll(): Observable<Array<Contragent>> {

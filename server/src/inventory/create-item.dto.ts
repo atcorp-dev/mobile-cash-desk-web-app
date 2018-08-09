@@ -14,4 +14,5 @@ export class CreateItemDto {
 
   @ApiModelProperty()
   price: number;
+
 }

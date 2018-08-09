@@ -1,10 +1,12 @@
+import { InventoryModule } from './inventory/inventory.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { ContragentModule } from './contragents/contragent.module';
 
 @Module({
   imports: [
-    ContragentModule
+    ContragentModule,
+    InventoryModule
   ],
   controllers: [AppController],
   providers: [],
