@@ -1,5 +1,5 @@
 import { Guid } from 'guid-typescript';
-import { Contragent } from './../contragents/contragent.model';
+import { Company } from './../companies/company.model';
 import { of, Subject, Subscriber, from } from 'rxjs';
 import { Observable } from 'rxjs';
 import { CreateItemDto } from './create-item.dto';
@@ -13,7 +13,7 @@ export class InventoryService {
 
   constructor(
     @Inject('ItemRepository') private readonly itemRepository: typeof Item,
-    @Inject('ContragentRepository') private readonly contragentRepository: typeof Contragent,
+    @Inject('CompanyRepository') private readonly companyRepository: typeof Company,
   ) {}
 
   importFromCsv(file): Observable<any> {
@@ -23,11 +23,11 @@ export class InventoryService {
     const headers = arr.shift();
     this.validateHeaders(headers);
     const items = arr.map(values => {
-      const [name, code, description, contragent] = values;
-      return { name, code, description, contragent, contragentId: null }
+      const [name, code, description, company] = values;
+      return { name, code, description, company, companyId: null }
     });
     return this.removeItems(items).pipe(
-      switchMap(() => this.fillContragents(items)),
+      switchMap(() => this.fillCompanies(items)),
       switchMap(
         res => from(
           this.itemRepository.bulkCreate(res)
@@ -62,25 +62,25 @@ export class InventoryService {
     );
   }
 
-  private fillContragents(items: any[]): Observable<any> {
+  private fillCompanies(items: any[]): Observable<any> {
     return Observable.create(async (observer: Subscriber<any>) => {
-      const contragentIds = {};
+      const companyIds = {};
       const it = this.getIterator(items);
       let current = it.next();
       while(!current.done) {
         const item = current.value;
-        const code = item.contragent;
+        const code = item.company;
         item.id = Guid.create().toString();
-        if (contragentIds[code]) {
-          item.contragentId = contragentIds[code];
+        if (companyIds[code]) {
+          item.companyId = companyIds[code];
         } else {
-          const contragent = await this.contragentRepository.find({ where: { code } });
-          if (contragent) {
-            item.contragentId = contragent.id;
-            contragentIds[code] = contragent.id;
+          const company = await this.companyRepository.find({ where: { code } });
+          if (company) {
+            item.companyId = company.id;
+            companyIds[code] = company.id;
           }
         }
-        // observer.next({ items, contragentIds });
+        // observer.next({ items, companyIds });
         current = it.next();
       }
       observer.next(items);

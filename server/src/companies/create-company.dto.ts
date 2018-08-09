@@ -1,7 +1,7 @@
 import { Guid } from 'guid-typescript';
 import { ApiModelProperty } from '@nestjs/swagger';
 
-export class CreateContragentDto {
+export class CreateCompanyDto {
 
   @ApiModelProperty()
   name: string;

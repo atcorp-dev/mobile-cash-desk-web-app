@@ -1,10 +1,10 @@
-import { Item } from './../inventory/item.model';
+import { Item } from '../inventory/item.model';
 import { Guid } from 'guid-typescript';
 import { Table, Column, Model, IsUUID, PrimaryKey, Sequelize, HasMany } from 'sequelize-typescript';
 
 
 @Table
-export class Contragent extends Model<Contragent> {
+export class Company extends Model<Company> {
 
   // @IsUUID(4)
   @PrimaryKey

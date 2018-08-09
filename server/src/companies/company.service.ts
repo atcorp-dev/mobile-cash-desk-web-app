@@ -1,39 +1,39 @@
-import { CreateItemDto } from './../inventory/create-item.dto';
+import { CreateItemDto } from '../inventory/create-item.dto';
 import { Guid } from 'guid-typescript';
-import { CreateContragentDto } from './create-contragent.dto';
+import { CreateCompanyDto } from './create-company.dto';
 import { Injectable, Inject } from '@nestjs/common';
 import { Observable, from } from 'rxjs';
-import { Contragent } from './contragent.model';
+import { Company } from './company.model';
 import { Item } from '../inventory/item.model';
 import { map, switchMap } from 'rxjs/operators';
 
 @Injectable()
-export class ContragentService {
+export class CompanyService {
 
   public constructor(
-    @Inject('ContragentRepository') private readonly contragentRepository: typeof Contragent,
+    @Inject('CompanyRepository') private readonly companyRepository: typeof Company,
     @Inject('ItemRepository') private readonly itemRepository: typeof Item
   ) {}
 
-  getAll(): Observable<Array<Contragent>> {
-    const response = this.contragentRepository.findAll();
+  getAll(): Observable<Array<Company>> {
+    const response = this.companyRepository.findAll();
     return from(response);
   }
 
-  getById(id: string): Observable<Contragent> {
-    const response = this.contragentRepository.findById<Contragent>(id);
+  getById(id: string): Observable<Company> {
+    const response = this.companyRepository.findById<Company>(id);
     return from(response);
   }
 
-  create(createContragent: CreateContragentDto): Observable<Contragent> {
+  create(createCompany: CreateCompanyDto): Observable<Company> {
     const id = Guid.create().toString();
-    const contragent = Object.assign(createContragent, { id });
-    const response = this.contragentRepository.create(contragent);
+    const company = Object.assign(createCompany, { id });
+    const response = this.companyRepository.create(company);
     return from(response);
   }
 
   getItems(id: string): Observable<Array<Item>> {
-    const response = this.contragentRepository.findById(id, {
+    const response = this.companyRepository.findById(id, {
       include: [Item]
     });
     return from(response).pipe(
@@ -45,7 +45,7 @@ export class ContragentService {
     const itemId = Guid.create().toString();
     const item = Object.assign(itemDto, {
       id: itemId,
-      contragentId: id
+      companyId: id
     });
     const response = this.itemRepository.create(item);
     return from(response);

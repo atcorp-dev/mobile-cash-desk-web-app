@@ -1,4 +1,4 @@
-import { Contragent } from './../contragents/contragent.model';
+import { Company } from './../companies/company.model';
 import { Guid } from 'guid-typescript';
 import { Table, Column, Model, IsUUID, PrimaryKey, Sequelize, BelongsTo, ForeignKey } from 'sequelize-typescript';
 
@@ -23,11 +23,11 @@ export class Item extends Model<Item> {
   @Column
   price: number;
 
-  @BelongsTo(() => Contragent)
-  contragent: Contragent;
+  @BelongsTo(() => Company)
+  company: Company;
 
-  @ForeignKey(() => Contragent)
+  @ForeignKey(() => Company)
   @Column(Sequelize.UUID)
-  contragentId: string;
+  companyId: string;
 
 }

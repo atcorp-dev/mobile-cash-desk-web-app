@@ -1,4 +1,4 @@
-import { Contragent } from './../contragents/contragent.model';
+import { Company } from './../companies/company.model';
 import { Item } from './item.model';
 
 export const inventoryProviders = [
@@ -7,7 +7,7 @@ export const inventoryProviders = [
     useValue: Item
   },
   {
-    provide: 'ContragentRepository',
-    useValue: Contragent
+    provide: 'CompanyRepository',
+    useValue: Company
   },
 ];

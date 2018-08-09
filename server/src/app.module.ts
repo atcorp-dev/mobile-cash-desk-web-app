@@ -1,11 +1,11 @@
 import { InventoryModule } from './inventory/inventory.module';
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { ContragentModule } from './contragents/contragent.module';
+import { CompanyModule } from './companies/company.module';
 
 @Module({
   imports: [
-    ContragentModule,
+    CompanyModule,
     InventoryModule
   ],
   controllers: [AppController],
