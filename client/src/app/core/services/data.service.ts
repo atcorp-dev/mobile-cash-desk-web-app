@@ -4,11 +4,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable()
-export class DataService {
+export abstract class DataService {
+  abstract apiPath: string;
+
   constructor(protected httpClient: HttpClient) {}
 
   public get<T>(c: new () => T): Observable<T[]> {
-    return this.httpClient.get('api/companies')
+    return this.httpClient.get(this.apiPath)
     .pipe(
       map((res: any[]) => res.map(
         e => Object.assign(this.createInstance(c), e)
@@ -17,7 +19,7 @@ export class DataService {
   }
 
   public post(body): Observable<any> {
-    return this.httpClient.post('api/companies', body);
+    return this.httpClient.post(this.apiPath, body);
   }
 
   protected createInstance<T>(c: new () => T): T {

@@ -1,49 +1,92 @@
-<form [formGroup]="form" class=form>
-  <mat-form-field>
-    <input matInput formControlName="name" placeholder="Name">
-  </mat-form-field>
-  <mat-form-field>
-    <input matInput formControlName="code" placeholder="Code">
-  </mat-form-field>
-  <mat-form-field>
-    <input matInput formControlName="email" placeholder="E-Mail">
-  </mat-form-field>
-  <mat-form-field>
-    <input matInput formControlName="phone" placeholder="Phone">
-  </mat-form-field>
-  <div class=save-button>
-    <button mat-flat-button [disabled]="form?.invalid" (click)="create()">Add</button>
-  </div>
-</form>
-<table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+<div class="company-container">
+  <mat-accordion>
 
-  <!--- Note that these columns can be defined in any order.
-        The actual rendered columns are set as a property on the row definition" -->
+    <mat-expansion-panel>
 
-  <!-- Name Column -->
-  <ng-container matColumnDef="name">
-    <th mat-header-cell *matHeaderCellDef> Name </th>
-    <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-  </ng-container>
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Create New Company Form
+        </mat-panel-title>
+        <mat-panel-description>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
 
-  <!-- Code Column -->
-  <ng-container matColumnDef="code">
-    <th mat-header-cell *matHeaderCellDef> Code </th>
-    <td mat-cell *matCellDef="let element"> {{element.code}} </td>
-  </ng-container>
+      <form [formGroup]="form" class=form>
+        <mat-form-field>
+          <input matInput formControlName="name" placeholder="Name">
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput formControlName="code" placeholder="Code">
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput formControlName="email" placeholder="E-Mail">
+        </mat-form-field>
+        <mat-form-field>
+          <input matInput formControlName="phone" placeholder="Phone">
+        </mat-form-field>
+        <div class=save-button>
+          <button mat-flat-button [disabled]="form?.invalid" (click)="create()">Add</button>
+        </div>
+      </form>
+    </mat-expansion-panel>
 
-  <!-- E-Mail Column -->
-  <ng-container matColumnDef="email">
-    <th mat-header-cell *matHeaderCellDef> E-Mail </th>
-    <td mat-cell *matCellDef="let element"> {{element.email}} </td>
-  </ng-container>
+  </mat-accordion>
 
-  <!-- Phone Column -->
-  <ng-container matColumnDef="phone">
-    <th mat-header-cell *matHeaderCellDef> Phone </th>
-    <td mat-cell *matCellDef="let element"> {{element.phone}} </td>
-  </ng-container>
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;" (dblclick)="openEditPage(row.id)"></tr>
-</table>
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+    </ng-container>
+
+    <!-- Code Column -->
+    <ng-container matColumnDef="code">
+      <th mat-header-cell *matHeaderCellDef> Code </th>
+      <td mat-cell *matCellDef="let element"> {{element.code}} </td>
+    </ng-container>
+
+    <!-- E-Mail Column -->
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef> E-Mail </th>
+      <td mat-cell *matCellDef="let element"> {{element.email}} </td>
+    </ng-container>
+
+    <!-- Phone Column -->
+    <ng-container matColumnDef="phone">
+      <th mat-header-cell *matHeaderCellDef> Phone </th>
+      <td mat-cell *matCellDef="let element"> {{element.phone}} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (dblclick)="openEditPage(row.id)"></tr>
+  </table>
+
+  <!-- <mat-list>
+    <mat-list-item *ngFor="let element of dataSource">
+      <mat-card>
+        <div class=element-card>
+          <div class=element-label>Name</div>
+          <div class=element-data>{{ element.name }}</div>
+        </div>
+        <div>
+          <div class=element-label>Code</div>
+          <div class=element-data>{{ element.code }}</div>
+        </div>
+        <div>
+          <div class=element-label>E-Mail</div>
+          <div class=element-data>{{ element.email }}</div>
+        </div>
+        <div>
+          <div class=element-label>Phone</div>
+          <div class=element-data>{{ element.phone }}</div>
+        </div>
+      </mat-card>
+    </mat-list-item>
+  </mat-list> -->
+
+</div>
+

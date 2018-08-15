@@ -4,12 +4,13 @@ import { Component, OnInit } from '@angular/core';
 import { Company } from '../../models/company.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { CompanyDataService } from 'src/app/company/services/company-data.service';
 
 @Component({
   selector: 'app-company',
   templateUrl: './company-list.component.html',
   styleUrls: ['./company-list.component.css'],
-  providers: [DataService]
+  providers: [CompanyDataService]
 })
 export class CompanyListComponent implements OnInit {
 
@@ -19,7 +20,7 @@ export class CompanyListComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private dataService: DataService,
+    private dataService: CompanyDataService,
     private route: ActivatedRoute,
     private router: Router
   ) { }

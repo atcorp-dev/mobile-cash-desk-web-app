@@ -6,12 +6,12 @@ import { AppComponent } from './app.component';
 import { Routes, RouterModule } from '@angular/router';
 
 const appRoutes: Routes = [
-  { path: '', component: ItemListComponent, pathMatch: 'full' },
+  { path: '', component: CompanyListComponent, pathMatch: 'full' },
   { path: 'item-list', component: ItemListComponent, pathMatch: 'full' },
   { path: 'item/:id', component: ItemPageComponent, pathMatch: 'full' },
   { path: 'company-list', component: CompanyListComponent, pathMatch: 'full' },
   { path: 'company/:id', component: CompanyPageComponent, pathMatch: 'full' },
-  { path: '**', component: ItemListComponent, pathMatch: 'full' },
+  { path: '**', component: CompanyListComponent, pathMatch: 'full' },
 ];
 export const AppRoutes = RouterModule.forRoot(appRoutes, {
   useHash: true
