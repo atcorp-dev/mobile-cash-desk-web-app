@@ -1,7 +1,9 @@
+import { Observable } from 'rxjs';
 import { DataService } from './../../../core/services/data.service';
 import { Component, OnInit } from '@angular/core';
 import { Company } from '../../models/company.model';
 import { Router, ActivatedRoute } from '@angular/router';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-company',
@@ -13,14 +15,34 @@ export class CompanyListComponent implements OnInit {
 
   displayedColumns: string[] = ['name', 'code', 'email', 'phone'];
   dataSource: Array<Company> = [];
+  form: FormGroup;
 
   constructor(
+    private formBuilder: FormBuilder,
     private dataService: DataService,
     private route: ActivatedRoute,
     private router: Router
   ) { }
 
   ngOnInit() {
+    this.loadCompanies();
+    this.createForm();
+  }
+
+  createForm() {
+    this.form = this.formBuilder.group({
+      name: [null, [Validators.required]],
+      code: [null, [Validators.required]],
+      email: null,
+      phone: null,
+    });
+  }
+
+  callWepApiService(query: Observable<any>) {
+    query.subscribe();
+  }
+
+  loadCompanies() {
     this.dataService.get(Company).subscribe(
       data => this.dataSource = data
     );
@@ -28,6 +50,15 @@ export class CompanyListComponent implements OnInit {
 
   openEditPage(id) {
     this.router.navigate(['..', 'company', id], { relativeTo: this.route });
+  }
+
+  create() {
+    this.dataService.post(
+      this.form.value
+    ).subscribe(() => {
+      this.form.reset();
+      this.loadCompanies();
+    });
   }
 
 }

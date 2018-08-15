@@ -1,3 +1,12 @@
 table {
   width: 100%;
 }
+form {
+  display: flex;
+  flex-direction: row;
+  justify-content: center
+}
+
+.save-button {
+  padding: 12px;
+}

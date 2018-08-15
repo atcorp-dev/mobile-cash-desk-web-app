@@ -16,6 +16,10 @@ export class DataService {
     );
   }
 
+  public post(body): Observable<any> {
+    return this.httpClient.post('api/companies', body);
+  }
+
   protected createInstance<T>(c: new () => T): T {
     return new c();
   }
