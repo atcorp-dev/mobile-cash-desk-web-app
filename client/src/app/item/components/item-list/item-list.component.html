@@ -37,6 +37,21 @@
       </form>
     </mat-expansion-panel>
 
+    <mat-expansion-panel>
+  
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          Import Form CSV
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      
+      <label for="file-upload" class="file-upload">
+        <mat-icon>backup</mat-icon> Choose CSV file to upload
+      </label>
+      <input id="file-upload" type="file" (change)="uploadCSV($event)" accept=".csv" />
+  
+    </mat-expansion-panel>
+  
   </mat-accordion>
 
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">

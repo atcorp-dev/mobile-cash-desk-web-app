@@ -7,7 +7,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CompanyDataService } from 'src/app/company/services/company-data.service';
 
 @Component({
-  selector: 'app-company',
+  selector: 'app-company-list',
   templateUrl: './company-list.component.html',
   styleUrls: ['./company-list.component.css'],
   providers: [CompanyDataService]

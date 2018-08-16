@@ -1,3 +1,4 @@
+import { InventoryDataService } from './../services/inventory-data.service';
 import { Company } from './../../../company/models/company.model';
 import { CompanyDataService } from './../../../company/services/company-data.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -7,12 +8,13 @@ import { Item } from './../../models/item.model';
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-item',
+  selector: 'app-item-list',
   templateUrl: './item-list.component.html',
   styleUrls: ['./item-list.component.css'],
   providers: [
     ItemDataService,
-    CompanyDataService
+    CompanyDataService,
+    InventoryDataService
   ]
 })
 export class ItemListComponent implements OnInit {
@@ -26,6 +28,7 @@ export class ItemListComponent implements OnInit {
     private formBuilder: FormBuilder,
     private dataService: ItemDataService,
     private companyService: CompanyDataService,
+    private inventoryService: InventoryDataService,
     private route: ActivatedRoute,
     private router: Router
   ) { }
@@ -69,6 +72,17 @@ export class ItemListComponent implements OnInit {
       this.form.reset();
       this.loadItems();
     });
+  }
+
+  uploadCSV(event: any) {
+    const fileList: FileList = event.target.files;
+    if (!fileList.length) {
+      return;
+    }
+    const file = fileList[0];
+    this.inventoryService.importCsv(file).subscribe(
+      () => this.loadItems()
+    );
   }
 
 }
