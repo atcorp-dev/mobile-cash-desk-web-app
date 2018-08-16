@@ -14,9 +14,10 @@ import { CompanyDataService } from 'src/app/company/services/company-data.servic
 })
 export class CompanyListComponent implements OnInit {
 
-  displayedColumns: string[] = ['name', 'code', 'email', 'phone'];
+  displayedColumns: string[] = ['name', 'code', 'email', 'phone', 'menu'];
   dataSource: Array<Company> = [];
   form: FormGroup;
+  addButtonDisabled: boolean;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -50,11 +51,13 @@ export class CompanyListComponent implements OnInit {
   }
 
   create() {
+    this.addButtonDisabled = true;
     this.dataService.post(
       this.form.value
     ).subscribe(() => {
       this.form.reset();
       this.loadCompanies();
+      this.addButtonDisabled = false;
     });
   }
 

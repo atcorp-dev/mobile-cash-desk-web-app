@@ -25,7 +25,7 @@
           <input matInput formControlName="phone" placeholder="Phone">
         </mat-form-field>
         <div class=save-button>
-          <button mat-flat-button [disabled]="form?.invalid" (click)="create()">Add</button>
+          <button mat-flat-button [disabled]="addButtonDisabled || form?.invalid" (click)="create()">Add</button>
         </div>
       </form>
     </mat-expansion-panel>
@@ -59,6 +59,26 @@
     <ng-container matColumnDef="phone">
       <th mat-header-cell *matHeaderCellDef> Phone </th>
       <td mat-cell *matCellDef="let element"> {{element.phone}} </td>
+    </ng-container>
+
+    <!-- Menu Column -->
+    <ng-container matColumnDef="menu">
+      <th mat-header-cell *matHeaderCellDef></th>
+      <td mat-cell *matCellDef="let element" align=right>
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button mat-menu-item (click)="openEditPage(element.id)">
+            <mat-icon>edit</mat-icon>
+            <span>Edit</span>
+          </button>
+          <button mat-menu-item>
+            <mat-icon>delete</mat-icon>
+            <span>Delete</span>
+          </button>
+        </mat-menu>
+      </td>
     </ng-container>
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

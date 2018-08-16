@@ -19,10 +19,12 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ItemListComponent implements OnInit {
 
-  displayedColumns: string[] = ['name', 'code', 'price', 'company'];
+  displayedColumns: string[] = ['name', 'code', 'price', 'company', 'menu'];
   dataSource: Array<Item> = [];
   companyList: Array<Company>;
   form: FormGroup;
+  addButtonDisabled: boolean;
+  uploadButtonDisabled: boolean;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -66,23 +68,28 @@ export class ItemListComponent implements OnInit {
   }
 
   create() {
+    this.addButtonDisabled = true;
     this.companyService.createItem(
       this.form.value
     ).subscribe(() => {
       this.form.reset();
       this.loadItems();
+      this.addButtonDisabled = false;
     });
   }
 
   uploadCSV(event: any) {
+    this.uploadButtonDisabled = true;
     const fileList: FileList = event.target.files;
     if (!fileList.length) {
       return;
     }
     const file = fileList[0];
-    this.inventoryService.importCsv(file).subscribe(
-      () => this.loadItems()
-    );
+    this.inventoryService.importCsv(file)
+    .subscribe(() => {
+      this.loadItems();
+      this.uploadButtonDisabled = false;
+    });
   }
 
 }
