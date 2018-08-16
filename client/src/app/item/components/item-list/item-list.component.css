@@ -15,20 +15,18 @@ form {
   padding: 12px;
 }
 
-.mat-list {
-  visibility: hidden;
+.list {
+  display: none;
 }
 
-.element-card {
-  display: flex;
-  flex-direction: row;
+.element-field {
+  display: grid;
+  grid-template-columns: 25% auto;
 }
 .element-label {
-  flex-grow: 1;
   padding-right: 3px;
 }
 .element-data {
-  flex-grow: 4;
 }
 
 input[type="file"] {
@@ -42,12 +40,12 @@ input[type="file"] {
 }
 
 @media screen and (max-width: 600px) {
-  /*table {
-    visibility: hidden;
+  .table {
+    display: none;
   }
-  .mat-list {
-    visibility: visible;
-  }*/
+  .list {
+    display: block;
+  }
   .item-container {
     padding: 0;
   }

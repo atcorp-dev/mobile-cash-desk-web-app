@@ -32,7 +32,7 @@
 
   </mat-accordion>
 
-  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
+  <table mat-table [dataSource]="dataSource" class="table mat-elevation-z8">
 
     <!--- Note that these columns can be defined in any order.
           The actual rendered columns are set as a property on the row definition" -->
@@ -65,28 +65,28 @@
     <tr mat-row *matRowDef="let row; columns: displayedColumns;" (dblclick)="openEditPage(row.id)"></tr>
   </table>
 
-  <!-- <mat-list>
-    <mat-list-item *ngFor="let element of dataSource">
+  <div class=list>
+    <div *ngFor="let element of dataSource">
       <mat-card>
-        <div class=element-card>
-          <div class=element-label>Name</div>
+        <div class=element-field>
+          <div class=element-label>Name:</div>
           <div class=element-data>{{ element.name }}</div>
         </div>
-        <div>
-          <div class=element-label>Code</div>
+        <div class=element-field>
+          <div class=element-label>Code:</div>
           <div class=element-data>{{ element.code }}</div>
         </div>
-        <div>
-          <div class=element-label>E-Mail</div>
+        <div class=element-field>
+          <div class=element-label>E-Mail:</div>
           <div class=element-data>{{ element.email }}</div>
         </div>
-        <div>
-          <div class=element-label>Phone</div>
+        <div class=element-field>
+          <div class=element-label>Phone:</div>
           <div class=element-data>{{ element.phone }}</div>
         </div>
       </mat-card>
-    </mat-list-item>
-  </mat-list> -->
+    </div>
+  </div>
 
 </div>
 
