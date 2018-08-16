@@ -39,10 +39,6 @@ export class CompanyListComponent implements OnInit {
     });
   }
 
-  callWepApiService(query: Observable<any>) {
-    query.subscribe();
-  }
-
   loadCompanies() {
     this.dataService.get(Company).subscribe(
       data => this.dataSource = data

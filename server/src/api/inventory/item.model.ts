@@ -20,7 +20,7 @@ export class Item extends Model<Item> {
   @Column
   description: string;
 
-  @Column
+  @Column(Sequelize.DECIMAL)
   price: number;
 
   @BelongsTo(() => Company)
