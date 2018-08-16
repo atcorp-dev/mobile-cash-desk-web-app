@@ -23,8 +23,8 @@ export class InventoryService {
     const headers = arr.shift();
     this.validateHeaders(headers);
     const items = arr.map(values => {
-      const [name, code, description, company] = values;
-      return { name, code, description, company, companyId: null }
+      const [name, code, price, description, company] = values;
+      return { name, code, price: this.toDecimal(price), description, company, companyId: null }
     });
     return this.removeItems(items).pipe(
       switchMap(() => this.fillCompanies(items)),
@@ -36,8 +36,12 @@ export class InventoryService {
     );
   }
 
+  private toDecimal(value: string): number {
+    return Number.parseFloat(value && value.replace(',', '.')) || 0;
+  }
+
   private validateHeaders(headers: Array<string>) {
-    const validHeaders = ['NAME', 'CODE', 'DESCRIPTION', 'CONTRAGENT'];
+    const validHeaders = ['NAME', 'CODE', 'PRICE', 'DESCRIPTION', 'CONTRAGENT'];
     validHeaders.forEach((validHeader, i) => {
       const header = headers[i] || '';
       if (header.toUpperCase() !== validHeader) {
