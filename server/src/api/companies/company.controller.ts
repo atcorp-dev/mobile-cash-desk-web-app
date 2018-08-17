@@ -8,7 +8,7 @@ import { ApiUseTags } from '@nestjs/swagger';
 import { Company } from './company.model';
 
 @ApiUseTags('Companies')
-@Controller('api/companies')
+@Controller('companies')
 export class CompanyController {
 
   constructor(private companyService: CompanyService) {}

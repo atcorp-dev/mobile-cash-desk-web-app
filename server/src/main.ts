@@ -1,4 +1,3 @@
-import { ApiModule } from './api/api.module';
 import * as express from 'express';
 import { join }  from 'path';
 import { NestFactory } from '@nestjs/core';
@@ -17,6 +16,7 @@ async function bootstrap() {
     .setTitle('Mobile Cash Desk API')
     .setDescription('The API for mobile apps that uses for Mobile Cash Desk process')
     .setVersion('1.0')
+    .setBasePath('api')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('swagger', app, document);

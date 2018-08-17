@@ -5,7 +5,7 @@ import { ApiUseTags } from '@nestjs/swagger';
 import { Controller, Get } from '@nestjs/common';
 
 @ApiUseTags('Items')
-@Controller('api/items')
+@Controller('items')
 export class ItemController {
 
   constructor(private itemService: ItemService) { }

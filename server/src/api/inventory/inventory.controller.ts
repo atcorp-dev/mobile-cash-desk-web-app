@@ -5,7 +5,7 @@ import { ApiUseTags, ApiImplicitBody } from '@nestjs/swagger';
 import { Controller, Post, UseInterceptors, FileInterceptor, UploadedFile } from '@nestjs/common';
 
 @ApiUseTags('Inventory')
-@Controller('api/inventory')
+@Controller('inventory')
 export class InventoryController {
 
   constructor(private inventoryService: InventoryService) {}
