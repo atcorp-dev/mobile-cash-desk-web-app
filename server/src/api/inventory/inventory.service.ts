@@ -11,29 +11,39 @@ import { map, switchMap } from 'rxjs/operators';
 @Injectable()
 export class InventoryService {
 
+  private template = ['NAME', 'CODE', 'PRICE', 'DESCRIPTION'];
   constructor(
     @Inject('ItemRepository') private readonly itemRepository: typeof Item,
     @Inject('CompanyRepository') private readonly companyRepository: typeof Company,
   ) {}
 
-  importFromCsv(file): Observable<any> {
+  importFromCsv(companyCode: string, file): Observable<any> {
     const data: Buffer = file.buffer;
     const csv = data.toString();
     const arr: Array<string[]> = CSV.parse(csv);
     const headers = arr.shift();
     this.validateHeaders(headers);
     const items = arr.map(values => {
-      const [name, code, price, description, company] = values;
-      return { name, code, price: this.toDecimal(price), description, company, companyId: null }
+      const [name, code, price, description] = values;
+      return { id: Guid.create().toString(), name, code, price: this.toDecimal(price), description, companyId: null }
     });
-    return this.removeItems(items).pipe(
-      switchMap(() => this.fillCompanies(items)),
-      switchMap(
-        res => from(
-          this.itemRepository.bulkCreate(res)
-        )
-      )
+    return from (
+      this.companyRepository.find({ where: { code: companyCode } })
+    )
+    .pipe(
+      switchMap(company => {
+        items.forEach(item => item.companyId = company.id);
+        return this.removeItems(company.id, items)
+      }),
+      switchMap(() => from(
+        this.itemRepository.bulkCreate(items)
+      ))
     );
+  }
+
+  public getTemplate(): string {
+    return this.template
+      .join(';');
   }
 
   private toDecimal(value: string): number {
@@ -41,7 +51,7 @@ export class InventoryService {
   }
 
   private validateHeaders(headers: Array<string>) {
-    const validHeaders = ['NAME', 'CODE', 'PRICE', 'DESCRIPTION', 'CONTRAGENT'];
+    const validHeaders = this.template;
     validHeaders.forEach((validHeader, i) => {
       const header = headers[i] || '';
       if (header.toUpperCase() !== validHeader) {
@@ -50,7 +60,7 @@ export class InventoryService {
     });
   }
 
-  private removeItems(items: Array<any>): Observable<any> {
+  private removeItems(companyId: string, items: Array<any>): Observable<any> {
     const codes = [];
     items.forEach(item => {
       if (codes.indexOf(item.code) == -1) {
@@ -60,47 +70,11 @@ export class InventoryService {
     return from(
       this.itemRepository.destroy({
         where: {
-          code: codes
+          code: codes,
+          companyId
         }
       })
     );
   }
 
-  private fillCompanies(items: any[]): Observable<any> {
-    return Observable.create(async (observer: Subscriber<any>) => {
-      const companyIds = {};
-      const it = this.getIterator(items);
-      let current = it.next();
-      while(!current.done) {
-        const item = current.value;
-        const code = item.company;
-        item.id = Guid.create().toString();
-        if (companyIds[code]) {
-          item.companyId = companyIds[code];
-        } else {
-          const company = await this.companyRepository.find({ where: { code } });
-          if (company) {
-            item.companyId = company.id;
-            companyIds[code] = company.id;
-          }
-        }
-        // observer.next({ items, companyIds });
-        current = it.next();
-      }
-      observer.next(items);
-      observer.complete();
-    });
-  }
-
-  private getIterator(array: Array<any>) {
-    var nextIndex = 0;
-
-    return {
-      next: function () {
-        return nextIndex < array.length ?
-          { value: array[nextIndex++], done: false } :
-          { done: true };
-      }
-    }
-  }
 }

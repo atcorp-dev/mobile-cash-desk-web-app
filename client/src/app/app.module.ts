@@ -17,7 +17,7 @@ import { AngularMaterialModule } from './angular-material.module';
     AngularMaterialModule,
     AppRoutes,
     CompanyModule,
-    ItemModule
+    ItemModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

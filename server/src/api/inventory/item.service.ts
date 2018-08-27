@@ -11,9 +11,10 @@ export class ItemService {
     @Inject('ItemRepository') private readonly itemRepository: typeof Item
   ) { }
 
-  getAll(): Observable<Item[]> {
+  getAll(where): Observable<Item[]> {
     return from(
       this.itemRepository.findAll({
+        where,
         include: [{
           model: Company
         }]

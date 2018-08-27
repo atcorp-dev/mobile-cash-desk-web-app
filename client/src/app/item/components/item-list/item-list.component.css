@@ -10,8 +10,16 @@ form {
   justify-content: center;
   align-items: center
 }
+.searchForm {
+  margin-top: 3px;
+  justify-content: flex-start;
+}
 
-.save-button {
+.uploadForm .mat-form-field {
+  margin: 0 6px;
+}
+
+.save-button, .import-button {
   padding: 12px;
 }
 
@@ -56,7 +64,7 @@ input[type="file"] {
   .mat-form-field {
     width: 100%;
   }
-  .save-button {
+  .save-button, .import-button {
     width: 100%;
     display: flex;
     justify-content: flex-end

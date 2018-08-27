@@ -9,8 +9,8 @@ export abstract class DataService {
 
   constructor(protected httpClient: HttpClient) {}
 
-  public get<T>(c: new () => T): Observable<T[]> {
-    return this.httpClient.get(this.apiPath)
+  public get<T>(c: new () => T, filter?): Observable<T[]> {
+    return this.httpClient.get(this.apiPath, { params: filter })
     .pipe(
       map((res: any[]) => res.map(
         e => Object.assign(this.createInstance(c), e)

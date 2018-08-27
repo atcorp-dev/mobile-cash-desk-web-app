@@ -1,4 +1,5 @@
 <div class="item-container">
+  <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
   <mat-accordion>
 
     <mat-expansion-panel>
@@ -44,15 +45,47 @@
           Import Form CSV
         </mat-panel-title>
       </mat-expansion-panel-header>
-      
-      <label for="file-upload" class="file-upload">
-        <mat-icon>cloud_upload</mat-icon> Choose CSV file to upload
-      </label>
-      <input id="file-upload" type="file" (change)="uploadCSV($event)" accept=".csv" [disabled]="uploadButtonDisabled" />
+
+      <form [formGroup]="uploadForm" class="uploadForm">
+        
+        <mat-form-field>
+          <mat-select placeholder="Company" formControlName="companyId">
+            <mat-option *ngFor="let company of companyList" [value]="company.id">
+              {{company.name}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div>
+          <label for="file-upload" class="file-upload">
+            <mat-icon>cloud_upload</mat-icon> Choose CSV file to upload
+          </label>
+          <input id="file-upload" type="file" (change)="selectFile($event)" accept=".csv" [disabled]="uploadButtonDisabled" />
+        </div>
+  
+        <div class=import-button>
+          <button mat-flat-button [disabled]="uploadForm?.invalid" (click)="uploadCSV()">Import</button>
+        </div>
+
+        <a href="/api/inventory/template">Download template</a>
+
+      </form>
   
     </mat-expansion-panel>
   
   </mat-accordion>
+
+  <form [formGroup]="searchForm" class="searchForm">
+  
+    <mat-form-field>
+      <mat-select placeholder="Company" formControlName="companyId">
+        <mat-option *ngFor="let company of companyList" [value]="company.id">
+          {{company.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    </form>
 
   <table mat-table [dataSource]="dataSource" class="table mat-elevation-z8">
 

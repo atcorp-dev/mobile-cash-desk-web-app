@@ -1,10 +1,10 @@
-import { Observable } from 'rxjs';
-import { DataService } from './../../../core/services/data.service';
 import { Component, OnInit } from '@angular/core';
 import { Company } from '../../models/company.model';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { CompanyDataService } from 'src/app/company/services/company-data.service';
+import { finalize } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-company-list',
@@ -18,17 +18,25 @@ export class CompanyListComponent implements OnInit {
   dataSource: Array<Company> = [];
   form: FormGroup;
   addButtonDisabled: boolean;
+  loading: boolean;
 
   constructor(
     private formBuilder: FormBuilder,
     private dataService: CompanyDataService,
     private route: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit() {
     this.loadCompanies();
     this.createForm();
+  }
+
+  openSnackBar(message: string, action?: string) {
+    this.snackBar.open(message, action, {
+      duration: 2000,
+    });
   }
 
   createForm() {
@@ -41,9 +49,14 @@ export class CompanyListComponent implements OnInit {
   }
 
   loadCompanies() {
-    this.dataService.get(Company).subscribe(
-      data => this.dataSource = data
-    );
+    this.loading = true;
+    this.dataService.get(Company)
+      .pipe(
+        finalize(() => this.loading = false)
+      )
+      .subscribe(
+        data => this.dataSource = data
+      );
   }
 
   openEditPage(id) {
@@ -51,14 +64,20 @@ export class CompanyListComponent implements OnInit {
   }
 
   create() {
+    this.loading = true;
     this.addButtonDisabled = true;
     this.dataService.post(
       this.form.value
-    ).subscribe(() => {
-      this.form.reset();
-      this.loadCompanies();
-      this.addButtonDisabled = false;
-    });
+    )
+      .pipe(
+        finalize(() => this.loading = false)
+      )
+      .subscribe(() => {
+        this.form.reset();
+        this.loadCompanies();
+        this.addButtonDisabled = false;
+        this.openSnackBar('Saved');
+      });
   }
 
 }
