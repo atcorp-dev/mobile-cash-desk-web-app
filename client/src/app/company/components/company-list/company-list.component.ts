@@ -80,4 +80,20 @@ export class CompanyListComponent implements OnInit {
       });
   }
 
+  remove(id: string) {
+    this.loading = true;
+    this.dataService.delete(id)
+      .pipe(
+        finalize(() => this.loading = false)
+      )
+      .subscribe(success => {
+        if (success) {
+          this.loadCompanies();
+          this.openSnackBar('Removed');
+        } else {
+          this.openSnackBar('Company can not be deleted');
+        }
+      });
+  }
+
 }

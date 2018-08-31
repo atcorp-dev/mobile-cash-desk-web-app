@@ -2,7 +2,7 @@ import { CreateItemDto } from '../inventory/create-item.dto';
 import { Guid } from 'guid-typescript';
 import { CreateCompanyDto } from './create-company.dto';
 import { Injectable, Inject } from '@nestjs/common';
-import { Observable, from } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { Company } from './company.model';
 import { Item } from '../inventory/item.model';
 import { map, switchMap } from 'rxjs/operators';
@@ -26,10 +26,31 @@ export class CompanyService {
   }
 
   create(createCompany: CreateCompanyDto): Observable<Company> {
-    const id = Guid.create().toString();
-    const company = Object.assign(createCompany, { id });
-    const response = this.companyRepository.create(company);
+    const response = this.companyRepository.create(createCompany);
     return from(response);
+  }
+
+  remove(id: string): Observable<boolean> {
+    return from (
+      this.itemRepository.count({
+        where: { companyId: id }
+      })
+    )
+      .pipe(
+        switchMap(count => {
+          if (!count) {
+            return this.companyRepository.findById<Company>(id);
+          }
+          return of(null);
+        }),
+        switchMap((company: Company) => { 
+          if(company) {
+            return company.destroy()
+              .then(() => true);
+          }
+          return of(false);
+        })
+    );
   }
 
   getItems(id: string): Observable<Array<Item>> {
@@ -42,11 +63,7 @@ export class CompanyService {
   }
 
   addItem(id: string, itemDto: CreateItemDto): Observable<any> {
-    const itemId = Guid.create().toString();
-    const item = Object.assign(itemDto, {
-      id: itemId,
-      companyId: id
-    });
+    const item = Object.assign(itemDto, { companyId: id });
     const response = this.itemRepository.create(item);
     return from(response);
   }

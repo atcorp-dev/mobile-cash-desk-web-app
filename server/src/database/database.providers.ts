@@ -1,3 +1,5 @@
+import { Category } from './../api/categories/category.model';
+import { User } from './../api/user/user.model';
 import { Item } from './../api/inventory/item.model';
 import { Company } from './../api/companies/company.model';
 import { Sequelize } from 'sequelize-typescript';
@@ -11,11 +13,13 @@ export const databaseProviders = [
     useFactory: async () => {
       const sequelize = new Sequelize(connectionConfig);
       sequelize.addModels([
+        User,
+        Category,
+        Item,
         Company,
-        Item
       ]);
-      await sequelize.sync({ force: false });
-      // await Item.sync({ force: true })
+      await sequelize.sync({ force: true });
+      // Item.sync({ force: false })
       return sequelize;
     },
   },

@@ -1,3 +1,4 @@
+import { switchMap } from 'rxjs/operators';
 import { Company } from './../companies/company.model';
 import { Observable, from } from 'rxjs';
 import { Item } from './item.model';
@@ -20,5 +21,15 @@ export class ItemService {
         }]
       })
     )
+  }
+
+  remove(id: string): Observable<void> {
+    return from(
+      this.itemRepository.findById<Item>(id)
+    ).pipe(
+      switchMap(
+        item => item.destroy()
+      )
+    );
   }
 }

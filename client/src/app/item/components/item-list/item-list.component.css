@@ -38,13 +38,32 @@ form {
 }
 
 input[type="file"] {
-    display: none;
+  display: none;
 }
 .file-upload {
-    border: 1px solid #ccc;
-    display: inline-block;
-    padding: 6px 12px;
-    cursor: pointer;
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.image-upload {
+  border: 1px solid #ccc;
+  display: inline-block;
+  width: 32px;
+  cursor: pointer;
+}
+
+.image-upload .mat-icon {
+  font-size: xx-large
+}
+
+.cell-img {
+  width: 48px;
+}
+
+.form-image-preview {
+  width: 32px;
 }
 
 @media screen and (max-width: 600px) {

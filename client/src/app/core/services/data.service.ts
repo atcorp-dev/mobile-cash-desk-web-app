@@ -22,6 +22,13 @@ export abstract class DataService {
     return this.httpClient.post(this.apiPath, body);
   }
 
+  public delete(id): Observable<any> {
+    const parts = this.apiPath.split('/');
+    parts.push(id);
+    const url = parts.join('/');
+    return this.httpClient.delete(url);
+  }
+
   protected createInstance<T>(c: new () => T): T {
     return new c();
   }

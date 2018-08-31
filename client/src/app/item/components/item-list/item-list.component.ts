@@ -8,6 +8,7 @@ import { Item } from './../../models/item.model';
 import { Component, OnInit } from '@angular/core';
 import { finalize } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material';
+import { Observable } from 'rxjs';
 @Component({
   selector: 'app-item-list',
   templateUrl: './item-list.component.html',
@@ -20,7 +21,7 @@ import { MatSnackBar } from '@angular/material';
 })
 export class ItemListComponent implements OnInit {
 
-  displayedColumns: string[] = ['name', 'code', 'price', 'company', 'menu'];
+  displayedColumns: string[] = ['name', 'code', 'price', 'company', 'image', 'menu'];
   dataSource: Array<Item> = [];
   companyList: Array<Company>;
   form: FormGroup;
@@ -28,6 +29,7 @@ export class ItemListComponent implements OnInit {
   searchForm: FormGroup;
   addButtonDisabled: boolean;
   uploadButtonDisabled: boolean;
+  uploadImageButtonDisabled: boolean;
   loading: boolean;
 
   constructor(
@@ -57,6 +59,7 @@ export class ItemListComponent implements OnInit {
       name: [null, [Validators.required]],
       code: [null, [Validators.required]],
       price: [null, [Validators.required, Validators.min(0.01)]],
+      image: null,
       description: null,
     });
     this.uploadForm = this.formBuilder.group({
@@ -79,7 +82,8 @@ export class ItemListComponent implements OnInit {
   loadItems() {
     const companyId = this.searchForm.get('companyId').value;
     this.loading = true;
-    this.dataService.get(Item, { companyId })
+    const params = companyId ? { companyId } : undefined;
+    this.dataService.get(Item, params)
       .pipe(
         finalize(() => this.loading = false)
       )
@@ -99,14 +103,47 @@ export class ItemListComponent implements OnInit {
       this.form.value
     )
       .pipe(
-        finalize(() => this.loading = false)
+        finalize(() => {
+          this.loading = false;
+          this.addButtonDisabled = false;
+        })
       )
-      .subscribe(() => {
+      .subscribe(item => {
         this.form.reset();
+        this.searchForm.patchValue({ companyId: item.companyId });
         this.loadItems();
         this.addButtonDisabled = false;
         this.openSnackBar('Saved');
+      }, err => this.openSnackBar('Error while saving'));
+  }
+
+  remove(id: string) {
+    this.loading = true;
+    this.dataService.delete(id)
+      .pipe(
+        finalize(() => this.loading = false)
+      )
+      .subscribe(success => {
+        if (success) {
+          this.loadItems();
+          this.openSnackBar('Removed');
+        } else {
+          this.openSnackBar('Item can not be deleted');
+        }
       });
+  }
+
+  selectImageFile(event) {
+    this.uploadImageButtonDisabled = true;
+    const fileList: FileList = event.target.files;
+    if (!fileList.length) {
+      this.uploadImageButtonDisabled = false;
+      return;
+    }
+    const file = fileList[0];
+    this.getBase64(file).subscribe(
+      value => this.form.patchValue({ image: value })
+    );
   }
 
   selectFile(event) {
@@ -133,6 +170,15 @@ export class ItemListComponent implements OnInit {
         this.openSnackBar('Imported');
         this.uploadForm.reset();
       });
+  }
+
+  getBase64(file: File): Observable<string> {
+    return Observable.create(observer => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => observer.next(reader.result);
+      reader.onerror = error => observer.error(error);
+    });
   }
 
 }

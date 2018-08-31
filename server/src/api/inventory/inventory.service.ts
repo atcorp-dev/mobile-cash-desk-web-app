@@ -1,12 +1,10 @@
-import { Guid } from 'guid-typescript';
 import { Company } from './../companies/company.model';
-import { of, Subject, Subscriber, from } from 'rxjs';
+import { from } from 'rxjs';
 import { Observable } from 'rxjs';
-import { CreateItemDto } from './create-item.dto';
 import { Item } from './item.model';
 import { Injectable, Inject } from '@nestjs/common';
 import * as CSV from 'csv-string';
-import { map, switchMap } from 'rxjs/operators';
+import { switchMap } from 'rxjs/operators';
 
 @Injectable()
 export class InventoryService {
@@ -25,7 +23,7 @@ export class InventoryService {
     this.validateHeaders(headers);
     const items = arr.map(values => {
       const [name, code, price, description] = values;
-      return { id: Guid.create().toString(), name, code, price: this.toDecimal(price), description, companyId: null }
+      return { name, code, price: this.toDecimal(price), description, companyId: null }
     });
     return from (
       this.companyRepository.find({ where: { code: companyCode } })

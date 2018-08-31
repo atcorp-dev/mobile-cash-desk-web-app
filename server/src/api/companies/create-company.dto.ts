@@ -1,3 +1,4 @@
+import { CompanyType } from './company.model';
 import { Guid } from 'guid-typescript';
 import { ApiModelProperty } from '@nestjs/swagger';
 
@@ -17,4 +18,10 @@ export class CreateCompanyDto {
 
   @ApiModelProperty()
   address: string;
+
+  @ApiModelProperty({ required: false})
+  parentId: string;
+
+  @ApiModelProperty({ enum: [ 0, 1 ] })
+  type: CompanyType;
 }
