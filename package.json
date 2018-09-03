@@ -10,7 +10,7 @@
     "build": "npm run build:client",
     "build:client": "(cd ./client && npm run build)",
     "start": "npm run start:prod",
-    "start:prod": "(cd ./server && ./node_modules/.bin/ts-node ./src/main.ts)",
+    "start:prod": "(cd ./server && node index.js)",
     "start:dev": "npm run start:client & npm run start:server",
     "start:client": "(cd ./client && npm run start)",
     "start:server": "(cd ./server && npm run start:watch)"
