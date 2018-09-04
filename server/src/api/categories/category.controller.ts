@@ -1,9 +1,9 @@
-import { CreateCategoryDto } from './create-Category.dto';
 import { Observable } from 'rxjs';
 import { CategoryService } from './category.service';
 import { Controller, Get, Post, Param, Body, Delete } from '@nestjs/common';
 import { ApiUseTags } from '@nestjs/swagger';
 import { Category } from './category.model';
+import { CreateCategoryDto } from './create-category.dto';
 
 @ApiUseTags('Categories')
 @Controller('categories')

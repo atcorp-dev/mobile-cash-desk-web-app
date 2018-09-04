@@ -3,7 +3,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { Observable, from, of } from 'rxjs';
 import { Item } from '../inventory/item.model';
 import { switchMap } from 'rxjs/operators';
-// import { CreateCategoryDto } from './create-category.dto';
+import { CreateCategoryDto } from './create-category.dto';
 
 @Injectable()
 export class CategoryService {
@@ -23,7 +23,7 @@ export class CategoryService {
     return from(response);
   }
 
-  create(createCategory: any): Observable<Category> {
+  create(createCategory: CreateCategoryDto): Observable<Category> {
     const response = this.categoryRepository.create(createCategory);
     return from(response);
   }
