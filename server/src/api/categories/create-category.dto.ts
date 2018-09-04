@@ -7,4 +7,5 @@ export class CreateCategoryDto {
 
   @ApiModelProperty()
   code: string;
+
 }
