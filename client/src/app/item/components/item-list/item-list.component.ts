@@ -21,7 +21,7 @@ import { Observable } from 'rxjs';
 })
 export class ItemListComponent implements OnInit {
 
-  displayedColumns: string[] = ['name', 'code', 'price', 'company', 'image', 'menu'];
+  displayedColumns: string[] = ['name', 'barCode', 'code', 'price', 'company', 'image', 'menu'];
   dataSource: Array<Item> = [];
   companyList: Array<Company>;
   form: FormGroup;
@@ -58,6 +58,7 @@ export class ItemListComponent implements OnInit {
       companyId: [null, [Validators.required]],
       name: [null, [Validators.required]],
       code: [null, [Validators.required]],
+      barCode: [null, [Validators.required]],
       price: [null, [Validators.required, Validators.min(0.01)]],
       image: null,
       description: null,

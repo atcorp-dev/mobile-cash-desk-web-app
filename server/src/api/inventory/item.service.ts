@@ -23,6 +23,30 @@ export class ItemService {
     )
   }
 
+  getItemByCode(companyId: string, code: string): Observable<Item> {
+    const where = { companyId, code };
+    return from(
+        this.itemRepository.findOne({
+        where,
+        include: [{
+          model: Company
+        }]
+      })
+    );
+  }
+
+  getItemByBarCode(companyId: string, barCode: string): Observable<Item> {
+    const where = { companyId, barCode };
+    return from(
+        this.itemRepository.findOne({
+        where,
+        include: [{
+          model: Company
+        }]
+      })
+    );
+  }
+
   remove(id: string): Observable<void> {
     return from(
       this.itemRepository.findById<Item>(id)

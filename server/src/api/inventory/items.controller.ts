@@ -16,6 +16,16 @@ export class ItemController {
     return this.itemService.getAll(where);
   }
 
+  @Get('byCode/:companyId/:code')
+  getByCode(@Param('companyId') companyId: string, @Param('code') code: string): Observable<Item> {
+    return this.itemService.getItemByCode(companyId, code);
+  }
+
+  @Get('byBarCode/:companyId/:barCode')
+  getByBarCode(@Param('companyId') companyId: string, @Param('barCode') barCode: string): Observable<Item> {
+    return this.itemService.getItemByBarCode(companyId, barCode);
+  }
+
   @Delete(':id')
   remove(@Param('id') id: string): Observable<void> {
     return this.itemService.remove(id);

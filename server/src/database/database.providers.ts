@@ -18,7 +18,7 @@ export const databaseProviders = [
         Item,
         Company,
       ]);
-      await sequelize.sync({ force: true });
+      await sequelize.sync({ force: false });
       // Item.sync({ force: false })
       return sequelize;
     },

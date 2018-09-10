@@ -1,3 +1,4 @@
+import { Guid } from 'guid-typescript';
 import { Company } from './../companies/company.model';
 import { from } from 'rxjs';
 import { Observable } from 'rxjs';
@@ -9,7 +10,7 @@ import { switchMap } from 'rxjs/operators';
 @Injectable()
 export class InventoryService {
 
-  private template = ['NAME', 'CODE', 'PRICE', 'DESCRIPTION'];
+  private template = ['NAME', 'CODE', 'PRICE'];
   constructor(
     @Inject('ItemRepository') private readonly itemRepository: typeof Item,
     @Inject('CompanyRepository') private readonly companyRepository: typeof Company,
@@ -19,11 +20,12 @@ export class InventoryService {
     const data: Buffer = file.buffer;
     const csv = data.toString();
     const arr: Array<string[]> = CSV.parse(csv);
+    console.log(arr[1]);
     const headers = arr.shift();
-    this.validateHeaders(headers);
+   // this.validateHeaders(headers);
     const items = arr.map(values => {
       const [name, code, price, description] = values;
-      return { name, code, price: this.toDecimal(price), description, companyId: null }
+      return { id: Guid.create().toString(), name, code, price: this.toDecimal(price), description, companyId: null }
     });
     return from (
       this.companyRepository.find({ where: { code: companyCode } })
@@ -53,6 +55,8 @@ export class InventoryService {
     validHeaders.forEach((validHeader, i) => {
       const header = headers[i] || '';
       if (header.toUpperCase() !== validHeader) {
+        console.log(headers.join(','));
+        console.log(`${header} not equal ${validHeader}`);
         throw new Error('Invalid data structure')
       }
     });
