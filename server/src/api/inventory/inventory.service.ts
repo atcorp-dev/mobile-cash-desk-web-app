@@ -10,7 +10,7 @@ import { switchMap } from 'rxjs/operators';
 @Injectable()
 export class InventoryService {
 
-  private template = ['NAME', 'CODE', 'PRICE'];
+  private template = ['NAME', 'EXT_CODE', 'CODE', 'BAR_CODE', 'PRICE'];
   constructor(
     @Inject('ItemRepository') private readonly itemRepository: typeof Item,
     @Inject('CompanyRepository') private readonly companyRepository: typeof Company,
@@ -24,8 +24,17 @@ export class InventoryService {
     const headers = arr.shift();
    // this.validateHeaders(headers);
     const items = arr.map(values => {
-      const [name, code, price, description] = values;
-      return { id: Guid.create().toString(), name, code, price: this.toDecimal(price), description, companyId: null }
+      const [name, extCode, code, barCode, price, description] = values;
+      return { 
+        id: Guid.create().toString(),
+        name,
+        code,
+        extCode,
+        barCode,
+        price: this.toDecimal(price),
+        description,
+        companyId: null
+      }
     });
     return from (
       this.companyRepository.find({ where: { code: companyCode } })

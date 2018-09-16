@@ -20,6 +20,9 @@ export class Item extends BaseModel<Item> {
   code: string;
 
   @Column
+  extCode: string;
+
+  @Column
   barCode: string;
 
   @BelongsTo(() => Category)

@@ -1,10 +1,15 @@
+import { Sequelize } from 'sequelize-typescript';
 import { switchMap } from 'rxjs/operators';
 import { Company } from './../companies/company.model';
-import { Observable, from } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { Item } from './item.model';
 import { Injectable, Inject } from '@nestjs/common';
 
+const Op = Sequelize.Op;
 
+export const ITEM_SELECT_ATTRIBUTES = [
+  'id', 'name', 'code', 'barCode', 'price', 'companyId', 'categoryId'
+];
 @Injectable()
 export class ItemService {
 
@@ -15,6 +20,7 @@ export class ItemService {
   getAll(where): Observable<Item[]> {
     return from(
       this.itemRepository.findAll({
+        attributes: ITEM_SELECT_ATTRIBUTES,
         where,
         include: [{
           model: Company
@@ -26,23 +32,29 @@ export class ItemService {
   getItemByCode(companyId: string, code: string): Observable<Item> {
     const where = { companyId, code };
     return from(
-        this.itemRepository.findOne({
-        where,
-        include: [{
-          model: Company
-        }]
-      })
+      this.itemRepository.findOne({ attributes: ITEM_SELECT_ATTRIBUTES, where })
     );
   }
 
   getItemByBarCode(companyId: string, barCode: string): Observable<Item> {
     const where = { companyId, barCode };
     return from(
-        this.itemRepository.findOne({
-        where,
-        include: [{
-          model: Company
-        }]
+      this.itemRepository.findOne({ attributes: ITEM_SELECT_ATTRIBUTES, where })
+    );
+  }
+
+  getItemsByName(companyId: string, name: string): Observable<Item[]> {
+    if (!name || name.length < 3) {
+      return of([]);
+    }
+    const where = {
+      companyId,
+        name: { [Op.iLike]: `%${name}%`} 
+    };
+    return from(
+        this.itemRepository.findAll({
+        attributes: ITEM_SELECT_ATTRIBUTES,
+        where
       })
     );
   }
