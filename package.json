@@ -16,7 +16,7 @@
     "start:client": "(cd ./client && npm run start)",
     "start:server": "(cd ./server && npm run start:watch)",
 	"migrate": "(cd ./server && npm run migrate)",
-	"migrate": "(cd ./server && npm run seed)"
+	"seed": "(cd ./server && npm run seed)"
   },
   "repository": {
     "type": "git",
