@@ -1,7 +1,5 @@
-import { User } from './../user/user.model';
 import { Item } from '../inventory/item.model';
-import { Guid } from 'guid-typescript';
-import { Table, Column, Model, IsUUID, PrimaryKey, Sequelize, HasMany, BelongsTo, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Sequelize, HasMany, BelongsTo, ForeignKey } from 'sequelize-typescript';
 import { BaseModel } from '../base/base.model';
 
 export enum CompanyType {
@@ -42,4 +40,5 @@ export class Company extends BaseModel<Company> {
 
   @HasMany(() => Item)
   itemList: Array<Item>
+
 }

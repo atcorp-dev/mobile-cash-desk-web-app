@@ -1,3 +1,4 @@
+import { User } from './../user/user.model';
 import { CreateItemDto } from '../inventory/create-item.dto';
 import { Guid } from 'guid-typescript';
 import { CreateCompanyDto } from './create-company.dto';
@@ -61,6 +62,15 @@ export class CompanyService {
       map(i => i.itemList)
     );
   }
+
+  /*getUsers(id: string): Observable<Array<User>> {
+    const response = this.companyRepository.findById(id, {
+      include: [User]
+    });
+    return from(response).pipe(
+      map(i => i.users)
+    );
+  }*/
 
   addItem(id: string, itemDto: CreateItemDto): Observable<any> {
     const item = Object.assign(itemDto, { companyId: id });

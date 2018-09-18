@@ -1,4 +1,6 @@
-import { Table, Column, Model, PrimaryKey, Sequelize } from 'sequelize-typescript';
+import { Guid } from 'guid-typescript';
+import { Table, Column, Model, PrimaryKey, Sequelize, BelongsTo, ForeignKey, IsUUID, BeforeCreate } from 'sequelize-typescript';
+import { Company } from '../companies/company.model';
 
 export enum UserRole {
   Admin = 1,
@@ -10,7 +12,7 @@ export enum UserRole {
 @Table
 export class User extends Model<User> {
   
-  // @IsUUID(4)
+  @IsUUID(4)
   @PrimaryKey
   @Column(Sequelize.UUID)
   id: string;
@@ -19,15 +21,29 @@ export class User extends Model<User> {
   login: string;
 
   @Column
-  password: string
+  password: string;
 
   @Column
-  email: string
+  email: string;
 
   @Column
-  active: boolean
+  active: boolean;
 
   @Column(Sequelize.SMALLINT)
-  role: number
+  role: number;
+
+  // @ForeignKey(() => Company)
+  @Column(Sequelize.UUID)
+  companyId: string;
+
+  // #region Methods: Hooks
+  @BeforeCreate
+  static generateId(instance: Model<any>) {
+    if (!instance.id) {
+      instance.id = Guid.create().toString();
+    }
+  }
+
+  // #endregion
 
 }

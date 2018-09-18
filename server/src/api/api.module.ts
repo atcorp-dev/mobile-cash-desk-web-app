@@ -6,10 +6,10 @@ import { Routes, RouterModule, Route } from 'nest-router'
 import { UserModule } from './user/user.module';
 
 const modules = [
+  UserModule,
   CategoryModule,
   InventoryModule,
   CompanyModule,
-  UserModule,
 ]
 
 const routes: Routes = modules.map(module => <Route>{

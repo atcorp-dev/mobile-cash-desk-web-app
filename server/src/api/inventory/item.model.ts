@@ -1,8 +1,6 @@
 import { Category } from './../categories/category.model';
-import { User } from './../user/user.model';
 import { Company } from './../companies/company.model';
-import { Guid } from 'guid-typescript';
-import { Table, Column, Model, IsUUID, PrimaryKey, Sequelize, BelongsTo, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Sequelize, BelongsTo, ForeignKey } from 'sequelize-typescript';
 import { BaseModel } from '../base/base.model';
 
 export interface AdditionalField {
