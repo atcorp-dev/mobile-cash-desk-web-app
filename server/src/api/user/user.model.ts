@@ -1,5 +1,12 @@
 import { Table, Column, Model, PrimaryKey, Sequelize } from 'sequelize-typescript';
 
+export enum UserRole {
+  Admin = 1,
+  Owner = 2,
+  Supervisor = 4,
+  Operator = 8
+}
+
 @Table
 export class User extends Model<User> {
   
@@ -20,7 +27,7 @@ export class User extends Model<User> {
   @Column
   active: boolean
 
- /* @Column(Sequelize.INTEGER)
-  role: number*/
+  @Column(Sequelize.SMALLINT)
+  role: number
 
 }
