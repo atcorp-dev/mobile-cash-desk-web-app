@@ -5,7 +5,8 @@
     "ssl": true,
     "dialectOptions": {
       "ssl": true
-    }
+    },
+    "seederStorage": "sequelize"
   },
   "development": {
     "dialect": "postgres",
@@ -13,6 +14,7 @@
     "port": 5432,
     "username": "atcorp",
     "password": "atcorp",
-    "database": "mobile_cash_desk"
+    "database": "mobile_cash_desk",
+    "seederStorage": "sequelize"
   }
 }

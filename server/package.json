@@ -8,8 +8,9 @@
     "start:watch": "nodemon",
     "build": "tsc",
     "start:prod": "node dist/main.js",
-    "migrate:dev": "sequelize --env=development db:migrate",
-    "migrate": "sequelize --env=production db:migrate"
+    "migrate:dev": "sequelize db:migrate --env=development",
+    "migrate": "sequelize db:migrate --env=production",
+    "seed": "sequelize db:seed:all --env=production"
   },
   "dependencies": {
     "@nestjs/common": "^5.1.0",
