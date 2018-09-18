@@ -6,7 +6,7 @@
     "install": "npm run install:client && npm run install:server",
     "install:client": "(cd ./client && npm install)",
     "install:server": "(cd ./server && npm install)",
-    "postinstall": "npm run build",
+    "postinstall": "npm run build && migrate",
     "build": "npm run build:client && npm run build:server",
     "build:client": "(cd ./client && npm run build)",
 	"build:server": "(cd ./server && npm run build)",
@@ -14,7 +14,8 @@
     "start:prod": "(cd ./server && npm run start:prod)",
     "start:dev": "npm run start:client & npm run start:server",
     "start:client": "(cd ./client && npm run start)",
-    "start:server": "(cd ./server && npm run start:watch)"
+    "start:server": "(cd ./server && npm run start:watch)",
+	"migrate": "(cd ./server && npm run migrate)"
   },
   "repository": {
     "type": "git",
