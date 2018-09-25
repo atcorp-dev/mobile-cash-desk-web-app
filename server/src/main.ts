@@ -16,7 +16,7 @@ async function bootstrap() {
     .setTitle('Mobile Cash Desk API')
     .setDescription('The API for mobile apps that uses for Mobile Cash Desk process')
     .setVersion('1.0')
-    .setBasePath('api')
+    // .setBasePath('api')
     .build();
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('swagger', app, document);

@@ -1,3 +1,4 @@
+import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './categories/category.module';
 import { InventoryModule } from './inventory/inventory.module';
 import { Module } from '@nestjs/common';
@@ -20,6 +21,7 @@ const routes: Routes = modules.map(module => <Route>{
 @Module({
   imports: [
     RouterModule.forRoutes(routes),
+    AuthModule,
     ...modules
   ],
   exports: [

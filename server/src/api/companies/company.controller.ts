@@ -3,15 +3,17 @@ import { Item } from '../inventory/item.model';
 import { CreateCompanyDto } from './create-company.dto';
 import { Observable } from 'rxjs';
 import { CompanyService } from './company.service';
-import { Controller, Get, Post, Param, Body, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Delete, UseGuards } from '@nestjs/common';
 import { ApiUseTags } from '@nestjs/swagger';
 import { Company } from './company.model';
+import { AuthGuard } from '@nestjs/passport';
 
 @ApiUseTags('Companies')
 @Controller('companies')
+  @UseGuards(AuthGuard('bearer'))
 export class CompanyController {
 
-  constructor(private companyService: CompanyService) {}
+  constructor(private companyService: CompanyService) { }
 
   @Get()
   getAll(): Observable<Array<Company>> {

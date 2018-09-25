@@ -77,7 +77,7 @@ export class UserService {
     );
   }
 
-  getUserByLogin(login: string, password: string): Observable<UserDto | null> {
+  public getUserByLoginPassword(login: string, password: string): Observable<UserDto | null> {
     const userQuery = this.userRepository.findOne({ where: { login } });
     return combineLatest(
       this.getEncryptedPassword(password),
@@ -87,6 +87,10 @@ export class UserService {
       switchMap(([password, user]) => this.checkPassword(password, user)),
       map(res => res)
     )
+  }
+
+  public findOneByToken(token: string): Promise<any> {
+    return Promise.resolve(null);
   }
 
   // #endregion
