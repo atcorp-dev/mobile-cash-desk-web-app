@@ -1,11 +1,14 @@
+import { AppAuthGuard } from './../auth/auth.guard';
 import { Item } from './item.model';
 import { ItemService } from './item.service';
 import { Observable } from 'rxjs';
-import { ApiUseTags } from '@nestjs/swagger';
-import { Controller, Get, Query, Delete, Param } from '@nestjs/common';
+import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Get, Query, Delete, Param, UseGuards } from '@nestjs/common';
 
 @ApiUseTags('Items')
+@ApiBearerAuth()
 @Controller('items')
+@UseGuards(AppAuthGuard)
 export class ItemController {
 
   constructor(private itemService: ItemService) { }

@@ -1,12 +1,15 @@
+import { AppAuthGuard } from './../auth/auth.guard';
 import { Observable } from 'rxjs';
 import { CategoryService } from './category.service';
-import { Controller, Get, Post, Param, Body, Delete } from '@nestjs/common';
-import { ApiUseTags } from '@nestjs/swagger';
+import { Controller, Get, Post, Param, Body, Delete, UseGuards } from '@nestjs/common';
+import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Category } from './category.model';
 import { CreateCategoryDto } from './create-category.dto';
 
 @ApiUseTags('Categories')
+@ApiBearerAuth()
 @Controller('categories')
+@UseGuards(AppAuthGuard)
 export class CategoryController {
 
   constructor(private categoryService: CategoryService) { }
