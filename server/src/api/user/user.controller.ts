@@ -31,7 +31,14 @@ export class UserController {
   @ApiOperation({ title: 'Authenticate' })
   @ApiBearerAuth()
   public login(@Res() res, @Session() session) {
-    const ses = session;
-    return res.status(HttpStatus.OK).send();
+    const user = session.passport.user;
+    return res.status(HttpStatus.OK).send(user);
+  }
+
+  @Post('logout')
+  @ApiOperation({ title: 'Log Out' })
+  public logOut(@Req() request, @Res() response) {
+    request.logout();
+    return response.status(HttpStatus.OK).send();
   }
 }

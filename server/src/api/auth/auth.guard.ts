@@ -9,6 +9,9 @@ export class AppAuthGuard implements CanActivate {
       httpContext.getRequest(),
       httpContext.getResponse()
     ];
+    if (request.session && request.session.passport && request.session.passport.user) {
+      return true;
+    }
     const passportFn = createPassportContext(request, response);
 
     const user = await passportFn(
