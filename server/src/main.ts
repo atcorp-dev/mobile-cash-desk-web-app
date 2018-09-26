@@ -1,22 +1,34 @@
 import * as express from 'express';
 import * as passport from 'passport';
 import * as session from 'express-session';
-import { join }  from 'path';
+import { join } from 'path';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ApplicationModule } from './app.module';
 
+const config = require('../config/config.json');
+const conString = process.env.DATABASE_URL || (config.postgreSqlStore && config.postgreSqlStore.development);
+const PostgreSqlStore = require('connect-pg-simple')(session);
+
 
 const SERVER_PORT = process.env.PORT || 3000;
 const CLIENT_FILES = join(__dirname, '..', '..', 'client', 'dist');
+const SESSION_HOURS_EXPIRED = 12, MINUTES_IN_HOURS = 60, SECONDS_IN_MINUTES = 60;
+const sessionHoursExpired = parseInt(process.env.SESSION_HOURS_EXPIRED) || SESSION_HOURS_EXPIRED;
+const cookieExpires = new Date(Date.now() + (sessionHoursExpired * MINUTES_IN_HOURS * SECONDS_IN_MINUTES * 1000))
 
 async function bootstrap() {
   const app = await NestFactory.create(ApplicationModule);
   app.use(session({
     secret: process.env.SESSION_SECRET_KEY || 'secret-key',
-    name: 'sess',
+    name: 'mobilecashdasksession',
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+      expires: cookieExpires,
+      maxAge: cookieExpires
+    },
+    store: conString ? new PostgreSqlStore({ conString }) : null
   }))
   app.use(passport.initialize());
   app.use(passport.session());

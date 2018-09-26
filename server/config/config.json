@@ -16,5 +16,8 @@
     "password": "atcorp",
     "database": "mobile_cash_desk",
     "seederStorage": "sequelize"
+  },
+  "postgreSqlStore": {
+    "development": "postgres://atcorp:atcorp@localhost:5432/mobile_cash_desk"
   }
 }
