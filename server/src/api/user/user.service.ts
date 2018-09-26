@@ -1,6 +1,6 @@
 import { map, switchMap } from 'rxjs/operators';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Observable, from, combineLatest } from 'rxjs';
+import { Observable, from, combineLatest, of } from 'rxjs';
 import { User } from './user.model';
 import { Injectable, Inject } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
@@ -31,7 +31,7 @@ export class UserService {
     );
   }
 
-  protected getHash(str: string, salt: string): Observable<string> {
+  protected getHash(str: string, salt): Observable<string> {
     return from (
       bcrypt.hash(str, salt)
     );
@@ -47,6 +47,9 @@ export class UserService {
   }
 
   protected checkPassword(password: string, user: User): Observable<UserDto | null> {
+    if (!user) {
+      return of(null);
+    }
     return from(
       bcrypt.compare(password, user.password)
     ).pipe(
@@ -77,14 +80,13 @@ export class UserService {
     );
   }
 
-  public getUserByLoginPassword(login: string, password: string): Observable<UserDto | null> {
-    const userQuery = this.userRepository.findOne({ where: { login } });
-    return combineLatest(
-      this.getEncryptedPassword(password),
-      userQuery,
-    )
-    .pipe(
-      switchMap(([password, user]) => this.checkPassword(password, user)),
+  public authenticateUser(user: { username: string, password: string }): Observable<UserDto | null> {
+    const { username, password } = user;
+    const userQuery = this.userRepository.findOne({ where: { login: username } });
+    return from(
+      userQuery
+    ).pipe(
+      switchMap((user) => this.checkPassword(password, user)),
       map(res => res)
     )
   }

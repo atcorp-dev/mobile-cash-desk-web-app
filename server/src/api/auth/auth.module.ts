@@ -1,4 +1,5 @@
-
+import { CookieSerializer } from './cookie.serializer';
+import { AppAuthGuard } from './auth.guard';
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { HttpStrategy } from './http.strategy';
@@ -10,6 +11,11 @@ import { PassportModule } from '@nestjs/passport';
     PassportModule.register({ defaultStrategy: 'bearer' }),
     UserModule
   ],
-  providers: [AuthService, HttpStrategy],
+  providers: [
+    AuthService,
+    HttpStrategy,
+    AppAuthGuard,
+    CookieSerializer
+  ],
 })
 export class AuthModule { }
