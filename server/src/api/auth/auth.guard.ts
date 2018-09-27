@@ -9,6 +9,16 @@ export class AppAuthGuard implements CanActivate {
       httpContext.getRequest(),
       httpContext.getResponse()
     ];
+    
+    /// <todo>
+    /// TODO: Add validation that only one session fo one user can exists
+    /// Use check like:
+    ///
+    ///  select *
+    ///  from "session"
+    ///  where cast(sess::jsonb#>'{passport,user,login}' as text) = '"admin"'
+    ///  </todo>
+
     if (request.session && request.session.passport && request.session.passport.user) {
       return true;
     }
