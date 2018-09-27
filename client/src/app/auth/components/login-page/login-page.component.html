@@ -1,0 +1,19 @@
+<div class="wrap-container">
+  <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
+  <mat-card>
+    <form [formGroup]="form">
+      <div class="img-wrap">
+        <img src="/assets/logo.png" />
+      </div>
+      <mat-form-field>
+        <input matInput formControlName="username" placeholder="Login">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type=password formControlName="password" placeholder="Password">
+      </mat-form-field>
+      <div>
+        <button mat-flat-button [disabled]="form?.invalid" (click)="onLogin()">Log In</button>
+      </div>
+    </form>
+  </mat-card>
+</div>

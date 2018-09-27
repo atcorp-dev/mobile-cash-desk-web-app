@@ -1,9 +1,8 @@
-import { AppAuthGuard } from './../auth/auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './user.model';
 import { Observable } from 'rxjs';
-import { Controller, Get, Post, Req, Res, Session, HttpStatus, Body, UseGuards } from '@nestjs/common';
-import { ApiUseTags, ApiOperation, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { ApiUseTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UserService } from './user.service';
 
 @ApiUseTags('Users')
@@ -26,19 +25,4 @@ export class UserController {
     return this.userService.register(createUser);
   }
 
-  @Post('login')
-  @UseGuards(AppAuthGuard)
-  @ApiOperation({ title: 'Authenticate' })
-  @ApiBearerAuth()
-  public login(@Res() res, @Session() session) {
-    const user = session.passport.user;
-    return res.status(HttpStatus.OK).send(user);
-  }
-
-  @Post('logout')
-  @ApiOperation({ title: 'Log Out' })
-  public logOut(@Req() request, @Res() response) {
-    request.logout();
-    return response.status(HttpStatus.OK).send();
-  }
 }

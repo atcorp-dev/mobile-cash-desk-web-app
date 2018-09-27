@@ -1,3 +1,6 @@
+import { Router } from '@angular/router';
+import { AuthService } from './auth/auth.service';
+import { AppService } from './app.service';
 import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
 @Component({
@@ -22,7 +25,25 @@ export class AppComponent implements OnDestroy {
 
   private _mobileQueryListener: () => void;
 
-  constructor(changeDetectorRef: ChangeDetectorRef, media: MediaMatcher) {
+  public get currentUser() {
+    return this.appService.currentUser;
+  }
+
+  public get logoutButtonDisabled(): boolean {
+    return !this.currentUser;
+  }
+
+  public get menuButtonDisabled(): boolean {
+    return !this.currentUser;
+  }
+
+  constructor(
+    private changeDetectorRef: ChangeDetectorRef,
+    private media: MediaMatcher,
+    private appService: AppService,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
@@ -30,6 +51,13 @@ export class AppComponent implements OnDestroy {
 
   ngOnDestroy(): void {
     this.mobileQuery.removeListener(this._mobileQueryListener);
+  }
+
+  logOut() {
+    this.authService.logOut().subscribe(() => {
+      this.appService.currentUser = null;
+      this.router.navigate(['login']);
+    });
   }
 
 }
