@@ -10,7 +10,8 @@ import { Location } from '@angular/common';
   styleUrls: ['./login-page.component.css']
 })
 export class LoginPageComponent implements OnInit {
-
+  
+  loading: boolean;
   form: FormGroup;
 
   constructor(
@@ -29,12 +30,15 @@ export class LoginPageComponent implements OnInit {
 
   onLogin() {
     const { username, password } = this.form.value;
+    this.loading = true;
     this.authService.authorize(username, password)
       .subscribe(
         user => {
+          this.loading = false;
           this.appService.currentUser = user;
           this.location.back();
-        }
+        },
+        e => this.loading = false
       );
   }
 
