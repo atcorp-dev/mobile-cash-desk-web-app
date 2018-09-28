@@ -10,7 +10,7 @@ import { Location } from '@angular/common';
   styleUrls: ['./login-page.component.css']
 })
 export class LoginPageComponent implements OnInit {
-  
+
   loading: boolean;
   form: FormGroup;
 
