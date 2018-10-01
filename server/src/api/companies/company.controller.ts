@@ -4,7 +4,7 @@ import { Item } from '../inventory/item.model';
 import { CreateCompanyDto } from './create-company.dto';
 import { Observable } from 'rxjs';
 import { CompanyService } from './company.service';
-import { Controller, Get, Post, Param, Body, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Delete, UseGuards, Query, Req } from '@nestjs/common';
 import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Company } from './company.model';
 
@@ -17,8 +17,8 @@ export class CompanyController {
   constructor(private companyService: CompanyService) { }
 
   @Get()
-  getAll(): Observable<Array<Company>> {
-    return this.companyService.getAll();
+  getAll(@Query('page') page: number, @Req() req): Observable<Array<Company>> {
+    return this.companyService.getAll(page, req.user);
   }
 
   @Get(':id')
@@ -37,8 +37,8 @@ export class CompanyController {
   }
 
   @Get(':id/items')
-  getCompanyItems(@Param('id') id: string): Observable<Item[]> {
-    return this.companyService.getItems(id);
+  getCompanyItems(@Param('id') id: string, @Query('page') page: number): Observable<Item[]> {
+    return this.companyService.getItems(id, +page);
   }
 
   @Post(':id/items')

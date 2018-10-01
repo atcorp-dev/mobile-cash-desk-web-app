@@ -13,18 +13,25 @@ export const ITEM_SELECT_ATTRIBUTES = [
 @Injectable()
 export class ItemService {
 
+  limit = 30;
+
   constructor(
     @Inject('ItemRepository') private readonly itemRepository: typeof Item
   ) { }
 
-  getAll(where): Observable<Item[]> {
+  getAll(where, page): Observable<Item[]> {
+    page = +page || 0;
+    const limit = this.limit;
+    const offset = limit * (page > 0 ? page -1 : 0);
     return from(
       this.itemRepository.findAll({
         attributes: ITEM_SELECT_ATTRIBUTES,
         where,
         include: [{
           model: Company
-        }]
+        }],
+        limit,
+        offset
       })
     )
   }

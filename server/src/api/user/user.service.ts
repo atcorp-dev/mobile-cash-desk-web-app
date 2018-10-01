@@ -72,6 +72,7 @@ export class UserService {
   }
 
   public register(createUser: CreateUserDto): Observable<UserDto> {
+    createUser.companyId = createUser.companyId ? createUser.companyId : null;
     return this.getEncryptedPassword(createUser.password).pipe(
       switchMap(
         password => this.userRepository.create(Object.assign({}, createUser, { password, active: true }))

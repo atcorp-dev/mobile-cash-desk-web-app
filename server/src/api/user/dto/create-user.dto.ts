@@ -15,4 +15,5 @@ export class CreateUserDto {
 
   @ApiModelProperty({ required: false })
   companyId?: string;
+
 }

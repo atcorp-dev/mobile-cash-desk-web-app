@@ -14,9 +14,9 @@ export class ItemController {
   constructor(private itemService: ItemService) { }
 
   @Get('')
-  getAll(@Query('companyId') companyId: string): Observable<Item[]> {
+  getAll(@Query('companyId') companyId: string, @Query('page') page: number): Observable<Item[]> {
     const where = companyId ? { companyId } : null;
-    return this.itemService.getAll(where);
+    return this.itemService.getAll(where, page);
   }
 
   @Get('byCode/:companyId/:code')
