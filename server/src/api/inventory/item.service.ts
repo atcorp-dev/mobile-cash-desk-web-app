@@ -36,6 +36,12 @@ export class ItemService {
     )
   }
 
+  getItemById(id: string): Observable<Item> {
+    return from(
+      this.itemRepository.findById(id)
+    );
+  }
+
   getItemByCode(companyId: string, code: string): Observable<Item> {
     const where = { companyId, code };
     return from(
