@@ -3,7 +3,7 @@ import { Item } from './item.model';
 import { ItemService } from './item.service';
 import { Observable } from 'rxjs';
 import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
-import { Controller, Get, Query, Delete, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Delete, Param, UseGuards, Req } from '@nestjs/common';
 
 @ApiUseTags('Items')
 @ApiBearerAuth()
@@ -17,6 +17,11 @@ export class ItemController {
   getAll(@Query('companyId') companyId: string, @Query('page') page?: number): Observable<Item[]> {
     const where = companyId ? { companyId } : null;
     return this.itemService.getAll(where, page);
+  }
+
+  @Get('available/:companyId/:code')
+  getAvailableByCode(@Param('companyId') companyId: string, @Param('code') code: string): Observable<Item[]> {
+    return this.itemService.getAvailableByCode(companyId, code);
   }
 
   @Get('byId/:id')

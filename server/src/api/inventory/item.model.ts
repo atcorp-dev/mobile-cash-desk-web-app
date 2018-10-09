@@ -52,4 +52,7 @@ export class Item extends BaseModel<Item> {
   @Column(Sequelize.JSON)
   additionalFields: Array<AdditionalField>;
 
+  @Column(Sequelize.BOOLEAN)
+  available: boolean;
+
 }

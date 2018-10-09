@@ -25,7 +25,14 @@ export class CompanyService {
     page = +page || 0;
     const offset = limit * (page > 0 ? page -1 : 0);
     const companyId = user && user.companyId;
-    const where = companyId ? { [Op.or]: [{ id: companyId }, {parentId: companyId }] }: null;
+    // const where = companyId ? { [Op.or]: [{ id: companyId }, {parentId: companyId }] }: null;
+    const where = Sequelize.literal(`
+      exists (
+        select id
+        from get_allowed_companies('${companyId}'::uuid) ac
+        where "Company".id = ac.id
+      )
+    `);
     const response = this.companyRepository.findAll({ where, limit, offset });
     return from(response);
   }

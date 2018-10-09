@@ -1,5 +1,6 @@
+import { User } from './../user/user.model';
 import { Sequelize } from 'sequelize-typescript';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, map } from 'rxjs/operators';
 import { Company } from './../companies/company.model';
 import { Observable, from, of } from 'rxjs';
 import { Item } from './item.model';
@@ -8,7 +9,7 @@ import { Injectable, Inject } from '@nestjs/common';
 const Op = Sequelize.Op;
 
 export const ITEM_SELECT_ATTRIBUTES = [
-  'id', 'name', 'code', 'barCode', 'price', 'companyId', 'categoryId'
+  'id', 'name', 'code', 'barCode', 'price', 'companyId', 'categoryId', 'available'
 ];
 @Injectable()
 export class ItemService {
@@ -33,6 +34,31 @@ export class ItemService {
         limit,
         offset
       })
+    )
+  }
+
+  getAvailableByCode(companyId: string, code: string): Observable<Item[]> {
+    return this.getCompanyGroupId(companyId).pipe(
+      switchMap(groupId => {
+        const where = Sequelize.literal(`
+          exists (
+            select "Item".id
+            from get_allowed_companies('${groupId}'::uuid) ac
+            where "Item"."companyId" = ac.id
+            and "Item".available = true
+            and "Item".code = '${code}'
+          )
+        `);
+        return from(this.itemRepository.findAll({
+          attributes: ITEM_SELECT_ATTRIBUTES,
+          include: [{
+            model: Company
+          }],
+          where
+        })
+        )
+      }
+      )
     )
   }
 
@@ -80,5 +106,25 @@ export class ItemService {
         item => item.destroy()
       )
     );
+  }
+
+  private getCompanyGroupId(companyId): Observable<string> {
+    return from(
+      Company.sequelize.query(`
+        WITH RECURSIVE companies AS (
+          SELECT m.id, m.name, m.type, m.code, m."parentId"
+          FROM "Company" m
+          WHERE m.id = '${companyId}'::uuid
+          UNION
+          SELECT p.id, p.name, p.type, p.code, p."parentId"
+          FROM "Company" p
+          INNER JOIN companies c ON p.id = c."parentId"
+        )
+        SELECT companies.id
+        FROM companies
+        WHERE "parentId" IS NULL
+        LIMIT 1
+      `, { type: Sequelize.QueryTypes.SELECT })
+    ).pipe(map((res: any[]) => res.length ? res[0].id : null ));
   }
 }
