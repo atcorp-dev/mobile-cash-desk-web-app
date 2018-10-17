@@ -1,9 +1,10 @@
+import { CreateItemDto } from './create-item.dto';
 import { AppAuthGuard } from './../auth/auth.guard';
 import { Item } from './item.model';
 import { ItemService } from './item.service';
 import { Observable } from 'rxjs';
 import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
-import { Controller, Get, Query, Delete, Param, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Query, Delete, Param, UseGuards, Req, Body, Patch } from '@nestjs/common';
 
 @ApiUseTags('Items')
 @ApiBearerAuth()
@@ -42,6 +43,11 @@ export class ItemController {
   @Get('byName/:companyId/:name')
   getByName(@Param('companyId') companyId: string, @Param('name') name: string): Observable<Item[]> {
     return this.itemService.getItemsByName(companyId, name);
+  }
+
+  @Patch(':id')
+  modify(@Param('id') id: string, @Body() itemDto: CreateItemDto): Observable<Item> {
+    return this.itemService.modify(id, itemDto);
   }
 
   @Delete(':id')

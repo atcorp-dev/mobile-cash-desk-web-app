@@ -4,7 +4,7 @@ import { Item } from '../inventory/item.model';
 import { CreateCompanyDto } from './create-company.dto';
 import { Observable } from 'rxjs';
 import { CompanyService } from './company.service';
-import { Controller, Get, Post, Param, Body, Delete, UseGuards, Query, Req } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Delete, UseGuards, Query, Req, Patch } from '@nestjs/common';
 import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Company } from './company.model';
 
@@ -29,6 +29,11 @@ export class CompanyController {
   @Post()
   create(@Body() createCompany: CreateCompanyDto): Observable<any> {
     return this.companyService.create(createCompany);
+  }
+
+  @Patch(':id')
+  modify(@Param('id') id: string, @Body() companyDto: CreateCompanyDto): Observable<Company> {
+    return this.companyService.modify(id, companyDto);
   }
 
   @Delete(':id')

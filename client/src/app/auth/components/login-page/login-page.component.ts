@@ -1,7 +1,7 @@
 import { AuthService } from './../../auth.service';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AppService } from './../../../app.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Location } from '@angular/common';
 
 @Component({

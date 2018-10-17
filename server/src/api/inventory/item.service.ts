@@ -5,12 +5,10 @@ import { Company } from './../companies/company.model';
 import { Observable, from, of } from 'rxjs';
 import { Item } from './item.model';
 import { Injectable, Inject } from '@nestjs/common';
+import { CreateItemDto } from './create-item.dto';
 
 const Op = Sequelize.Op;
 
-export const ITEM_SELECT_ATTRIBUTES = [
-  'id', 'name', 'code', 'barCode', 'price', 'companyId', 'categoryId', 'available'
-];
 @Injectable()
 export class ItemService {
 
@@ -26,7 +24,6 @@ export class ItemService {
     const offset = limit * (page > 0 ? page -1 : 0);
     return from(
       this.itemRepository.findAll({
-        attributes: ITEM_SELECT_ATTRIBUTES,
         where,
         include: [{
           model: Company
@@ -50,7 +47,6 @@ export class ItemService {
           )
         `);
         return from(this.itemRepository.findAll({
-          attributes: ITEM_SELECT_ATTRIBUTES,
           include: [{
             model: Company
           }],
@@ -64,21 +60,21 @@ export class ItemService {
 
   getItemById(id: string): Observable<Item> {
     return from(
-      this.itemRepository.findById(id)
+      this.itemRepository.scope('full').findById(id)
     );
   }
 
   getItemByCode(companyId: string, code: string): Observable<Item> {
     const where = { companyId, code };
     return from(
-      this.itemRepository.findOne({ attributes: ITEM_SELECT_ATTRIBUTES, where })
+      this.itemRepository.findOne({ where })
     );
   }
 
   getItemByBarCode(companyId: string, barCode: string): Observable<Item> {
     const where = { companyId, barCode };
     return from(
-      this.itemRepository.findOne({ attributes: ITEM_SELECT_ATTRIBUTES, where })
+      this.itemRepository.findOne({ where })
     );
   }
 
@@ -91,11 +87,23 @@ export class ItemService {
         name: { [Op.iLike]: `%${name}%`} 
     };
     return from(
-        this.itemRepository.findAll({
-        attributes: ITEM_SELECT_ATTRIBUTES,
-        where
-      })
+        this.itemRepository.findAll({ where })
     );
+  }
+
+  modify(id: string, itemDto: CreateItemDto): Observable<Item> {
+    return from(this.itemRepository.findById(id))
+      .pipe(switchMap(item => {
+        if (!itemDto) {
+          return of(item);
+        }
+        Object.keys(itemDto)
+          .filter(key => ['id'].indexOf(key) === -1)
+          .forEach(key => {
+            item.set(key, itemDto[key])
+          });
+        return item.save();
+      }));
   }
 
   remove(id: string): Observable<void> {

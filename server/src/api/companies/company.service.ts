@@ -48,6 +48,20 @@ export class CompanyService {
     return from(response);
   }
 
+  modify(id: string, companyDto: CreateCompanyDto): Observable<Company> {
+    return from(this.companyRepository.findById(id)).pipe(switchMap(company => {
+      if (!companyDto) {
+        return of(company);
+      }
+      Object.keys(companyDto)
+      .filter(key => ['id'].indexOf(key) === -1)
+      .forEach(key => {
+        company.set(key, companyDto[key])
+      });
+      return company.save();
+    }));
+  }
+
   remove(id: string): Observable<boolean> {
     return from (
       this.itemRepository.count({

@@ -1,6 +1,6 @@
 import { Category } from './../categories/category.model';
 import { Company } from './../companies/company.model';
-import { Table, Column, Sequelize, BelongsTo, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Sequelize, BelongsTo, ForeignKey, DefaultScope, Scopes } from 'sequelize-typescript';
 import { BaseModel } from '../base/base.model';
 
 export interface AdditionalField {
@@ -8,6 +8,14 @@ export interface AdditionalField {
   value: string;
 }
 
+@DefaultScope({
+  attributes: ['id', 'name', 'code', 'barCode', 'price', 'companyId', 'categoryId', 'available']
+})
+@Scopes({
+  full: {
+    include: [() => Company]
+  }
+})
 @Table
 export class Item extends BaseModel<Item> {
 
