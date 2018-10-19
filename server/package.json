@@ -4,7 +4,7 @@
   "description": "",
   "license": "MIT",
   "scripts": {
-    "start": "node index.js",
+    "start": "pm2-runtime start ecosystem.config.js --env production",
     "start:watch": "nodemon",
     "build": "tsc",
     "start:prod": "node dist/main.js",
@@ -32,6 +32,7 @@
     "passport-local": "^1.0.0",
     "pg": "^7.4.3",
     "pg-hstore": "^2.3.2",
+    "pm2": "^3.2.2",
     "redis": "^2.8.0",
     "reflect-metadata": "^0.1.12",
     "rxjs": "^6.2.2",
