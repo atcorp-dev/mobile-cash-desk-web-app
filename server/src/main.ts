@@ -27,6 +27,8 @@ const SESSION_HOURS_EXPIRED = 12, MINUTES_IN_HOURS = 60, SECONDS_IN_MINUTES = 60
 const sessionHoursExpired = parseInt(process.env.SESSION_HOURS_EXPIRED) || SESSION_HOURS_EXPIRED;
 const cookieExpires = new Date(Date.now() + (sessionHoursExpired * MINUTES_IN_HOURS * SECONDS_IN_MINUTES * 1000))
 
+console.log(process.argv);
+
 async function bootstrap() {
   const app = await NestFactory.create(ApplicationModule);
   app.use(session({
