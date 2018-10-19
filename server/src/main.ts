@@ -1,3 +1,13 @@
+const io = require('@pm2/io')
+
+io.init({
+  metrics: {
+    network: {
+      ports: true
+    }
+  }
+});
+
 import * as express from 'express';
 import * as passport from 'passport';
 import * as session from 'express-session';
