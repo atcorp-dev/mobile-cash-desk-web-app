@@ -4,7 +4,7 @@
   "description": "",
   "license": "MIT",
   "scripts": {
-    "start": "pm2-runtime start ecosystem.config.js --env production",
+    "start": "node index.js",
     "start:watch": "nodemon",
     "build": "tsc",
     "start:prod": "node dist/main.js",

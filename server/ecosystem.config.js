@@ -1,7 +1,7 @@
 module.exports = {
   apps : [{
     name: 'Mobile_Cash_Desk_WebApp',
-    script: 'index.js',
+    script: 'dist/main.js',
 
     // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
     args: 'one two',
