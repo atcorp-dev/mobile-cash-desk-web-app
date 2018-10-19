@@ -9,7 +9,7 @@ export enum PaymentType {
   Cash = 1,
 }
 
-export enum CartStatus {
+export enum TransactionStatus {
   Pending = 0,
   Payed = 1,
   Rejected = 2
@@ -17,12 +17,12 @@ export enum CartStatus {
 
 export class StatusCannotBeChangedException extends Error {
   constructor() {
-    super('Status cannot be changed in not pending cart');
+    super('Status cannot be changed in not pending transaction');
   }
 }
 
 @Table
-export class Cart extends BaseModel<Cart> {
+export class Transaction extends BaseModel<Transaction> {
 
   @BelongsTo(() => Company)
   company: User;
@@ -38,7 +38,7 @@ export class Cart extends BaseModel<Cart> {
   dateTime: Date;
 
   @Column(Sequelize.SMALLINT)
-  status: CartStatus;
+  status: TransactionStatus;
 
   @BelongsTo(() => User)
   owner: User;
@@ -48,16 +48,19 @@ export class Cart extends BaseModel<Cart> {
   ownerId: string;
 
   @Column(Sequelize.JSONB)
-  itemList: Array<Item>
+  itemList: Array<Item>;
+
+  @Column(Sequelize.DOUBLE)
+  totalPrice: number;
 
   // #region Methods: Hooks
   @BeforeCreate
-  static initStatus(instance: Cart) {
-    instance.set('status', CartStatus.Pending);
+  static initStatus(instance: Transaction) {
+    instance.set('status', TransactionStatus.Pending);
   }
 
   @BeforeCreate
-  static setDateTime(instance: Cart) {
+  static setDateTime(instance: Transaction) {
     if (!instance.dateTime) {
       instance.set('dateTime', new Date());
     }
@@ -66,18 +69,18 @@ export class Cart extends BaseModel<Cart> {
   // #endregion
 
   // #region Methods: Pubic
-  public markAsPayed(): Cart {
-    return this.setStatus(CartStatus.Payed);
+  public markAsPayed(): Transaction {
+    return this.setStatus(TransactionStatus.Payed);
   }
 
-  public markAsRejected(): Cart {
-    return this.setStatus(CartStatus.Rejected);
+  public markAsRejected(): Transaction {
+    return this.setStatus(TransactionStatus.Rejected);
   }
   // #endregion
 
   // #region Methods: Protected
-  protected setStatus(status: CartStatus): Cart {
-    if (this.status == CartStatus.Pending) {
+  protected setStatus(status: TransactionStatus): Transaction {
+    if (this.status == TransactionStatus.Pending) {
       this.set('status', status);
     } else {
       throw new StatusCannotBeChangedException()

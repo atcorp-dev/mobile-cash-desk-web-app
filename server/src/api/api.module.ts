@@ -1,4 +1,4 @@
-import { CartModule } from './cart/cart.module';
+import { TransactionModule } from './transaction/transaction.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './categories/category.module';
 import { InventoryModule } from './inventory/inventory.module';
@@ -13,7 +13,7 @@ const modules = [
   CategoryModule,
   InventoryModule,
   CompanyModule,
-  CartModule
+  TransactionModule
 ]
 
 const routes: Routes = modules.map(module => <Route>{
@@ -31,7 +31,7 @@ const routes: Routes = modules.map(module => <Route>{
     CompanyModule,
     InventoryModule,
     UserModule,
-    CartModule
+    TransactionModule
   ],
 })
 export class ApiModule { }

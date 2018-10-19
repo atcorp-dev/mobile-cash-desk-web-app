@@ -1,6 +1,6 @@
 import { ApiModelProperty } from '@nestjs/swagger';
 
-export class CartItemDto {
+export class TransactionItemDto {
 
   @ApiModelProperty()
   itemId: string;
