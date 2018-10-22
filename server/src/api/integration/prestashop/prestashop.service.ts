@@ -49,7 +49,7 @@ export class PrestaShopIntegrationService implements IntegrationService {
             createdById: user && user.id,
             modifiedById: user && user.id,
             extCode: x.id,
-            available: +x.active === 1,
+            available: +x.active === 1 && +x.quantity > 0,
             code: x.reference,
             companyId,
             name: x.name[0].value,
