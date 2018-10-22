@@ -27,9 +27,6 @@ export class InventoryService {
       switchMap(
         company => this.getIntegrationService(company).importItems({ company, user })
       ),
-      map(items => {
-        return { rowsAffected: !items ? 0 : items.length}
-      }),
       catchError(err => {
         console.error(err);
         throw err;
