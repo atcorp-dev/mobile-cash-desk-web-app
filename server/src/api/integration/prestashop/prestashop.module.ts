@@ -10,8 +10,7 @@ import { Module, HttpModule } from "@nestjs/common";
     PrestaShopIntegrationService
   ],
   providers: [
-    ...prestaShopProviders,
-    PrestaShopIntegrationService
+    ...prestaShopProviders
   ]
 })
 export class PrestaShopIntegrationModule { }

@@ -57,10 +57,13 @@ export class Item extends BaseModel<Item> {
   @Column(Sequelize.TEXT({length: 'long'}))
   image: string;
 
-  @Column(Sequelize.JSON)
+  @Column(Sequelize.JSONB)
   additionalFields: Array<AdditionalField>;
 
   @Column(Sequelize.BOOLEAN)
   available: boolean;
+
+  @Column(Sequelize.JSONB)
+  source: any;
 
 }

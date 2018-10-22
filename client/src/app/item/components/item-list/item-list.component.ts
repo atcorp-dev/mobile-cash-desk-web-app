@@ -32,6 +32,16 @@ export class ItemListComponent implements OnInit {
   uploadImageButtonDisabled: boolean;
   loading: boolean;
 
+  get makeImportButtonDisabled(): boolean {
+    return !this.makeImportButtonEnabled;
+  }
+
+  get makeImportButtonEnabled(): boolean {
+    const companyId = this.searchForm && this.searchForm.value.companyId;
+    const company = this.companyList && this.companyList.find(c => c.id === companyId);
+    return company && company.extras && company.extras.integrationConfig;
+  }
+
   constructor(
     private formBuilder: FormBuilder,
     private dataService: ItemDataService,
@@ -180,6 +190,22 @@ export class ItemListComponent implements OnInit {
       reader.onload = () => observer.next(reader.result);
       reader.onerror = error => observer.error(error);
     });
+  }
+
+  makeImport() {
+    const companyId = this.searchForm && this.searchForm.value.companyId;
+    this.loading = true;
+    this.inventoryService.makeImport(companyId).subscribe(
+      res => {
+        this.loading = false;
+        this.openSnackBar('Imported');
+        this.loadItems();
+      },
+      err => {
+        this.loading = false;
+        this.openSnackBar('Error while make import');
+      }
+    );
   }
 
 }

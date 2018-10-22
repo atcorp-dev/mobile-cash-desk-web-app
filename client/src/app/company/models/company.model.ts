@@ -5,4 +5,5 @@ export class Company {
   public email: string;
   public phone: string;
   public address: string;
+  public extras: any;
 }

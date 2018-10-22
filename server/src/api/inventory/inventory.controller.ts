@@ -11,11 +11,7 @@ import { Item } from './item.model';
 @Controller('inventory')
 export class InventoryController {
 
-  constructor(
-    private inventoryService: InventoryService,
-    private readonly prestaShopIntegrationService: PrestaShopIntegrationService,
-    @Inject('ItemRepository') private readonly itemRepository: typeof Item
-    ) {}
+  constructor(private inventoryService: InventoryService) {}
 
   @Post(':companyCode/importFromCsv')
   @UseInterceptors(FileInterceptor('file'))
@@ -31,27 +27,6 @@ export class InventoryController {
 
   @Post('makeImport/:companyId')
   makeImport(@Param('companyId') companyId: string, @Req() req): Observable<any> {
-    return this.prestaShopIntegrationService.importItems(companyId).pipe(
-      switchMap(res => {
-        let items = [];
-        if (res && res.data && res.data.products) {
-          items = res.data.products.map(x => <Item>{
-            id: Guid.create().toString(),
-            extCode: x.id,
-            available: +x.active === 1,
-            code: x.reference,
-            companyId,
-            name: x.name[0].value,
-            additionalFields: x
-          });
-        } else {
-          return of(null);
-        }
-        return from(this.itemRepository.bulkCreate(items)).pipe(
-          catchError(err =>{
-            throw err;
-          })
-        )
-    }));
+    return this.inventoryService.makeImport(companyId, req.user);
   }
 }

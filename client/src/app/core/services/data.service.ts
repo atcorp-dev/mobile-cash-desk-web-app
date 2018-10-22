@@ -18,8 +18,8 @@ export abstract class DataService {
     );
   }
 
-  public post(body): Observable<any> {
-    return this.httpClient.post(this.apiPath, body);
+  public post(body, path?): Observable<any> {
+    return this.httpClient.post(path || this.apiPath, body);
   }
 
   public delete(id): Observable<any> {

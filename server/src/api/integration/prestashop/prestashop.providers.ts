@@ -1,10 +1,15 @@
+import { Item } from './../../inventory/item.model';
+import { PrestaShopIntegrationService } from './prestashop.service';
+import { Provider } from '@nestjs/common';
+
 export const prestaShopProviders = [
   {
-    provide: 'PrestaShopIntegrationConfig',
-    useValue: {
-      domain: 'eshome.com.ua',
-      authToken: 'Qk5YTlFMR05OU1lVTUlIVThUNVlXR0c2TUo5OEI1QTk6',
-      type: 'https'
-    }
+    provide: 'ItemRepository',
+    useValue: Item
+  },
+  PrestaShopIntegrationService,
+  <Provider>{
+    provide: 'PrestaShopIntegrationService',
+    useClass: PrestaShopIntegrationService
   }
 ];

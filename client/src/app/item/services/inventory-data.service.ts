@@ -16,4 +16,9 @@ export class InventoryDataService extends DataService {
     const options: any = { headers: headers };
     return this.httpClient.post(url, formData, options);
   }
+
+  makeImport(companyId): Observable<any> {
+    const url = `${this.apiPath}/makeImport/${companyId}`;
+    return this.httpClient.post(url, null);
+  }
 }

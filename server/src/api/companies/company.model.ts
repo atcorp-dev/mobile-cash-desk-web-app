@@ -41,4 +41,7 @@ export class Company extends BaseModel<Company> {
   @HasMany(() => Item)
   itemList: Array<Item>
 
+  @Column(Sequelize.JSONB)
+  extras: any;
+
 }

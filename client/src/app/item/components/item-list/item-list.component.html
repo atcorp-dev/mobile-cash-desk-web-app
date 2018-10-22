@@ -100,6 +100,8 @@
       </mat-select>
     </mat-form-field>
 
+    <button mat-flat-button [disabled]="makeImportButtonDisabled" (click)="makeImport()">Import</button>
+
     </form>
 
   <table mat-table [dataSource]="dataSource" class="table mat-elevation-z8">

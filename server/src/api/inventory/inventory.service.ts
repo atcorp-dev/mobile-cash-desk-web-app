@@ -1,3 +1,5 @@
+import { IntegrationService } from './../integration/integration.service';
+import { PrestaShopIntegrationService } from './../integration/prestashop/prestashop.service';
 import { Guid } from 'guid-typescript';
 import { Company } from './../companies/company.model';
 import { from } from 'rxjs';
@@ -5,7 +7,8 @@ import { Observable } from 'rxjs';
 import { Item } from './item.model';
 import { Injectable, Inject } from '@nestjs/common';
 import * as CSV from 'csv-string';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, map, catchError } from 'rxjs/operators';
+import { User } from '../user/user.model';
 
 @Injectable()
 export class InventoryService {
@@ -14,9 +17,27 @@ export class InventoryService {
   constructor(
     @Inject('ItemRepository') private readonly itemRepository: typeof Item,
     @Inject('CompanyRepository') private readonly companyRepository: typeof Company,
+    private readonly prestaShopIntegrationService: PrestaShopIntegrationService,
   ) {}
 
-  importFromCsv(companyCode: string, file): Observable<any> {
+  public makeImport(companyId: string, user: User): Observable<any> {
+    return from(
+      this.companyRepository.findById(companyId)
+    ).pipe(
+      switchMap(
+        company => this.getIntegrationService(company).importItems({ company, user })
+      ),
+      map(items => {
+        return { rowsAffected: !items ? 0 : items.length}
+      }),
+      catchError(err => {
+        console.error(err);
+        throw err;
+      })
+    )
+  }
+
+  public importFromCsv(companyCode: string, file): Observable<any> {
     const data: Buffer = file.buffer;
     const csv = data.toString();
     const arr: Array<string[]> = CSV.parse(csv);
@@ -86,6 +107,19 @@ export class InventoryService {
         }
       })
     );
+  }
+
+  private getIntegrationService(company: Company): IntegrationService {
+    const integrationConfig = company.extras && company.extras.integrationConfig;
+    if (integrationConfig) {
+      switch (integrationConfig.service) {
+        case 'PrestaShopIntegrationService':
+          return this.prestaShopIntegrationService
+        default:
+          throw new Error('Can\'not find integration service');
+      }
+    }
+    throw new Error('Integration config not set for this company');
   }
 
 }
