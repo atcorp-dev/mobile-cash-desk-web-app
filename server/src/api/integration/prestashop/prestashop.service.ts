@@ -85,7 +85,7 @@ export class PrestaShopIntegrationService implements IntegrationService {
   protected getAdditionalFields(row): any {
     const description: string = row.description && row.description && row.description[0].value;
     if (description) {
-      return <AdditionalField>{ name: '', value: description }
+      return [<AdditionalField>{ name: '', value: description }];
       /*return description.split('\n')
       .map(v => /<p>(.*?)<\/p>/.exec(v) || v)
       .map((m: any) => m[1] || m.input || m)
