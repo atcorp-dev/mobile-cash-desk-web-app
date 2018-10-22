@@ -53,7 +53,7 @@ export class PrestaShopIntegrationService implements IntegrationService {
             code: x.reference,
             companyId,
             name: x.name[0].value,
-            price: +x.price || null,
+            price: +x.price || 0,
             additionalFields: this.getAdditionalFields(x),
             source: x
           });
