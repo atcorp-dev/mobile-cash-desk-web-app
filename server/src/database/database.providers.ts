@@ -1,3 +1,4 @@
+import { GateItem } from './../api/inventory/gate-item.model';
 import { Transaction } from './../api/transaction/transaction.model';
 import { Category } from './../api/categories/category.model';
 import { User } from './../api/user/user.model';
@@ -19,7 +20,8 @@ export const databaseProviders = [
         Category,
         Item,
         Company,
-        Transaction
+        Transaction,
+        GateItem
       ]);
       // await sequelize.sync({ force: false });
       return sequelize;

@@ -1,5 +1,7 @@
+import { Guid } from 'guid-typescript';
+import { GateItem } from './../../inventory/gate-item.model';
 import { Company } from './../../companies/company.model';
-import { Observable, from } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { IntegrationService, ImportResult } from './../integration.service';
 import { Injectable, Inject, HttpService } from "@nestjs/common";
 import { Item, AdditionalField } from '../../inventory/item.model';
@@ -15,6 +17,7 @@ export class PrestaShopIntegrationConfig {
 
 declare class Items extends Array<Item> {};
 declare class Products extends Array<any> {};
+declare class Stocks extends Array<any> {};
 declare class Product {
   [key:string]: any;
 };
@@ -25,12 +28,12 @@ export class PrestaShopIntegrationService implements IntegrationService {
   protected config: PrestaShopIntegrationConfig;
   protected lastImportDate: Date;
   protected transaction: sequelize.Transaction;
-  protected inserted = 0;
-  protected updated = 0;
+  protected rowsAffected = 0;
 
   constructor(
     private readonly httpService: HttpService,
-    @Inject('ItemRepository') private readonly itemRepository: typeof Item
+    @Inject('ItemRepository') private readonly itemRepository: typeof Item,
+    @Inject('GateItemRepository') private readonly gateItemRepository: typeof GateItem
     ) {}
 
   protected get uri() {
@@ -40,15 +43,20 @@ export class PrestaShopIntegrationService implements IntegrationService {
 
   public importItems(args: { company: Company, user?: User }): Observable<ImportResult> {
     const { company, user } = args;
-    const companyId = company.id;
-    this.config = company.extras && company.extras.integrationConfig && company.extras.integrationConfig.config;
-    this.lastImportDate = company.extras && company.extras.integrationConfig && company.extras.integrationConfig.lastImportDate;
+    const integrationConfig = company.extras && company.extras.integrationConfig;
+    if (!integrationConfig) {
+      const companyName = company && company.name || '';
+      throw new Error(`No integration config fo this company [${companyName}]`);
+    }
+    this.config = integrationConfig.config;
+    this.lastImportDate = integrationConfig.lastImportDate;
     company.extras.integrationConfig.lastImportDate = new Date();
     return this.beginTransaction().pipe(
-      switchMap(() => this.getProducts(this.lastImportDate)),
+      switchMap(() => this.getStocks()),
+      switchMap(stocks => this.getProducts(stocks, this.lastImportDate)),
       switchMap(products => this.upsertItems(products, company, user)),
       switchMap(res => company.save()),
-      switchMap(() => this.commitTransaction(this.transaction, null))
+      switchMap(() => this.commitTransaction(this.transaction))
     )
   }
 
@@ -60,95 +68,106 @@ export class PrestaShopIntegrationService implements IntegrationService {
     )
   }
 
-  protected commitTransaction(transaction: sequelize.Transaction, res: ImportResult): Observable<ImportResult> {
+  protected commitTransaction(transaction: sequelize.Transaction): Observable<ImportResult> {
     return from(
       transaction.commit()
     ).pipe(
-      map(() => res)
+      map(() => <ImportResult>{
+        rowsAffected: this.rowsAffected
+      })
     )
   }
 
-  protected getProducts(lastImportDate: Date): Observable<Products> {
-    const display = lastImportDate ? 'full' : '[id,reference,quantity,price,active,meta_title,name,description]'
-    const filter = `[|${new Date().toISOString()}]`
-    const filterKey = 'filter[date_upd]'
-    const config = {
+  protected getStocks(): Observable<Stocks> {
+    const config: any = {
       headers: {
         authorization: `Basic ${this.config.authToken}`
       },
       params: {
         'output_format': 'JSON',
-        display
+        display: '[id,quantity]'
       }
     }
-    return this.httpService.get(`${this.uri}/products`, config).pipe(
-      map(res => (res && res.data && res.data.products) || [])
-    );
+    return this.httpService.get(`${this.uri}/stock_availables`, config).pipe(
+      map(res => {
+        const stocks: Stocks = res.data && res.data['stock_availables'];
+        return stocks;
+      })
+    )
   }
 
-  protected upsertItems(products: Products, company: Company, user: User): Observable<ImportResult> {
-    return Observable.create(observer => {
-      const it = this.getIterator(products);
-      const items: Items = [];
-      const upsert = () => {
-        const current = it.next();
-        this.upsertItem(current.value, company, user)
-        .subscribe(item => {
-          items.push(item);
-          if (!current.done) {
-            upsert();
-          } else {
-            observer.next(<ImportResult>{
-              rowsInserted: this.inserted,
-              rowsUpdated: this.updated
-            })
-          }
-        });
-        upsert();
+  protected getProducts(stocks: Stocks, lastImportDate: Date): Observable<Products> {
+    const dateFrom = this.getPhpDate(lastImportDate || new Date(2000,0,1));
+    const dateTo = this.getPhpDate(new Date());
+    const filter = `[${dateFrom}|${dateTo}]`;
+    const filterKey = 'filter[date_upd]'
+    const config: any = {
+      headers: {
+        authorization: `Basic ${this.config.authToken}`
+      },
+      params: {
+        'output_format': 'JSON',
+        display: '[id,reference,price,active,name,description,stock_availables[id]]',
+        //[filterKey]: filter
       }
+    }
+    const limit = 500;
+    const resultProducts = [];
+    return Observable.create(observer => {
+      const fetchProducts = page => {
+        console.time(`fetching page #${page}`);
+        const offset = page * limit;
+        config.params.limit = `${offset},${limit}`;
+        this.httpService.get(`${this.uri}/products`, config)
+        .subscribe(res => {
+          const products: Products = res && res.data && res.data.products || [];
+          console.timeEnd(`fetching page #${page}`);
+          if (!products.length) {
+            console.timeEnd(`fetching products`);
+            console.debug(`fetched ${resultProducts.length} rows`);
+            resultProducts.forEach(
+              product => {
+                if (product.associations && Array.isArray(product.associations['stock_availables'])) {
+                  const stockId = +(product.associations['stock_availables'][0].id);
+                  product.stock = stocks.find(stock => stock.id === stockId);
+                }
+              }
+            )
+            observer.next(resultProducts);
+          } else {
+            resultProducts.push(...products);
+            fetchProducts(page + 1);
+          }
+        }, err => observer.error(err));
+      };
+      console.time(`fetching products`);
+      fetchProducts(0);
     });
   }
 
-  protected upsertItem(product: Product, company: Company, user: User): Observable<Item> {
-    const itemDto = this.getItem(product, company.id, user);
-    const opts = {
-      where: { code: product.reference },
-      transaction: this.transaction
-    }
-    return from(this.itemRepository.findOrCreate(opts)
-    .spread((item: Item, created) => {
-      if (!created) {
-        this.inserted++;
-        Object.assign(item, itemDto);
-        return item.save();
-      }
-      this.updated++;
-      return Promise.resolve(item);
-    }));
-  }
-
-  protected getProductById(id: number): Observable<Product> {
-    const display = 'full'
-    const config = {
-      headers: {
-        authorization: `Basic ${this.config.authToken}`
-      },
-      params: {
-        'output_format': 'JSON',
-        display
-      }
-    }
-    return this.httpService.get(`${this.uri}/products/${id}`, config).pipe(
-      map(res => <Product>(res && res.data && res.data.product) || {})
+  protected upsertItems(products: Products, company: Company, user: User): Observable<ImportResult> {
+    const key = Guid.create().toString();
+    const items = products.map(x => this.getItem(x, company.id, user, key));
+    this.rowsAffected = items.length;
+    return from(
+      this.gateItemRepository.bulkCreate(items)
+    ).pipe(
+      switchMap(() => GateItem.upsertItems(key)),
+      switchMap(() => GateItem.destroy({ where: { key }})),
+      map(() => <ImportResult>{ rowsAffected: this.rowsAffected }),
     );
   }
 
-  protected getItem(row: Product, companyId: string, user: User): Item {
-    return <Item>{
+  protected getItem(row: Product, companyId: string, user: User, key: string): GateItem {
+    return <any>{
+      key,
+      id: Guid.create().toString(),
       createdById: user && user.id,
+      createdOn: new Date(),
       modifiedById: user && user.id,
+      modifiedOn: new Date(),
       extCode: row.id,
-      available: +row.active === 1 && +row.quantity > 0,
+      available: +row.active === 1 && +(row.stock && row.stock.quantity) > 0,
       code: row.reference,
       companyId,
       name: row.name[0].value,
@@ -162,15 +181,6 @@ export class PrestaShopIntegrationService implements IntegrationService {
     const description: string = row.description && row.description && row.description[0].value;
     if (description) {
       return [<AdditionalField>{ name: '', value: description.replace(/<[^>]+>/g, '') }];
-      /*return description.split('\n')
-      .map(v => /<p>(.*?)<\/p>/.exec(v) || v)
-      .map((m: any) => m[1] || m.input || m)
-      .map(values => {
-        const parts = values.split(' ');
-        const name = parts.splice(0, 1)[0];
-        const value = parts.join(' ');
-        return <AdditionalField>{ name, value }
-      });*/
     }
     return null;
   }
@@ -181,5 +191,9 @@ export class PrestaShopIntegrationService implements IntegrationService {
         yield arr[i];
       }
     })();
+  }
+
+  protected getPhpDate(date: Date): string {
+    return date && date.toISOString().replace('T', ' ').substr(0, 19) || '';
   }
 }
