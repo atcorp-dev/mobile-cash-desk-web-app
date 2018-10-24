@@ -53,6 +53,7 @@ async function bootstrap() {
     .setDescription('The API for mobile apps that uses for Mobile Cash Desk process')
     .setVersion('1.0')
     // .setBasePath('api')
+    .setSchemes(process.env.NODE_ENV === 'production' ? 'https' : 'http')
     .addBearerAuth('Authorization', 'header')
     .build();
   const document = SwaggerModule.createDocument(app, options);

@@ -1,5 +1,4 @@
 import { ApiResponseModelProperty } from "@nestjs/swagger";
-import { totalmem } from "os";
 
 export class FindApiResponse<T> {
 
