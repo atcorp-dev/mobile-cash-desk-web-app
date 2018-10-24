@@ -1,12 +1,13 @@
+import { FindApiResponse } from './../find-api.response';
 import { Sequelize } from 'sequelize-typescript';
-import { User } from './../user/user.model';
+import { User, UserRole } from './../user/user.model';
 import { CreateItemDto } from '../inventory/create-item.dto';
 import { CreateCompanyDto } from './create-company.dto';
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, ForbiddenException } from '@nestjs/common';
 import { Observable, from, of } from 'rxjs';
 import { Company } from './company.model';
 import { Item } from '../inventory/item.model';
-import { switchMap } from 'rxjs/operators';
+import { switchMap, map } from 'rxjs/operators';
 
 const Op = Sequelize.Op
 
@@ -21,20 +22,20 @@ export class CompanyService {
   ) {}
 
   getAll(page?: number, user?: User): Observable<Array<Company>> {
-    const limit = this.limit;
+    const limit = page ? this.limit : null;
     page = +page || 0;
-    const offset = limit * (page > 0 ? page -1 : 0);
+    const offset = page ? limit * (page > 0 ? page - 1 : 0) : null;
     const companyId = user && user.companyId;
     // const where = companyId ? { [Op.or]: [{ id: companyId }, {parentId: companyId }] }: null;
-    const where = Sequelize.literal(`
+    const where = user && user.role === UserRole.Admin ? null : Sequelize.literal(`
       exists (
         select id
         from get_allowed_companies('${companyId}'::uuid) ac
         where "Company".id = ac.id
       )
     `);
-    const response = this.companyRepository.findAll({ where, limit, offset });
-    return from(response);
+    const response$ = this.companyRepository.findAll({ where, limit, offset });
+    return from(response$);
   }
 
   getById(id: string): Observable<Company> {
@@ -42,13 +43,21 @@ export class CompanyService {
     return from(response);
   }
 
-  create(createCompany: CreateCompanyDto): Observable<Company> {
+  create(createCompany: CreateCompanyDto, user: User): Observable<Company> {
+    if (!user || user.role !== UserRole.Admin) {
+      throw new ForbiddenException('Not enough permission');
+    }
     createCompany.parentId = createCompany.parentId ? createCompany.parentId : null;
-    const response = this.companyRepository.create(createCompany);
+    const response = this.companyRepository.create(
+      Object.assign(createCompany, { createdById: user.id, modifiedById: user.id })
+    );
     return from(response);
   }
 
-  modify(id: string, companyDto: CreateCompanyDto): Observable<Company> {
+  modify(id: string, companyDto: CreateCompanyDto, user: User): Observable<Company> {
+    if (!user || user.role !== UserRole.Admin) {
+      throw new ForbiddenException('Not enough permission');
+    }
     return from(this.companyRepository.findById(id)).pipe(switchMap(company => {
       if (!companyDto) {
         return of(company);
@@ -58,11 +67,16 @@ export class CompanyService {
       .forEach(key => {
         company.set(key, companyDto[key])
       });
+      company.modifiedById = user.id;
+      company.modifiedOn = new Date();
       return company.save();
     }));
   }
 
-  remove(id: string): Observable<boolean> {
+  remove(id: string, user: User): Observable<boolean> {
+    if (!user || user.role !== UserRole.Admin) {
+      throw new ForbiddenException('Not enough permission');
+    }
     return from (
       this.itemRepository.count({
         where: { companyId: id }

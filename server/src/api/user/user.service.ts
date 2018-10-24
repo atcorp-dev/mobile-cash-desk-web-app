@@ -1,8 +1,9 @@
+import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
 import { map, switchMap } from 'rxjs/operators';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Observable, from, combineLatest, of } from 'rxjs';
 import { User } from './user.model';
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotImplementedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { UserDto } from './dto/user-dto';
 
@@ -79,6 +80,11 @@ export class UserService {
       ),
       map(user => this.getUserDto(user))
     );
+  }
+
+  public changePassword(userId: string, changeUserPasswordDto: ChangeUserPasswordDto): Observable<UserDto> {
+    //TODO: Implement
+    throw new NotImplementedException('Not implemented');
   }
 
   public authenticateUser(user: { username: string, password: string }): Observable<UserDto | null> {

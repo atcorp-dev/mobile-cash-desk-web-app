@@ -18,9 +18,9 @@ export class ItemService {
     @Inject('ItemRepository') private readonly itemRepository: typeof Item
   ) { }
 
-  getAll(where, page): Observable<Item[]> {
-    page = +page || 0;
-    const limit = this.limit;
+  getAll(where, page?): Observable<Item[]> {
+    const limit = page ? this.limit : null;
+    page = limit ? (+page || 0) : null;
     const offset = limit * (page > 0 ? page -1 : 0);
     return from(
       this.itemRepository.findAll({

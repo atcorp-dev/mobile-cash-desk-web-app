@@ -1,3 +1,4 @@
+import { HttpExceptionFilter } from './api/http-exception.filter';
 const io = require('@pm2/io')
 
 io.init({
@@ -33,7 +34,7 @@ async function bootstrap() {
   const app = await NestFactory.create(ApplicationModule);
   app.use(session({
     secret: process.env.SESSION_SECRET_KEY || 'secret-key',
-    name: 'mobilecashdasksession',
+    name: 'mobile_cash_desk_session',
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -45,6 +46,7 @@ async function bootstrap() {
   app.use(passport.initialize());
   app.use(passport.session());
   app.use(express.static(CLIENT_FILES));
+  app.useGlobalFilters(new HttpExceptionFilter());
   
   const options = new DocumentBuilder()
     .setTitle('Mobile Cash Desk API')

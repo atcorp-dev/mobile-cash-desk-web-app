@@ -5,7 +5,7 @@ import { Company } from './../companies/company.model';
 import { from } from 'rxjs';
 import { Observable } from 'rxjs';
 import { Item } from './item.model';
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import * as CSV from 'csv-string';
 import { switchMap, map, catchError } from 'rxjs/operators';
 import { User } from '../user/user.model';
@@ -84,7 +84,7 @@ export class InventoryService {
       if (header.toUpperCase() !== validHeader) {
         console.log(headers.join(','));
         console.log(`${header} not equal ${validHeader}`);
-        throw new Error('Invalid data structure')
+        throw new BadRequestException('Invalid data structure')
       }
     });
   }
@@ -113,10 +113,10 @@ export class InventoryService {
         case 'PrestaShopIntegrationService':
           return this.prestaShopIntegrationService
         default:
-          throw new Error('Can\'not find integration service');
+          throw new BadRequestException('Can\'not find integration service');
       }
     }
-    throw new Error('Integration config not set for this company');
+    throw new BadRequestException('Integration config not set for this company');
   }
 
 }

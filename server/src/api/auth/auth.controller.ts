@@ -35,7 +35,7 @@ export class AuthController {
     return response.status(HttpStatus.OK).send();
   }
 
-  @Post('login')
+  @Post('ping')
   @UseGuards(AppAuthGuard)
   @ApiOperation({ title: 'Ping session' })
   @ApiBearerAuth()

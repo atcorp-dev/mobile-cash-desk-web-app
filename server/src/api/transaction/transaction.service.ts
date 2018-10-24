@@ -18,9 +18,9 @@ export class TransactionService {
   ) { }
 
   getAll(page?: number, user?: User): Observable<Array<Transaction>> {
-    const limit = this.limit;
+    const limit = page ? this.limit : null;
     page = +page || 0;
-    const offset = limit * (page > 0 ? page - 1 : 0);
+    const offset = limit ? (limit * (page > 0 ? page - 1 : 0)) : null;
     const ownerId = user && user.id;
     const response = this.transactionRepository.findAll({ where: { ownerId }, limit, offset });
     return from(response);

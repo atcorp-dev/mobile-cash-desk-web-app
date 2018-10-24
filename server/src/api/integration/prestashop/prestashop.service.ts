@@ -3,7 +3,7 @@ import { GateItem } from './../../inventory/gate-item.model';
 import { Company } from './../../companies/company.model';
 import { Observable, from, of } from 'rxjs';
 import { IntegrationService, ImportResult } from './../integration.service';
-import { Injectable, Inject, HttpService } from "@nestjs/common";
+import { Injectable, Inject, HttpService, BadRequestException } from "@nestjs/common";
 import { Item, AdditionalField } from '../../inventory/item.model';
 import { map, tap, switchMap } from 'rxjs/operators';
 import { User } from '../../user/user.model';
@@ -46,7 +46,7 @@ export class PrestaShopIntegrationService implements IntegrationService {
     const integrationConfig = company.extras && company.extras.integrationConfig;
     if (!integrationConfig) {
       const companyName = company && company.name || '';
-      throw new Error(`No integration config fo this company [${companyName}]`);
+      throw new BadRequestException(`No integration config fo this company [${companyName}]`);
     }
     this.config = integrationConfig.config;
     this.lastImportDate = integrationConfig.lastImportDate;
