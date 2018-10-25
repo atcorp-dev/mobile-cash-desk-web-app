@@ -17,7 +17,7 @@ import {
 } from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { Observable } from 'rxjs';
-import { ApiUseTags, ApiImplicitBody, ApiImplicitQuery } from '@nestjs/swagger';
+import { ApiUseTags, ApiImplicitBody, ApiImplicitQuery, ApiBearerAuth } from '@nestjs/swagger';
 import { AppAuthGuard } from './../auth/auth.guard';
 import { CreateItemDto } from './create-item.dto';
 import { ReqUser } from '../user/user.decorator';
@@ -25,6 +25,7 @@ import { User } from '../user/user.model';
 
 @ApiUseTags('Inventory')
 @Controller('inventory')
+@ApiBearerAuth()
 @UseGuards(AppAuthGuard)
 export class InventoryController {
 
