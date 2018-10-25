@@ -1,8 +1,27 @@
+import { catchError } from 'rxjs/operators';
+import { 
+  Controller,
+  Post,
+  UseInterceptors,
+  FileInterceptor,
+  UploadedFile,
+  Param, 
+  Get,
+  Res,
+  Req, 
+  HttpStatus,
+  UseGuards,
+  Body, 
+  Query,
+  BadRequestException
+} from '@nestjs/common';
 import { InventoryService } from './inventory.service';
 import { Observable } from 'rxjs';
-import { ApiUseTags } from '@nestjs/swagger';
-import { Controller, Post, UseInterceptors, FileInterceptor, UploadedFile, Param, Get, Res, Req, Inject, HttpStatus, UseGuards } from '@nestjs/common';
+import { ApiUseTags, ApiImplicitBody, ApiImplicitQuery } from '@nestjs/swagger';
 import { AppAuthGuard } from './../auth/auth.guard';
+import { CreateItemDto } from './create-item.dto';
+import { ReqUser } from '../user/user.decorator';
+import { User } from '../user/user.model';
 
 @ApiUseTags('Inventory')
 @Controller('inventory')
@@ -29,5 +48,20 @@ export class InventoryController {
       .subscribe(
         result => res.status(HttpStatus.OK).send(result)
       );
+  }
+
+  @Post('bulkCreateItems')
+  // @ApiImplicitBody({ name: 'createItemsDto', required: true, isArray: true, type: 'array'})
+  @ApiImplicitQuery({ name: 'companyId', required: true, type: 'string'})
+  bulkCreateItems(
+    @Body() createItemsDto: Array<CreateItemDto>, @Query('companyId') companyId: string, @ReqUser() user: User
+  ): Observable<any> {
+    return this.inventoryService.bulkCreateItems(createItemsDto, companyId, user)
+    .pipe(
+      catchError (err => {
+        console.log(err);
+        throw new BadRequestException(err.message);
+      })
+    );
   }
 }

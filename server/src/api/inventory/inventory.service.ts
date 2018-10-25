@@ -9,6 +9,7 @@ import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import * as CSV from 'csv-string';
 import { switchMap, map, catchError } from 'rxjs/operators';
 import { User } from '../user/user.model';
+import { CreateItemDto } from './create-item.dto';
 
 @Injectable()
 export class InventoryService {
@@ -65,6 +66,25 @@ export class InventoryService {
       switchMap(() => from(
         this.itemRepository.bulkCreate(items)
       ))
+    );
+  }
+
+  public bulkCreateItems(createItemsDto: Array<CreateItemDto>, companyId, user: User): Observable<any> {
+    if (!Array.isArray(createItemsDto)) {
+      throw new BadRequestException(`input parameter is not array`);
+    }
+    if ((!user && user.companyId) || !companyId) {
+      throw new BadRequestException(`Company not specified`);
+    }
+    const records = createItemsDto.map(dto => Object.assign({}, {
+      createdById: user && user.id,
+      modifiedById: user && user.id,
+      companyId: companyId || (user && user.companyId)
+    }));
+    return from(this.itemRepository.bulkCreate(records, { individualHooks: true })).pipe(
+      map(
+        items => Object.assign({}, { rowsAffected: items.length })
+      )
     );
   }
 
