@@ -93,11 +93,10 @@ export class ItemController {
   }
 
   @Delete(':id')
-  @Patch(':id')
   @ApiOperation({
     title: 'Delete item by id'
   })
-  @ApiImplicitQuery({ name: 'id', required: true, type: 'string', description: 'id of item' })
+  @ApiImplicitParam({ name: 'id', required: true, type: 'string', description: 'id of item' })
   remove(@Param('id') id: string): Observable<void> {
     return this.itemService.remove(id);
   }

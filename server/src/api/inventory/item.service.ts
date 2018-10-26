@@ -1,6 +1,7 @@
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { User } from './../user/user.model';
 import { Sequelize } from 'sequelize-typescript';
-import { switchMap, map } from 'rxjs/operators';
+import { switchMap, map, catchError } from 'rxjs/operators';
 import { Company } from './../companies/company.model';
 import { Observable, from, of } from 'rxjs';
 import { Item } from './item.model';
@@ -110,9 +111,16 @@ export class ItemService {
     return from(
       this.itemRepository.findById<Item>(id)
     ).pipe(
-      switchMap(
-        item => item.destroy()
-      )
+      switchMap(item => {
+        if (!item) {
+          throw new NotFoundException(`Item with Id: ${id} not found`);
+        }
+        return item.destroy();
+      }),
+      catchError(err => {
+        console.error(err);
+        throw new BadRequestException(err.message);
+      })
     );
   }
 
