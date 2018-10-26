@@ -76,7 +76,7 @@ export class InventoryService {
     if ((!user && user.companyId) || !companyId) {
       throw new BadRequestException(`Company not specified`);
     }
-    const records = createItemsDto.map(dto => Object.assign({}, {
+    const records = createItemsDto.map(dto => Object.assign({}, dto, {
       createdById: user && user.id,
       modifiedById: user && user.id,
       companyId: companyId || (user && user.companyId)
