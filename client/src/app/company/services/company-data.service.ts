@@ -8,7 +8,7 @@ export class CompanyDataService extends DataService {
   apiPath = 'api/companies';
 
   createItem(item: Item): Observable<any> {
-    const url = `${this.apiPath}/${item.companyId}/items`;
+    const url = `${this.apiPath}/${item.companyId}/item`;
     return this.httpClient.post(url, item);
   }
 }

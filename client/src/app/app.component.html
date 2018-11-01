@@ -8,7 +8,7 @@
       <h1 class="app-app-name">{{ appTitle }}</h1>
     </div>
     <div class="spacer"></div>
-    <button *ngIf="!mobileQuery.matches" mat-flat-button [disabled]="logoutButtonDisabled || form?.invalid" (click)="logOut()">Log Out</button>
+    <button *ngIf="!mobileQuery.matches" mat-flat-button [disabled]="logoutButtonDisabled" (click)="logOut()">Log Out</button>
   </mat-toolbar>
 
   <mat-sidenav-container class="app-sidenav-container" [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
@@ -21,7 +21,9 @@
     </mat-sidenav>
 
     <mat-sidenav-content>
-      <router-outlet></router-outlet> 
+      <div class=spacer>
+        <router-outlet></router-outlet> 
+      </div>
     </mat-sidenav-content>
   </mat-sidenav-container>
 </div>

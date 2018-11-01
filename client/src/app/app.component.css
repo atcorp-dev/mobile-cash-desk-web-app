@@ -34,6 +34,7 @@ h1.app-app-name {
   width: 240px;
 }
 
-.spacer {
-  flex-grow: 1;
+.mat-sidenav-content {
+  display: flex;
+  flex-direction: column;
 }

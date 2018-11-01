@@ -2,7 +2,7 @@
   <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
   <mat-accordion>
 
-    <mat-expansion-panel>
+    <mat-expansion-panel *ngIf="false">
 
       <mat-expansion-panel-header>
         <mat-panel-title>
@@ -100,7 +100,8 @@
       </mat-select>
     </mat-form-field>
 
-    <button mat-flat-button [disabled]="makeImportButtonDisabled" (click)="makeImport()">Import</button>
+    <button mat-flat-button class="margin-left-12" [disabled]="makeImportButtonDisabled" (click)="makeImport()">Import</button>
+    <button mat-flat-button class="margin-left-12" (click)="onAddButtonClick()">Add</button>
 
     </form>
 

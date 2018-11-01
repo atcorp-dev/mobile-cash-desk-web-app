@@ -18,6 +18,17 @@ export abstract class DataService {
     );
   }
 
+  public getById<T>(c: new () => T, id): Observable<T> {
+    return this.httpClient.get(
+      `${this.apiPath}/${id}`
+    )
+    .pipe(
+      map(
+        res => Object.assign(this.createInstance(c), res)
+      )
+    );
+  }
+
   public post(body, path?): Observable<any> {
     return this.httpClient.post(path || this.apiPath, body);
   }

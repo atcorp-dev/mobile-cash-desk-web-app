@@ -2,3 +2,17 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: 'Roboto', sans-serif; }
+
+.spacer {
+  flex-grow: 1;
+}
+
+.margin-left-12 {
+  margin-left: 12px;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}

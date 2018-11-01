@@ -10,8 +10,10 @@ const appRoutes: Routes = [
   { path: '', component: MainPageComponent, pathMatch: 'full' },
   { path: 'login', component: LoginPageComponent, pathMatch: 'full' },
   { path: 'item-list', component: ItemListComponent, pathMatch: 'full' },
+  { path: 'item', component: ItemPageComponent, pathMatch: 'full' },
   { path: 'item/:id', component: ItemPageComponent, pathMatch: 'full' },
   { path: 'company-list', component: CompanyListComponent, pathMatch: 'full' },
+  { path: 'company', component: CompanyPageComponent, pathMatch: 'full' },
   { path: 'company/:id', component: CompanyPageComponent, pathMatch: 'full' },
   { path: '**', component: CompanyListComponent, pathMatch: 'full' },
 ];

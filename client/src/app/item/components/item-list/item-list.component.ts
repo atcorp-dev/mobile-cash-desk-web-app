@@ -208,4 +208,8 @@ export class ItemListComponent implements OnInit {
     );
   }
 
+  onAddButtonClick() {
+    this.router.navigate(['/item']);
+  }
+
 }

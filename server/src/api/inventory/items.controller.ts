@@ -40,10 +40,21 @@ export class ItemController {
     return this.itemService.getAvailableByCode(companyId, code);
   }
 
-  @Get('byId/:id')
+  @Get(':id')
   @ApiOperation({
     title: 'Get item by Id',
     description: 'Returns Item full info by his Id'
+  })
+  @ApiImplicitParam({ name: 'id', required: true, type: 'string', description: 'id of item' })
+  get(@Param('id') id: string): Observable<Item> {
+    return this.itemService.getItemById(id);
+  }
+
+  @Get('byId/:id')
+  @ApiOperation({
+    title: 'Get item by Id',
+    description: 'Returns Item full info by his Id',
+    deprecated: true
   })
   @ApiImplicitParam({ name: 'id', required: true, type: 'string', description: 'id of item' })
   getById(@Param('id') id: string): Observable<Item> {
