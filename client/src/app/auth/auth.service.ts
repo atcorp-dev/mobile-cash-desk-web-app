@@ -10,6 +10,10 @@ export class AuthService {
   private password: string;
   private user: any;
 
+  public get isAuthorized(): boolean {
+    return Boolean(this.user);
+  }
+
   constructor(private http: HttpClient) {}
 
   public getToken(): string {
@@ -20,7 +24,14 @@ export class AuthService {
   public authorize(username: string, password: string): Observable<any> {
     this.username = username;
     this.password = password;
-    return this.getCurrentUser();
+    const credentials = { username: this.username, password: this.password };
+    return Observable.create(observer => {
+      this.http.post('/api/auth/login', credentials)
+      .subscribe(user => {
+        this.user = user;
+        observer.next(user);
+      });
+    });
   }
 
   public logOut(): Observable<any> {
@@ -36,7 +47,7 @@ export class AuthService {
       if (this.user) {
         return observer.next(this.user);
       }
-      this.http.post('/api/auth/login', { username: this.username, password: this.password })
+      this.http.post('/api/auth/ping', null)
       .subscribe(user => {
         this.user = user;
         observer.next(user);

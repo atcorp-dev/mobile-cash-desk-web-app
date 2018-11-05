@@ -3,6 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { AppService } from './../../../app.service';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Location } from '@angular/common';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login-page',
@@ -22,6 +23,11 @@ export class LoginPageComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    if (this.authService.isAuthorized) {
+      this.authService.logOut().pipe(
+        take(1)
+      ).subscribe();
+    }
     this.form = this.fb.group({
       username: [null, [Validators.required]],
       password: [null, [Validators.required]],

@@ -1,14 +1,15 @@
 import { Router } from '@angular/router';
 import { AuthService } from './auth/auth.service';
 import { AppService } from './app.service';
-import { ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { MediaMatcher } from '@angular/cdk/layout';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnDestroy {
+export class AppComponent implements OnDestroy, OnInit {
+  loading: boolean;
   mobileQuery: MediaQueryList;
   appTitle = 'Mobile Cash Desk DB';
 
@@ -47,6 +48,20 @@ export class AppComponent implements OnDestroy {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
     this.mobileQuery.addListener(this._mobileQueryListener);
+  }
+
+  ngOnInit() {
+    this.getCurrentUser();
+  }
+
+  getCurrentUser() {
+    this.loading = true;
+    const finalize = () => this.loading = false;
+    this.authService.getCurrentUser()
+      .subscribe(user => {
+        this.appService.currentUser = user;
+        finalize();
+      }, finalize, finalize);
   }
 
   ngOnDestroy(): void {
