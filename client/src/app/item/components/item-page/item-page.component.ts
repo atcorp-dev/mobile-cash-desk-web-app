@@ -64,7 +64,8 @@ export class ItemPageComponent implements OnInit {
       description: null,
       additionalFields: this.formBuilder.array([
         this.getAdditionalFieldsControls()
-      ])
+      ]),
+      available: false
     });
   }
 
@@ -146,6 +147,7 @@ export class ItemPageComponent implements OnInit {
       code: item.code,
       barCode: item.barCode,
       price: item.price,
+      available: item.available,
       description: item.description,
     });
     const controls = (item.additionalFields || []).map(f => this.getAdditionalFieldsControls(f));

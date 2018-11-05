@@ -16,3 +16,7 @@ body { margin: 0; font-family: 'Roboto', sans-serif; }
   flex-direction: row;
   width: 100%;
 }
+.checkbox-wrap {
+  width: 100%;
+  padding-left: 6px;
+}
