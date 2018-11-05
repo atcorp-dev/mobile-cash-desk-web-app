@@ -1,4 +1,5 @@
-import { IntegrationService } from './../integration/integration.service';
+import { GateItem } from './gate-item.model';
+import { IntegrationService, ImportResult } from './../integration/integration.service';
 import { PrestaShopIntegrationService } from './../integration/prestashop/prestashop.service';
 import { Guid } from 'guid-typescript';
 import { Company } from './../companies/company.model';
@@ -14,9 +15,10 @@ import { CreateItemDto } from './create-item.dto';
 @Injectable()
 export class InventoryService {
 
-  private template = ['NAME', 'EXT_CODE', 'CODE', 'BAR_CODE', 'PRICE'];
+  private template = ['NAME', 'EXT_CODE', 'CODE', 'BAR_CODE', 'PRICE', 'AVAILABLE', 'DESCRIPTION', 'FEATURE_KEY_N', 'FEATURE_VALUE_N'];
   constructor(
     @Inject('ItemRepository') private readonly itemRepository: typeof Item,
+    @Inject('GateItemRepository') private readonly gateItemRepository: typeof GateItem,
     @Inject('CompanyRepository') private readonly companyRepository: typeof Company,
     private readonly prestaShopIntegrationService: PrestaShopIntegrationService,
   ) {}
@@ -35,38 +37,41 @@ export class InventoryService {
     )
   }
 
-  public importFromCsv(companyCode: string, file): Observable<any> {
+  public importFromCsv(company: Company, file, user: User): Observable<any> {
     const data: Buffer = file.buffer;
     const csv = data.toString();
     const arr: Array<string[]> = CSV.parse(csv);
-    console.log(arr[1]);
     const headers = arr.shift();
+    const key = Guid.create().toString();
    // this.validateHeaders(headers);
-    const items = arr.map(values => {
-      const [name, extCode, code, barCode, price, description] = values;
+    const items = arr.map(row => {
+      const [name, extCode, code, barCode, price, available, description, ...features] = row;
       return { 
+        key,
         id: Guid.create().toString(),
+        createdById: user && user.id,
+        createdOn: new Date(),
+        modifiedById: user && user.id,
+        modifiedOn: new Date(),
         name,
         code,
         extCode,
         barCode,
         price: this.toDecimal(price),
         description,
-        companyId: null
+        available: +available === 1,
+        companyId: company.id,
+        additionalFields: features && this.getCsvFeatures(features),
+        source: row
       }
     });
-    return from (
-      this.companyRepository.find({ where: { code: companyCode } })
+    return from(
+      this.gateItemRepository.bulkCreate(items)
+    ).pipe(
+      switchMap(() => GateItem.upsertItems(key)),
+      switchMap(() => GateItem.destroy({ where: { key } })),
+      map(() => <ImportResult>{ rowsAffected: items.length }),
     )
-    .pipe(
-      switchMap(company => {
-        items.forEach(item => item.companyId = company.id);
-        return this.removeItems(company.id, items)
-      }),
-      switchMap(() => from(
-        this.itemRepository.bulkCreate(items)
-      ))
-    );
   }
 
   public bulkCreateItems(createItemsDto: Array<CreateItemDto>, companyId, user: User): Observable<any> {
@@ -109,23 +114,6 @@ export class InventoryService {
     });
   }
 
-  private removeItems(companyId: string, items: Array<any>): Observable<any> {
-    const codes = [];
-    items.forEach(item => {
-      if (codes.indexOf(item.code) == -1) {
-        codes.push(item.code);
-      }
-    })
-    return from(
-      this.itemRepository.destroy({
-        where: {
-          code: codes,
-          companyId
-        }
-      })
-    );
-  }
-
   private getIntegrationService(company: Company): IntegrationService {
     const integrationConfig = company.extras && company.extras.integrationConfig;
     if (integrationConfig) {
@@ -137,6 +125,18 @@ export class InventoryService {
       }
     }
     throw new BadRequestException('Integration config not set for this company');
+  }
+
+  private getCsvFeatures(row: Array<any>): {name: string, value: string}[] {
+    const res = [];
+    for(let i = 0; i < row.length; i += 2) {
+      const name = [row[i]];
+      const value = row[i + 1];
+      if (name && (value || value === 0)) {
+        res.push({ name, value });
+      }
+    }
+    return res;
   }
 
 }

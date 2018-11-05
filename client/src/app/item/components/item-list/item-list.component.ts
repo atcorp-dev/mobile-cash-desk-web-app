@@ -94,7 +94,7 @@ export class ItemListComponent implements OnInit {
     const companyId = this.searchForm.get('companyId').value;
     this.loading = true;
     const params = companyId ? { companyId } : undefined;
-    this.dataService.get(Item, params)
+    this.dataService.get(Item, Object.assign({}, params, { page: 1 }))
       .pipe(
         finalize(() => this.loading = false)
       )
