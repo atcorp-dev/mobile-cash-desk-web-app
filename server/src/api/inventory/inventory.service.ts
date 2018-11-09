@@ -130,7 +130,7 @@ export class InventoryService {
   private getCsvFeatures(row: Array<any>): {name: string, value: string}[] {
     const res = [];
     for(let i = 0; i < row.length; i += 2) {
-      const name = [row[i]];
+      const name = row[i];
       const value = row[i + 1];
       if (name && (value || value === 0)) {
         res.push({ name, value });
