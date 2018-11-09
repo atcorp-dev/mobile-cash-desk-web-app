@@ -65,6 +65,7 @@ export class InventoryService {
         source: row
       }
     });
+    return from('ok');
     return from(
       this.gateItemRepository.bulkCreate(items)
     ).pipe(

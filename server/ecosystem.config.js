@@ -6,7 +6,7 @@ module.exports = {
     // Options reference: https://pm2.io/doc/en/runtime/reference/ecosystem-file/
     args: 'one two',
 	  exec_mode: 'cluster',
-    instances: 4,
+    instances: 2,
     autorestart: true,
     watch: false,
 	merge_logs: true,
