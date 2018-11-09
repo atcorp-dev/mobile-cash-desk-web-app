@@ -5,9 +5,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ItemDataService } from './../../services/item-data.service';
 import { FormGroup, FormBuilder, Validators, FormControl } from '@angular/forms';
 import { Item } from './../../models/item.model';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { finalize } from 'rxjs/operators';
-import { MatSnackBar } from '@angular/material';
+import { MatSnackBar, MatPaginator } from '@angular/material';
 import { Observable } from 'rxjs';
 @Component({
   selector: 'app-item-list',
@@ -31,6 +31,9 @@ export class ItemListComponent implements OnInit {
   uploadButtonDisabled: boolean;
   uploadImageButtonDisabled: boolean;
   loading: boolean;
+  resultLength: number;
+
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   get makeImportButtonDisabled(): boolean {
     return !this.makeImportButtonEnabled;
@@ -55,6 +58,7 @@ export class ItemListComponent implements OnInit {
   ngOnInit() {
     this.loadCompanies();
     this.createForm();
+    this.paginator.page.subscribe(() => this.loadItems());
   }
 
   openSnackBar(message: string, action?: string) {
@@ -80,7 +84,10 @@ export class ItemListComponent implements OnInit {
     this.searchForm = this.formBuilder.group({
       companyId: null
     });
-    this.searchForm.get('companyId').valueChanges.subscribe(() => this.loadItems());
+    this.searchForm.get('companyId').valueChanges.subscribe(() => {
+      this.getItemsCount();
+      this.loadItems();
+    });
   }
 
   loadCompanies() {
@@ -94,12 +101,22 @@ export class ItemListComponent implements OnInit {
     const companyId = this.searchForm.get('companyId').value;
     this.loading = true;
     const params = companyId ? { companyId } : undefined;
-    this.dataService.get(Item, Object.assign({}, params, { page: 1 }))
+    this.dataService.get(Item, Object.assign({}, params, { page: this.paginator.pageIndex + 1 }))
       .pipe(
         finalize(() => this.loading = false)
       )
       .subscribe(
         data => this.dataSource = data
+      );
+  }
+
+  getItemsCount() {
+    const companyId = this.searchForm.get('companyId').value;
+    this.loading = true;
+    const params = companyId ? { companyId } : undefined;
+    this.dataService.getCount(Object.assign({}, params, { page: this.paginator.pageIndex + 1 }))
+      .subscribe(
+        res => this.resultLength = res
       );
   }
 

@@ -27,12 +27,19 @@ export class ItemService {
       this.itemRepository.findAll({
         where,
         include: [{
-          model: Company
+          model: Company,
+          attributes: ['id', 'name', 'code']
         }],
         limit,
         offset
       })
     )
+  }
+
+  getCount(where): Observable<number> {
+    return from(
+      this.itemRepository.count({ where })
+    );
   }
 
   getAvailableByCode(companyId: string, code: string): Observable<Item[]> {

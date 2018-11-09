@@ -18,6 +18,13 @@ export abstract class DataService {
     );
   }
 
+  public getCount(filter?): Observable<number> {
+    return this.httpClient.get(this.apiPath + '/count', { params: filter })
+    .pipe(
+      map(res => +res)
+    );
+  }
+
   public getById<T>(c: new () => T, id): Observable<T> {
     return this.httpClient.get(
       `${this.apiPath}/${id}`

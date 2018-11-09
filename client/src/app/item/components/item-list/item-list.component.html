@@ -169,6 +169,7 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;" (dblclick)="openEditPage(row.id)"></tr>
   </table>
+  <mat-paginator [length]="resultLength" [pageSize]="30"></mat-paginator>
 
   <div class=list>
     <div *ngFor="let element of dataSource">

@@ -29,6 +29,12 @@ export class ItemController {
     return this.itemService.getAll(where, page);
   }
 
+  @Get('count')
+  getCount(@Query('companyId') companyId: string): Observable<number> {
+    const where = companyId ? { companyId } : null;
+    return this.itemService.getCount(where);
+  }
+
   @Get('available/:companyId/:code')
   @ApiOperation({
     title: 'Get items available in specified company hierarchy',
