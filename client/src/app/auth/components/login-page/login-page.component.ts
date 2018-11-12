@@ -23,11 +23,11 @@ export class LoginPageComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    if (this.authService.isAuthorized) {
+    /*if (this.authService.isAuthorized) {
       this.authService.logOut().pipe(
         take(1)
       ).subscribe();
-    }
+    }*/
     this.form = this.fb.group({
       username: [null, [Validators.required]],
       password: [null, [Validators.required]],
