@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { Item } from './item.model';
 import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import * as CSV from 'csv-string';
-import { switchMap, map, catchError } from 'rxjs/operators';
+import { switchMap, map, catchError, finalize } from 'rxjs/operators';
 import { User } from '../user/user.model';
 import { CreateItemDto } from './create-item.dto';
 
@@ -71,17 +71,21 @@ export class InventoryService {
       switchMap(() => GateItem.upsertItems(key)),
       switchMap(() => GateItem.destroy({ where: { key } })),
       map(() => <ImportResult>{ rowsAffected: items.length }),
-    )
+    );
   }
 
   public bulkCreateItems(createItemsDto: Array<CreateItemDto>, companyId, user: User): Observable<any> {
+    if (createItemsDto == null || createItemsDto == undefined) {
+      throw new BadRequestException(`input parameter [createItemsDto] is not defined`);
+    }
     if (!Array.isArray(createItemsDto)) {
-      throw new BadRequestException(`input parameter is not array`);
+      throw new BadRequestException(`input parameter [createItemsDto] is not array`);
     }
     if ((!user && user.companyId) || !companyId) {
-      throw new BadRequestException(`Company not specified`);
+      throw new BadRequestException(`User->Company not specified`);
     }
     const records = createItemsDto.map(dto => Object.assign({}, dto, {
+      id: Guid.create().toString(),
       createdById: user && user.id,
       modifiedById: user && user.id,
       companyId: companyId || (user && user.companyId)
@@ -90,6 +94,38 @@ export class InventoryService {
       map(
         items => Object.assign({}, { rowsAffected: items.length })
       )
+    );
+  }
+
+  public bulkUpsertItems(createItemsDto: Array<CreateItemDto>, companyId, user: User): Observable<any> {
+    if (createItemsDto == null || createItemsDto == undefined) {
+      throw new BadRequestException(`input parameter [createItemsDto] is not defined`);
+    }
+    if (!Array.isArray(createItemsDto)) {
+      throw new BadRequestException(`input parameter [createItemsDto] is not array`);
+    }
+    if ((!user && user.companyId) || !companyId) {
+      throw new BadRequestException(`User->Company not specified`);
+    }
+    const key = Guid.create().toString();
+    const records = createItemsDto.map(dto => Object.assign({}, dto, {
+      id: Guid.create().toString(),
+      createdById: user && user.id,
+      modifiedById: user && user.id,
+      key,
+      companyId: companyId || (user && user.companyId),
+      extCode: dto.extCode || dto.code || dto.barCode
+    }));
+    return from(this.gateItemRepository.bulkCreate(records, { individualHooks: true })).pipe(
+      switchMap(() => {
+        return GateItem.upsertItems(key)
+      }),
+      switchMap(() => {
+        return GateItem.destroy({ where: { key } })
+      }),
+      map(() => {
+        return <ImportResult>{ rowsAffected: createItemsDto.length }
+      }),
     );
   }
 

@@ -15,6 +15,9 @@ export class CreateItemDto {
   name: string;
 
   @ApiModelProperty()
+  extCode: string;
+
+  @ApiModelProperty()
   code: string;
 
   @ApiModelProperty()

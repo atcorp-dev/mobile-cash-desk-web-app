@@ -13,6 +13,7 @@ export interface AdditionalField {
 })
 @Scopes({
   full: {
+    attributes: ['id', 'name', 'code', 'barCode', 'price', 'companyId', 'categoryId', 'available', 'description', 'additionalFields'],
     include: [() => Company]
   }
 })
