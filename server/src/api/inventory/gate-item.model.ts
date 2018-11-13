@@ -85,7 +85,7 @@ export class GateItem extends BaseModel<GateItem> {
           g."categoryId",
           g.price,
           g.image,
-          g."additionalFields",
+          COALESCE(g."additionalFields", '[]'),
           g.source
         from "GateItem" g
         WHERE key = '${key}'::uuid
@@ -101,7 +101,7 @@ export class GateItem extends BaseModel<GateItem> {
           "categoryId" = EXCLUDED."categoryId",
           price = EXCLUDED.price,
           image = EXCLUDED.image,
-          "additionalFields" = EXCLUDED."additionalFields",
+          "additionalFields" = COALESCE(EXCLUDED."additionalFields", '[]'),
           source = EXCLUDED.source
       `)
       .spread((result, rowsAffected) => {
