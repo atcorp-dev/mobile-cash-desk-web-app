@@ -2,7 +2,7 @@
   <ngx-loading [show]="loading" [config]="{ backdropBorderRadius: '14px' }"></ngx-loading>
   <mat-accordion>
 
-    <mat-expansion-panel>
+    <mat-expansion-panel *ngIf="false">
 
       <mat-expansion-panel-header>
         <mat-panel-title>
@@ -33,11 +33,13 @@
 
   </mat-accordion>
 
+  <button mat-flat-button class="margin-left-12" (click)="onAddButtonClick()">Add</button>
+
   <table mat-table [dataSource]="dataSource" class="table mat-elevation-z8">
 
     <!--- Note that these columns can be defined in any order.
           The actual rendered columns are set as a property on the row definition" -->
-
+  
     <!-- Name Column -->
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef> Name </th>
@@ -60,6 +62,12 @@
     <ng-container matColumnDef="phone">
       <th mat-header-cell *matHeaderCellDef> Phone </th>
       <td mat-cell *matCellDef="let element"> {{element.phone}} </td>
+    </ng-container>
+
+    <!-- Name Column -->
+    <ng-container matColumnDef="parent">
+      <th mat-header-cell *matHeaderCellDef> Parent </th>
+      <td mat-cell *matCellDef="let element"> {{element.parent?.name}} </td>
     </ng-container>
 
     <!-- Menu Column -->
@@ -89,22 +97,44 @@
   <div class=list>
     <div *ngFor="let element of dataSource">
       <mat-card>
-        <div class=element-field>
-          <div class=element-label>Name:</div>
-          <div class=element-data>{{ element.name }}</div>
-        </div>
-        <div class=element-field>
-          <div class=element-label>Code:</div>
-          <div class=element-data>{{ element.code }}</div>
-        </div>
-        <div class=element-field>
-          <div class=element-label>E-Mail:</div>
-          <div class=element-data>{{ element.email }}</div>
-        </div>
-        <div class=element-field>
-          <div class=element-label>Phone:</div>
-          <div class=element-data>{{ element.phone }}</div>
-        </div>
+        <mat-card-content>
+          <div class=element-field>
+            <div class=element-label>Name:</div>
+            <div class=element-data>{{ element.name }}</div>
+          </div>
+          <div class=element-field>
+            <div class=element-label>Code:</div>
+            <div class=element-data>{{ element.code }}</div>
+          </div>
+          <div class=element-field>
+            <div class=element-label>E-Mail:</div>
+            <div class=element-data>{{ element.email }}</div>
+          </div>
+          <div class=element-field>
+            <div class=element-label>Phone:</div>
+            <div class=element-data>{{ element.phone }}</div>
+          </div>
+          <div class=element-field>
+            <div class=element-label>Parent:</div>
+            <div class=element-data>{{ element.parent?.name }}</div>
+          </div>
+          <div class=element-field>
+            <div class=element-label>Active:</div>
+            <div class=element-data>{{ element.active ? 'Yes' : 'No' }}</div>
+          </div>
+        </mat-card-content>
+        <mat-action-row>
+          <div row>
+            <button mat-menu-item (click)="openEditPage(element.id)">
+              <mat-icon>edit</mat-icon>
+              <span>Edit</span>
+            </button>
+            <button mat-menu-item (click)="remove(element.id)">
+              <mat-icon>delete</mat-icon>
+              <span>Delete</span>
+            </button>
+          </div>
+        </mat-action-row>
       </mat-card>
     </div>
   </div>

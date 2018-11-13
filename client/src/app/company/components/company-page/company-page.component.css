@@ -1,0 +1,19 @@
+.mat-form-field {
+  width: 100%;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.feature .mat-form-field {
+  width: auto;
+}
+.feature-name {
+  flex-grow: 3
+}
+.feature-value {
+  flex-grow: 7
+}
+.feature-remove {
+  align-self: center;
+  cursor: pointer;
+}

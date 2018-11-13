@@ -28,6 +28,9 @@ form {
 }
 .element-data {
 }
+div[row] {
+  display: flex
+}
 
 @media screen and (max-width: 600px) {
   .table {

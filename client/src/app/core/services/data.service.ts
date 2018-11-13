@@ -40,6 +40,11 @@ export abstract class DataService {
     return this.httpClient.post(path || this.apiPath, body);
   }
 
+  public patch(id: string, values, uri?): Observable<any> {
+    const url = uri || `${this.apiPath}/${id}`;
+    return this.httpClient.patch(url, values);
+  }
+
   public delete(id): Observable<any> {
     const parts = this.apiPath.split('/');
     parts.push(id);

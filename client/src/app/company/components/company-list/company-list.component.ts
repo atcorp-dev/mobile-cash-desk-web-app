@@ -14,7 +14,7 @@ import { MatSnackBar } from '@angular/material';
 })
 export class CompanyListComponent implements OnInit {
 
-  displayedColumns: string[] = ['name', 'code', 'email', 'phone', 'menu'];
+  displayedColumns: string[] = ['name', 'code', 'email', 'phone', 'parent', 'menu'];
   dataSource: Array<Company> = [];
   form: FormGroup;
   addButtonDisabled: boolean;
@@ -94,6 +94,10 @@ export class CompanyListComponent implements OnInit {
           this.openSnackBar('Company can not be deleted');
         }
       });
+  }
+
+  onAddButtonClick() {
+    this.router.navigate(['/company']);
   }
 
 }

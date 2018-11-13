@@ -8,7 +8,7 @@ import { CompanyDataService } from 'src/app/company/services/company-data.servic
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material';
 import { Company } from 'src/app/company/models/company.model';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-item-page',
@@ -45,7 +45,7 @@ export class ItemPageComponent implements OnInit {
     this.loadCompanies();
     this.getRecordId().pipe(
       switchMap(id => this.loadItem(id))
-    ).subscribe(item => this.setFormValues(item));
+    ).subscribe(item => item && this.setFormValues(item));
   }
 
   openSnackBar(message: string, action?: string) {
@@ -132,6 +132,9 @@ export class ItemPageComponent implements OnInit {
   }
 
   loadItem(recordId: string): Observable<Item> {
+    if (!recordId) {
+      return of(null);
+    }
     this.loading = true;
     return this.dataService.getById(Item, recordId)
       .pipe(
@@ -141,6 +144,9 @@ export class ItemPageComponent implements OnInit {
 
   setFormValues(item: Item) {
     this.item = item;
+    if (!item) {
+      return;
+    }
     this.form.patchValue({
       name: item.name,
       companyId: item.companyId,

@@ -24,4 +24,7 @@ export class CreateCompanyDto {
 
   @ApiModelProperty({ enum: [ 0, 1 ] })
   type: CompanyType;
+
+  @ApiModelProperty()
+  active: boolean;
 }

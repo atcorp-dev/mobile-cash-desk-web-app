@@ -5,7 +5,7 @@ import { CreateItemDto } from '../inventory/create-item.dto';
 import { CreateCompanyDto } from './create-company.dto';
 import { Injectable, Inject, ForbiddenException } from '@nestjs/common';
 import { Observable, from, of } from 'rxjs';
-import { Company } from './company.model';
+import { Company, CompanyType } from './company.model';
 import { Item } from '../inventory/item.model';
 import { switchMap, map } from 'rxjs/operators';
 
@@ -48,6 +48,7 @@ export class CompanyService {
       throw new ForbiddenException('Not enough permission');
     }
     createCompany.parentId = createCompany.parentId ? createCompany.parentId : null;
+    createCompany.type = createCompany.parentId ? CompanyType.Child : CompanyType.Main;
     const response = this.companyRepository.create(
       Object.assign(createCompany, { createdById: user.id, modifiedById: user.id })
     );

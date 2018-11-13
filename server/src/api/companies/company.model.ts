@@ -1,5 +1,5 @@
 import { Item } from '../inventory/item.model';
-import { Table, Column, Sequelize, HasMany, BelongsTo, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Sequelize, HasMany, BelongsTo, ForeignKey, DefaultScope, Scopes, IScopeIncludeOptions } from 'sequelize-typescript';
 import { BaseModel } from '../base/base.model';
 
 export enum CompanyType {
@@ -7,6 +7,19 @@ export enum CompanyType {
   Child
 }
 
+@DefaultScope({
+  attributes: ['id', 'name', 'code', 'phone', 'email', 'address', 'parentId', 'active'],
+  include: [{ model: () => Company.scope('lookup'), as: 'parent' }]
+})
+@Scopes({
+  full: {
+    attributes: ['id', 'name', 'code', 'phone', 'email', 'address', 'parentId', 'active'],
+    include: [{model: () => Company, as: 'parent'}]
+  },
+  lookup: {
+    attributes: ['id', 'name', 'code'],
+  }
+})
 @Table
 export class Company extends BaseModel<Company> {
 
@@ -27,6 +40,9 @@ export class Company extends BaseModel<Company> {
 
   @Column
   address: string;
+
+  @Column
+  active: boolean;
 
   @BelongsTo(() => Company)
   parent: Company;
