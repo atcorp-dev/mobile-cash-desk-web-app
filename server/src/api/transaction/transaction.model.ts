@@ -25,7 +25,7 @@ export class StatusCannotBeChangedException extends Error {
 export class Transaction extends BaseModel<Transaction> {
 
   @BelongsTo(() => Company)
-  company: User;
+  company: Company;
 
   @ForeignKey(() => Company)
   @Column(Sequelize.UUID)

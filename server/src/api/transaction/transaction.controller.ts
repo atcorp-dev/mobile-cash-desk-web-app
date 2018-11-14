@@ -2,7 +2,7 @@ import { UserRole } from './../user/user.model';
 import { ReqUser } from './../user/user.decorator';
 import { TransactionService } from './transaction.service';
 import { ApiUseTags, ApiBearerAuth, ApiImplicitQuery, ApiOperation } from '@nestjs/swagger';
-import { Controller, UseGuards, Get, Query, Req, Patch, Param, Post, Body, ForbiddenException } from '@nestjs/common';
+import { Controller, UseGuards, Get, Query, Req, Patch, Param, Post, Body, ForbiddenException, BadRequestException } from '@nestjs/common';
 import { AppAuthGuard } from '../auth/auth.guard';
 import { Observable } from 'rxjs';
 import { Transaction } from './transaction.model';
@@ -27,6 +27,18 @@ export class TransactionController {
       throw new ForbiddenException('Not enough permission');
     }
     return this.transactionService.getAll(page, user);
+  }
+
+  @Get()
+  @ApiOperation({
+    title: 'Get transaction',
+    description: 'Get Transaction by his id'
+  })
+  getById(@Param('id') id: string): Observable<Transaction> {
+    if (!id) {
+      throw new BadRequestException('Id can not be null');
+    }
+    return this.transactionService.getById(id);
   }
 
   @Post(':companyId')
