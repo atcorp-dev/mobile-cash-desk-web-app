@@ -29,7 +29,7 @@ export class TransactionController {
     return this.transactionService.getAll(page, user);
   }
 
-  @Get()
+  @Get(':id')
   @ApiOperation({
     title: 'Get transaction',
     description: 'Get Transaction by his id'
