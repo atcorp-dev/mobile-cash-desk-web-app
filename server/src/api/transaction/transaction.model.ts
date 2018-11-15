@@ -78,6 +78,12 @@ export class Transaction extends BaseModel<Transaction> {
 
   // #region Methods: Hooks
   @BeforeCreate
+  static initOrderNum(instance: Transaction) {
+    const orderNum = Array.prototype.filter.call(new Date().toISOString(), c => /^\d$/.test(c)).join('');
+    instance.set('orderNum', orderNum);
+  }
+
+  @BeforeCreate
   static initStatus(instance: Transaction) {
     instance.set('status', TransactionStatus.Pending);
   }
