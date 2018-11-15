@@ -35,9 +35,23 @@ export class TransactionService {
   create(companyId: string, createTransactionDto: CreateTransactionDto, user: User): Observable<Transaction> {
     const createdById = user.id;
     const modifiedById = user.id;
+    const cartId = createTransactionDto.cartId;
     const values = Object.assign({}, createTransactionDto, { companyId, createdById, modifiedById });
     return from(
-      this.transactionRepository.create(values)
+      this.transactionRepository.findOne({ where: { cartId }} )
+    ).pipe(
+      switchMap(transaction => {
+        if (transaction) {
+          Object.keys(values)
+            .filter(key => ['id'].indexOf(key) === -1)
+            .forEach(key => {
+              transaction.set(key, values[key])
+            });
+          return from(transaction.save());
+        } else {
+          return from(this.transactionRepository.create(values));
+        }
+      }),
     )
   }
 

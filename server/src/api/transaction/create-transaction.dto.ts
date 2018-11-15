@@ -4,6 +4,9 @@ import { ApiModelProperty } from '@nestjs/swagger';
 
 export class CreateTransactionDto {
 
+  @ApiModelProperty()
+  cartId: string
+
   @ApiModelProperty({ enum: [0, 1]})
   type: PaymentType;
 

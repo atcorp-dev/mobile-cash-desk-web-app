@@ -70,6 +70,9 @@ export class Transaction extends BaseModel<Transaction> {
   @Column(Sequelize.DOUBLE)
   totalPrice: number;
 
+  @Column(Sequelize.UUID)
+  cartId: string;
+
   // #region Methods: Hooks
   @BeforeCreate
   static initStatus(instance: Transaction) {
