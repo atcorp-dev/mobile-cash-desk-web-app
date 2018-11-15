@@ -9,6 +9,9 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropColumn('Transaction', 'cartId')
+    return [
+      queryInterface.removeIndex('Transaction', 'transaction_cart_id'),
+      queryInterface.dropColumn('Transaction', 'cartId')
+    ]
   }
 };

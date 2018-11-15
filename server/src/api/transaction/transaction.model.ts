@@ -73,6 +73,9 @@ export class Transaction extends BaseModel<Transaction> {
   @Column(Sequelize.UUID)
   cartId: string;
 
+  @Column
+  orderNum: string;
+
   // #region Methods: Hooks
   @BeforeCreate
   static initStatus(instance: Transaction) {
