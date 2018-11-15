@@ -1,6 +1,6 @@
 import { CreateTransactionDto } from './create-transaction.dto';
 import { User } from './../user/user.model';
-import { Transaction } from './transaction.model';
+import { Transaction, TransactionStatus } from './transaction.model';
 import { Sequelize } from 'sequelize-typescript';
 import { Injectable, Inject } from '@nestjs/common';
 import { Observable, from, of } from 'rxjs';
@@ -16,6 +16,21 @@ export class TransactionService {
   public constructor(
     @Inject('TransactionRepository') private readonly transactionRepository: typeof Transaction
   ) { }
+
+  getAllPending(companyId: string): Observable<Array<Transaction>> {
+    const response = this.transactionRepository.findAll({ where: { companyId, status: TransactionStatus.Pending }});
+    return from(response);
+  }
+
+  getAllPayed(companyId: string): Observable<Array<Transaction>> {
+    const response = this.transactionRepository.findAll({ where: { companyId, status: TransactionStatus.Payed }});
+    return from(response);
+  }
+
+  getAllRejected(companyId: string): Observable<Array<Transaction>> {
+    const response = this.transactionRepository.findAll({ where: { companyId, status: TransactionStatus.Rejected }});
+    return from(response);
+  }
 
   getAll(page?: number, user?: User): Observable<Array<Transaction>> {
     const limit = page ? this.limit : null;

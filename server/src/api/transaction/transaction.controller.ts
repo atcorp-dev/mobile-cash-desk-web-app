@@ -30,6 +30,30 @@ export class TransactionController {
     return this.transactionService.getAll(page, user);
   }
 
+  @Get(':companyId/pending')
+  @ApiOperation({
+    title: 'Get all pending transactions'
+  })
+  getAllPending(@Param('companyId') companyId: string): Observable<Array<Transaction>> {
+    return this.transactionService.getAllPending(companyId);
+  }
+
+  @Get(':companyId/payed')
+  @ApiOperation({
+    title: 'Get all payed transactions'
+  })
+  getAllPayed(@Param('companyId') companyId: string): Observable<Array<Transaction>> {
+    return this.transactionService.getAllPayed(companyId);
+  }
+
+  @Get(':companyId/rejected')
+  @ApiOperation({
+    title: 'Get all rejected transactions'
+  })
+  getAllRejected(@Param('companyId') companyId: string): Observable<Array<Transaction>> {
+    return this.transactionService.getAllRejected(companyId);
+  }
+
   @Get(':id')
   @ApiOperation({
     title: 'Get transaction',
