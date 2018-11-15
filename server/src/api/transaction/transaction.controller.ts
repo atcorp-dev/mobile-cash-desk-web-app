@@ -1,3 +1,4 @@
+import { NotifyTransactionDto } from './notify-transaction.dto';
 import { UserRole, User } from './../user/user.model';
 import { ReqUser } from './../user/user.decorator';
 import { TransactionService } from './transaction.service';
@@ -129,5 +130,14 @@ export class TransactionController {
       .subscribe(
         result => res.status(HttpStatus.OK).send(result)
       );
+  }
+
+  @Post(':id/notify')
+  @ApiOperation({
+    title: 'Notify',
+    description: ``
+  })
+  notify(@Param('id') id: string, @Body() message: NotifyTransactionDto, @Res() res, @ReqUser() user: User) {
+    res.status(HttpStatus.OK).send(null);
   }
 }
