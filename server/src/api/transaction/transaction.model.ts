@@ -76,6 +76,9 @@ export class Transaction extends BaseModel<Transaction> {
   @Column
   orderNum: string;
 
+  @Column(Sequelize.JSONB)
+  extras: any;
+
   // #region Methods: Hooks
   @BeforeCreate
   static initOrderNum(instance: Transaction) {
