@@ -32,27 +32,29 @@ export class TransactionService {
     );
   }
 
-  create(companyId: string, createTransactionDto: CreateTransactionDto): Observable<Transaction> {
-    const values = Object.assign({}, createTransactionDto, { companyId })
+  create(companyId: string, createTransactionDto: CreateTransactionDto, user: User): Observable<Transaction> {
+    const createdById = user.id;
+    const modifiedById = user.id;
+    const values = Object.assign({}, createTransactionDto, { companyId, createdById, modifiedById });
     return from(
-      Transaction.create(values)
+      this.transactionRepository.create(values)
     )
   }
 
-  markAsPayed(id: string): Observable<Transaction> {
+  markAsPayed(id: string, user: User): Observable<Transaction> {
     return from(
       this.transactionRepository.findById(id)
     ).pipe(
-      map(transaction => transaction.markAsPayed()),
+      map(transaction => transaction.markAsPayed(user)),
       switchMap(transaction => transaction.save())
     )
   }
 
-  markAsRejected(id: string): Observable<Transaction> {
+  markAsRejected(id: string, user: User): Observable<Transaction> {
     return from(
       this.transactionRepository.findById(id)
     ).pipe(
-      map(transaction => transaction.markAsRejected()),
+      map(transaction => transaction.markAsRejected(user)),
       switchMap(transaction => transaction.save())
     )
   }

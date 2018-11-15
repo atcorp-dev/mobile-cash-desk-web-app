@@ -14,5 +14,8 @@ export class CreateTransactionDto {
   ownerId: string;
 
   @ApiModelProperty({ required: true, type: TransactionItemDto, isArray: true })
-  itemList: Array<TransactionItemDto>
+  itemList: Array<TransactionItemDto>;
+
+  @ApiModelProperty()
+  totalPrice: number;
 }

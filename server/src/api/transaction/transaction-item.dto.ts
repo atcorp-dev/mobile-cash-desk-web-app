@@ -14,10 +14,12 @@ export class TransactionItemDto {
   @ApiModelProperty()
   barCode: string;
 
-  @ApiModelProperty({ required: false })
-  description: string;
-
   @ApiModelProperty()
   price: number;
 
+  @ApiModelProperty()
+  qty: number;
+  
+  @ApiModelProperty({ required: false })
+  extras: any;
 }

@@ -1,12 +1,13 @@
-import { UserRole } from './../user/user.model';
+import { UserRole, User } from './../user/user.model';
 import { ReqUser } from './../user/user.decorator';
 import { TransactionService } from './transaction.service';
 import { ApiUseTags, ApiBearerAuth, ApiImplicitQuery, ApiOperation } from '@nestjs/swagger';
-import { Controller, UseGuards, Get, Query, Req, Patch, Param, Post, Body, ForbiddenException, BadRequestException } from '@nestjs/common';
+import { Controller, UseGuards, Get, Query, Req, Patch, Param, Post, Body, ForbiddenException, BadRequestException, Res, HttpStatus } from '@nestjs/common';
 import { AppAuthGuard } from '../auth/auth.guard';
 import { Observable } from 'rxjs';
 import { Transaction } from './transaction.model';
 import { CreateTransactionDto } from './create-transaction.dto';
+import { catchError, map } from 'rxjs/operators';
 
 @ApiUseTags('Transactions')
 @ApiBearerAuth()
@@ -51,8 +52,18 @@ export class TransactionController {
     This id or token will be printed out for customer
     `
   })
-  create(@Param('companyId') companyId: string, @Body() createTransactionDto: CreateTransactionDto): Observable<Transaction> {
-    return this.transactionService.create(companyId, createTransactionDto);
+  create(@Param('companyId') companyId: string, @Body() createTransactionDto: CreateTransactionDto, @Res() res, @ReqUser() user: User) {
+    return this.transactionService.create(companyId, createTransactionDto, user)
+      .pipe(
+        catchError(err => {
+          console.dir(err);
+          console.error(err);
+          throw new BadRequestException(err.message);
+        })
+      )
+      .subscribe(
+        result => res.status(HttpStatus.OK).send(result)
+      );
   }
 
   @Patch(':id/markAsPayed')
@@ -62,8 +73,18 @@ export class TransactionController {
     After call this method will be provide info to company server to create order etc
     `
   })
-  markAsPayed(@Param('id') id: string): Observable<Transaction> {
-    return this.transactionService.markAsPayed(id);
+  markAsPayed(@Param('id') id: string, @Res() res, @ReqUser() user: User) {
+    return this.transactionService.markAsPayed(id, user)
+    .pipe(
+      catchError(err => {
+        console.dir(err);
+        console.error(err);
+        throw new BadRequestException(err.message);
+      })
+    )
+      .subscribe(
+        result => res.status(HttpStatus.OK).send(result)
+      );
   }
 
   @Patch(':id/markAsRejected')
@@ -72,7 +93,17 @@ export class TransactionController {
     description: `This method for Mobile App
     After call this method wil be provide info to company server to cancel cart etc`
   })
-  markAsRejected(@Param('id') id: string): Observable<Transaction> {
-    return this.transactionService.markAsRejected(id);
+  markAsRejected(@Param('id') id: string, @Res() res, @ReqUser() user: User) {
+    return this.transactionService.markAsRejected(id, user)
+      .pipe(
+        catchError(err => {
+          console.dir(err);
+          console.error(err);
+          throw new BadRequestException(err.message);
+        })
+      )
+      .subscribe(
+        result => res.status(HttpStatus.OK).send(result)
+      );
   }
 }

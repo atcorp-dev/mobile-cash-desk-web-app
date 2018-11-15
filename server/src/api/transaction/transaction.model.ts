@@ -15,6 +15,23 @@ export enum TransactionStatus {
   Rejected = 2
 }
 
+export class TransactionItem {
+
+  itemId: string;
+
+  name: string;
+
+  code: string;
+
+  barCode: string;
+
+  price: number;
+
+  qty: number;
+
+  extras: any;
+}
+
 export class StatusCannotBeChangedException extends Error {
   constructor() {
     super('Status cannot be changed in not pending transaction');
@@ -48,7 +65,7 @@ export class Transaction extends BaseModel<Transaction> {
   ownerId: string;
 
   @Column(Sequelize.JSONB)
-  itemList: Array<Item>;
+  itemList: Array<TransactionItem>;
 
   @Column(Sequelize.DOUBLE)
   totalPrice: number;
@@ -69,11 +86,13 @@ export class Transaction extends BaseModel<Transaction> {
   // #endregion
 
   // #region Methods: Pubic
-  public markAsPayed(): Transaction {
+  public markAsPayed(user: User): Transaction {
+    this.modifiedById = user.id;
     return this.setStatus(TransactionStatus.Payed);
   }
 
-  public markAsRejected(): Transaction {
+  public markAsRejected(user: User): Transaction {
+    this.modifiedById = user.id;
     return this.setStatus(TransactionStatus.Rejected);
   }
   // #endregion
