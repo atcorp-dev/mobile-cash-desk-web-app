@@ -138,6 +138,7 @@ export class TransactionController {
     description: ``
   })
   notify(@Param('id') id: string, @Body() message: NotifyTransactionDto, @Res() res, @ReqUser() user: User) {
+    console.dir(message);
     res.status(HttpStatus.OK).send(null);
   }
 }
