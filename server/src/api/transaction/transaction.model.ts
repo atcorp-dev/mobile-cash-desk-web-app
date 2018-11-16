@@ -121,7 +121,9 @@ export class Transaction extends BaseModel<Transaction> {
   public recalculate(itemList: Array<TransactionItem>, user: User) {
     const newItems = [];
     itemList.map(dto => {
-      const transactionItem = this.itemList.find(i => i.itemId == dto.itemId);
+      const transactionItem = this.itemList.find(
+        i => (i.itemId == dto.itemId) || (i.barCode == dto.barCode) || (i.code == dto.code)
+      );
       if (!transactionItem) {
         newItems.push(dto);
       } else {
