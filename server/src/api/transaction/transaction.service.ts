@@ -114,7 +114,7 @@ export class TransactionService {
           aggr[key] = transaction[key];
           return aggr;
         }, {});
-        return this.sentPushMessage(transaction.extras, dto, body, title)
+        return this.sentPushMessage(transaction.extras!.recipientId, dto, body, title)
       })
     );
   }
