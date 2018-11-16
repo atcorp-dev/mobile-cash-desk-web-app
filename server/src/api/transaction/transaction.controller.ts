@@ -79,15 +79,16 @@ export class TransactionController {
   })
   create(@Param('companyId') companyId: string, @Body() createTransactionDto: CreateTransactionDto, @Res() res, @ReqUser() user: User) {
     return this.transactionService.create(companyId, createTransactionDto, user)
-      .pipe(
+      /*.pipe(
         catchError(err => {
           console.dir(err);
           console.error(err);
           throw new BadRequestException(err.message);
         })
-      )
+      )*/
       .subscribe(
-        result => res.status(HttpStatus.OK).send(result)
+        result => res.status(HttpStatus.OK).send(result),
+        err => res.status(HttpStatus.BAD_REQUEST).send(err.message)
       );
   }
 
@@ -100,15 +101,16 @@ export class TransactionController {
   })
   markAsPayed(@Param('id') id: string, @Res() res, @ReqUser() user: User) {
     return this.transactionService.markAsPayed(id, user)
-    .pipe(
+    /*.pipe(
       catchError(err => {
         console.dir(err);
         console.error(err);
         throw new BadRequestException(err.message);
       })
-    )
+    )*/
       .subscribe(
-        result => res.status(HttpStatus.OK).send(result)
+        result => res.status(HttpStatus.OK).send(result),
+        err => res.status(HttpStatus.BAD_REQUEST).send(err.message)
       );
   }
 
@@ -120,15 +122,16 @@ export class TransactionController {
   })
   markAsRejected(@Param('id') id: string, @Res() res, @ReqUser() user: User) {
     return this.transactionService.markAsRejected(id, user)
-      .pipe(
+      /*.pipe(
         catchError(err => {
           console.dir(err);
           console.error(err);
           throw new BadRequestException(err.message);
         })
-      )
+      )*/
       .subscribe(
-        result => res.status(HttpStatus.OK).send(result)
+        result => res.status(HttpStatus.OK).send(result),
+        err => res.status(HttpStatus.BAD_REQUEST).send(err.message)
       );
   }
 
@@ -144,7 +147,8 @@ export class TransactionController {
         err => {
           console.dir(err);
           console.error(err);
-          new BadRequestException(err.message);
+          //new BadRequestException(err.message);
+          res.status(HttpStatus.BAD_REQUEST).send(err.message);
         }
     );
   }

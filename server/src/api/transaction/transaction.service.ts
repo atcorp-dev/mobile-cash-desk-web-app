@@ -74,7 +74,7 @@ export class TransactionService {
             transaction.markAsPending(user);
           }
           Object.keys(values)
-            .filter(key => ['id'].indexOf(key) === -1)
+            .filter(key => ['id', 'status'].indexOf(key) === -1)
             .forEach(key => {
               transaction.set(key, values[key])
             });
