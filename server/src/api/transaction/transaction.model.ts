@@ -1,6 +1,5 @@
 import { Company } from './../companies/company.model';
 import { User } from './../user/user.model';
-import { Item } from '../inventory/item.model';
 import { Table, Column, Sequelize, BelongsTo, ForeignKey, BeforeCreate } from 'sequelize-typescript';
 import { BaseModel } from '../base/base.model';
 
@@ -12,7 +11,8 @@ export enum PaymentType {
 export enum TransactionStatus {
   Pending = 0,
   Payed = 1,
-  Rejected = 2
+  Rejected = 2,
+  Recalculated = 3
 }
 
 export class TransactionItem {
@@ -41,6 +41,7 @@ export class StatusCannotBeChangedException extends Error {
 @Table
 export class Transaction extends BaseModel<Transaction> {
 
+  // #region Columns
   @BelongsTo(() => Company)
   company: Company;
 
@@ -79,6 +80,8 @@ export class Transaction extends BaseModel<Transaction> {
   @Column(Sequelize.JSONB)
   extras: any;
 
+  // #endregion
+
   // #region Methods: Hooks
   @BeforeCreate
   static initOrderNum(instance: Transaction) {
@@ -110,15 +113,30 @@ export class Transaction extends BaseModel<Transaction> {
     this.modifiedById = user.id;
     return this.setStatus(TransactionStatus.Rejected);
   }
+
+  public recalculate(itemList: Array<TransactionItem>) {
+    const newItems = [];
+    itemList.map(dto => {
+      const transactionItem = this.itemList.find(i => i.itemId == dto.itemId);
+      if (!transactionItem) {
+        newItems.push(dto);
+      } else {
+        transactionItem.price = dto.price;
+        transactionItem.name = dto.name;
+        newItems.push(transactionItem);
+      }
+    });
+    this.itemList = newItems;
+    this.setStatus(TransactionStatus.Recalculated);
+  }
   // #endregion
 
   // #region Methods: Protected
   protected setStatus(status: TransactionStatus): Transaction {
-    if (this.status == TransactionStatus.Pending) {
-      this.set('status', status);
-    } else {
+    if (this.status != TransactionStatus.Pending && this.status != TransactionStatus.Recalculated) {
       throw new StatusCannotBeChangedException()
     }
+    this.set('status', status);
     return this;
   }
   // #endregion

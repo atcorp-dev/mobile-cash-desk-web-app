@@ -3,7 +3,7 @@ import { UserRole, User } from './../user/user.model';
 import { ReqUser } from './../user/user.decorator';
 import { TransactionService } from './transaction.service';
 import { ApiUseTags, ApiBearerAuth, ApiImplicitQuery, ApiOperation } from '@nestjs/swagger';
-import { Controller, UseGuards, Get, Query, Req, Patch, Param, Post, Body, ForbiddenException, BadRequestException, Res, HttpStatus } from '@nestjs/common';
+import { Controller, UseGuards, Get, Query, Patch, Param, Post, Body, ForbiddenException, BadRequestException, Res, HttpStatus } from '@nestjs/common';
 import { AppAuthGuard } from '../auth/auth.guard';
 import { Observable } from 'rxjs';
 import { Transaction } from './transaction.model';
@@ -138,7 +138,14 @@ export class TransactionController {
     description: ``
   })
   notify(@Param('id') id: string, @Body() message: NotifyTransactionDto, @Res() res, @ReqUser() user: User) {
-    console.dir(message);
-    res.status(HttpStatus.OK).send(null);
+    return this.transactionService.notify(id, message, user)
+      .subscribe(
+        result => res.status(HttpStatus.OK).send(result),
+        err => {
+          console.dir(err);
+          console.error(err);
+          new BadRequestException(err.message);
+        }
+    );
   }
 }
