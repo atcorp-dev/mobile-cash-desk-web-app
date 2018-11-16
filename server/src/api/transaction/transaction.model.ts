@@ -104,6 +104,10 @@ export class Transaction extends BaseModel<Transaction> {
   // #endregion
 
   // #region Methods: Pubic
+  public markAsPending(user: User) {
+    this.modifiedById = user.id;
+    return this.setStatus(TransactionStatus.Pending);
+  }
   public markAsPayed(user: User): Transaction {
     this.modifiedById = user.id;
     return this.setStatus(TransactionStatus.Payed);
@@ -114,7 +118,7 @@ export class Transaction extends BaseModel<Transaction> {
     return this.setStatus(TransactionStatus.Rejected);
   }
 
-  public recalculate(itemList: Array<TransactionItem>) {
+  public recalculate(itemList: Array<TransactionItem>, user: User) {
     const newItems = [];
     itemList.map(dto => {
       const transactionItem = this.itemList.find(i => i.itemId == dto.itemId);
@@ -133,9 +137,9 @@ export class Transaction extends BaseModel<Transaction> {
 
   // #region Methods: Protected
   protected setStatus(status: TransactionStatus): Transaction {
-    if (this.status != TransactionStatus.Pending && this.status != TransactionStatus.Recalculated) {
+    /*if (this.status != TransactionStatus.Pending && this.status != TransactionStatus.Recalculated) {
       throw new StatusCannotBeChangedException()
-    }
+    }*/
     this.set('status', status);
     return this;
   }

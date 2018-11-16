@@ -63,6 +63,16 @@ export class TransactionService {
     ).pipe(
       switchMap(transaction => {
         if (transaction) {
+          const isChangedItems = transaction.itemList.some(item => {
+            const newItem = createTransactionDto.itemList.find(i => i.itemId == item.itemId);
+            if (!newItem) {
+              return true;
+            }
+            return newItem.price != item.price || newItem.qty != item.qty;
+          })
+          if (isChangedItems) {
+            transaction.markAsPending(user);
+          }
           Object.keys(values)
             .filter(key => ['id'].indexOf(key) === -1)
             .forEach(key => {
@@ -103,8 +113,7 @@ export class TransactionService {
     ).pipe(
       switchMap(transaction => {
         const itemList = message.itemList.map(i => <TransactionItem>i)
-        transaction.recalculate(itemList);
-        transaction.modifiedById = user.id;
+        transaction.recalculate(itemList, user);
         return transaction.save();
       }),
       switchMap(transaction => {
