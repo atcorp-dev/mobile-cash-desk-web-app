@@ -21,4 +21,7 @@ export class CreateTransactionDto {
 
   @ApiModelProperty()
   totalPrice: number;
+
+  @ApiModelProperty()
+  extras: any;
 }

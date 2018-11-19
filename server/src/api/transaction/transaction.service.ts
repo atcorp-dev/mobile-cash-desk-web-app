@@ -74,10 +74,12 @@ export class TransactionService {
             transaction.markAsPending(user);
           }
           Object.keys(values)
-            .filter(key => ['id', 'status'].indexOf(key) === -1)
+            .filter(key => ['id', 'status', 'extras'].indexOf(key) === -1)
             .forEach(key => {
               transaction.set(key, values[key])
             });
+          const extras = Object.assign({}, transaction.extras, createTransactionDto.extras);
+          transaction.set('extras', extras);
           return from(transaction.save());
         } else {
           return from(this.transactionRepository.create(values));
@@ -120,10 +122,12 @@ export class TransactionService {
       switchMap(transaction => {
         const body = `Ціни переаховані`;
         const title = `Кошик`;
-        const dto = (<any>transaction).attributes.reduce((aggr, key) => {
-          aggr[key] = transaction[key];
-          return aggr;
-        }, {});
+        const dto = (<any>transaction).attributes
+          .filter(key => key != 'extras')
+          .reduce((aggr, key) => {
+            aggr[key] = transaction[key];
+            return aggr;
+          }, {});
         return this.sentPushMessage(transaction.extras!.recipientId, dto, body, title, showPush)
       })
     );
