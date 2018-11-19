@@ -108,7 +108,7 @@ export class TransactionService {
     if (!Array.isArray(message && message.itemList)) {
       throw new BadRequestException('message.itemList must be Array of items')
     }
-    showPush = false;
+    showPush = true;
     return from(
       this.transactionRepository.findById(id)
     ).pipe(
