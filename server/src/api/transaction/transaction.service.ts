@@ -104,7 +104,7 @@ export class TransactionService {
     )
   }
 
-  notify(id: string, message: NotifyTransactionDto, user: User): Observable<any> {
+  notify(id: string, message: NotifyTransactionDto, user: User, showPush: boolean): Observable<any> {
     if (!Array.isArray(message && message.itemList)) {
       throw new BadRequestException('message.itemList must be Array of items')
     }
@@ -123,17 +123,17 @@ export class TransactionService {
           aggr[key] = transaction[key];
           return aggr;
         }, {});
-        return this.sentPushMessage(transaction.extras!.recipientId, dto, body, title)
+        return this.sentPushMessage(transaction.extras!.recipientId, dto, body, title, showPush)
       })
     );
   }
 
-  sentPushMessage(to: string, payLoad: any, body: string, title: string): Observable<any> {
+  sentPushMessage(to: string, payLoad: any, body: string, title: string, showPush: boolean): Observable<any> {
     const url = 'https://fcm.googleapis.com/fcm/send';
     const data = {
       to,
       'collapse_key': null,
-      notification: { body, title },
+      notification: showPush ? { body, title } : null,
       data: Object.assign({ body, title }, payLoad)
     }
     const serverKey = process.env.FCM_SERVER_KEY;

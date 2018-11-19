@@ -140,8 +140,9 @@ export class TransactionController {
     title: 'Notify',
     description: ``
   })
-  notify(@Param('id') id: string, @Body() message: NotifyTransactionDto, @Res() res, @ReqUser() user: User) {
-    return this.transactionService.notify(id, message, user)
+  @ApiImplicitQuery({ name: 'showPush', required: false, enum: ['Y'] })
+  notify(@Param('id') id: string, @Body() message: NotifyTransactionDto, @Res() res, @ReqUser() user: User, @Query('showPush') showPush) {
+    return this.transactionService.notify(id, message, user, showPush === 'Y')
       .subscribe(
         result => res.status(HttpStatus.OK).send(result),
         err => {
