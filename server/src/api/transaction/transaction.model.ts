@@ -1,6 +1,6 @@
 import { Company } from './../companies/company.model';
 import { User } from './../user/user.model';
-import { Table, Column, Sequelize, BelongsTo, ForeignKey, BeforeCreate, DefaultScope } from 'sequelize-typescript';
+import { Table, Column, Sequelize, BelongsTo, ForeignKey, BeforeCreate, DefaultScope, Scopes } from 'sequelize-typescript';
 import { BaseModel } from '../base/base.model';
 
 export enum PaymentType {
@@ -40,6 +40,11 @@ export class StatusCannotBeChangedException extends Error {
 
 @DefaultScope({
   attributes: ['id', 'companyId', 'dateTime', 'type', 'status', 'ownerId', 'itemList', 'totalPrice', 'cartId', 'orderNum'],
+})
+@Scopes({ 
+  full: {
+    attributes: ['id', 'companyId', 'dateTime', 'type', 'status', 'ownerId', 'itemList', 'totalPrice', 'cartId', 'orderNum', 'extras'],
+  }
 })
 @Table
 export class Transaction extends BaseModel<Transaction> {

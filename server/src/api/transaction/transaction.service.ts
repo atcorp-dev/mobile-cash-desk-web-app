@@ -90,7 +90,7 @@ export class TransactionService {
 
   markAsPayed(id: string, user: User): Observable<Transaction> {
     return from(
-      this.transactionRepository.findById(id)
+      this.transactionRepository.scope('full').findById(id)
     ).pipe(
       map(transaction => transaction.markAsPayed(user)),
       switchMap(transaction => transaction.save())
@@ -99,7 +99,7 @@ export class TransactionService {
 
   markAsRejected(id: string, user: User): Observable<Transaction> {
     return from(
-      this.transactionRepository.findById(id)
+      this.transactionRepository.scope('full').findById(id)
     ).pipe(
       map(transaction => transaction.markAsRejected(user)),
       switchMap(transaction => transaction.save())
@@ -112,7 +112,7 @@ export class TransactionService {
     }
     showPush = true;
     return from(
-      this.transactionRepository.findById(id)
+      this.transactionRepository.scope('full').findById(id)
     ).pipe(
       switchMap(transaction => {
         const itemList = message.itemList.map(i => <TransactionItem>i)
@@ -156,6 +156,9 @@ export class TransactionService {
           console.error(response);
           throw new BadRequestException(response.data);
         }
+      }, err => {
+        console.error(err);
+        throw new BadRequestException(err);
       })
     );
   }
