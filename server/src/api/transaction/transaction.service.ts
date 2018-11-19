@@ -108,6 +108,7 @@ export class TransactionService {
     if (!Array.isArray(message && message.itemList)) {
       throw new BadRequestException('message.itemList must be Array of items')
     }
+    showPush = false;
     return from(
       this.transactionRepository.findById(id)
     ).pipe(
@@ -117,8 +118,8 @@ export class TransactionService {
         return transaction.save();
       }),
       switchMap(transaction => {
-        const body = `Транзакція ${id} переахована`;
-        const title = `Транзакція переахована`;
+        const body = `Ціни переаховані`;
+        const title = `Кошик`;
         const dto = (<any>transaction).attributes.reduce((aggr, key) => {
           aggr[key] = transaction[key];
           return aggr;

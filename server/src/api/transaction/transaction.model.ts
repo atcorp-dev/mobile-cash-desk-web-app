@@ -120,6 +120,13 @@ export class Transaction extends BaseModel<Transaction> {
 
   public recalculate(itemList: Array<TransactionItem>, user: User) {
     const newItems = [];
+    if (!this.extras) {
+      this.extras = {};
+    }
+    if (!Array.isArray(this.extras.historyItemList)) {
+      this.extras.historyItemList = [];
+    }
+    this.extras.historyItemList.push(this.itemList);
     itemList.map(dto => {
       const transactionItem = this.itemList.find(
         i => (i.itemId == dto.itemId) || (i.barCode == dto.barCode) || (i.code == dto.code)

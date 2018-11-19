@@ -3,7 +3,7 @@ import { UserRole, User } from './../user/user.model';
 import { ReqUser } from './../user/user.decorator';
 import { TransactionService } from './transaction.service';
 import { ApiUseTags, ApiBearerAuth, ApiImplicitQuery, ApiOperation } from '@nestjs/swagger';
-import { Controller, UseGuards, Get, Query, Patch, Param, Post, Body, ForbiddenException, BadRequestException, Res, HttpStatus } from '@nestjs/common';
+import { Controller, UseGuards, Get, Query, Patch, Param, Post, Body, ForbiddenException, BadRequestException, Res, HttpStatus, Logger } from '@nestjs/common';
 import { AppAuthGuard } from '../auth/auth.guard';
 import { Observable } from 'rxjs';
 import { Transaction } from './transaction.model';
@@ -142,6 +142,7 @@ export class TransactionController {
   })
   @ApiImplicitQuery({ name: 'showPush', required: false, enum: ['Y'] })
   notify(@Param('id') id: string, @Body() message: NotifyTransactionDto, @Res() res, @ReqUser() user: User, @Query('showPush') showPush) {
+    Logger.log(JSON.stringify(message), `${res.req!.url}`, true);
     return this.transactionService.notify(id, message, user, showPush === 'Y')
       .subscribe(
         result => res.status(HttpStatus.OK).send(result),
