@@ -51,9 +51,17 @@ export class TransactionService {
 
   getById(id: string): Observable<Transaction> {
     return from (
-      this.transactionRepository.findById(id, { raw: true })
-    ).pipe(
-      map(transaction => Object.assign(transaction, { clientInfo: transaction.extras && transaction.extras.clientInfo }, { extras: undefined }))
+      this.transactionRepository.scope('full').findById(id, { raw: true })
+    )
+    .pipe(
+      map(transaction => {
+        const extras = {
+          clientInfo: transaction.extras && transaction.extras.clientInfo,
+          bonusesAvailable: transaction.extras && transaction.extras.bonusesAvailable
+        };
+        const res = Object.assign(transaction, { extras });
+        return res; 
+      })
     );
   }
 
@@ -124,7 +132,7 @@ export class TransactionService {
         const itemList = message.itemList.map(i => <TransactionItem>i)
         transaction.recalculate(itemList, user);
         if (message.bonusesAvailable) {
-          transaction.extras = Object.assign({}, { bonusesAvailable: message.bonusesAvailable });
+          transaction.extras = Object.assign({}, transaction.extras, { bonusesAvailable: message.bonusesAvailable });
         }
         return transaction.save();
       }),
@@ -136,7 +144,7 @@ export class TransactionService {
         if (recipientId) {
           return this.sentPushMessage(recipientId, dto, body, title, showPush)
         } else {
-          of('cannot notify recipient')
+          return of('cannot notify recipient')
         }
       })
     );
