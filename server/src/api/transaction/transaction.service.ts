@@ -52,6 +52,8 @@ export class TransactionService {
   getById(id: string): Observable<Transaction> {
     return from (
       this.transactionRepository.findById(id, { raw: true })
+    ).pipe(
+      map(transaction => Object.assign(transaction, { clientInfo: transaction.extras!.clientInfo }, { extras: undefined }))
     );
   }
 
