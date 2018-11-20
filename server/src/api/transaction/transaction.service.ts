@@ -78,7 +78,7 @@ export class TransactionService {
             .forEach(key => {
               transaction.set(key, values[key])
             });
-          const extras = Object.assign({}, transaction.extras, createTransactionDto.extras);
+          const extras = Object.assign({}, transaction.extras, createTransactionDto.extras, { isChangedItems });
           transaction.set('extras', extras);
           return from(transaction.save());
         } else {
