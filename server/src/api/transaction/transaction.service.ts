@@ -23,17 +23,20 @@ export class TransactionService {
   ) { }
 
   getAllPending(companyId: string): Observable<Array<Transaction>> {
-    const response = this.transactionRepository.findAll({ where: { companyId, status: TransactionStatus.Pending }});
-    return from(response);
+    const response = this.transactionRepository.scope('full').findAll({ where: { companyId, status: TransactionStatus.Pending }, raw: true});
+    return from(response).pipe(
+      map(transactions => transactions.map(
+        transaction => Object.assign(transaction, { clientInfo: transaction.extras!.clientInfo}, { extras: undefined })))
+    );
   }
 
   getAllPayed(companyId: string): Observable<Array<Transaction>> {
-    const response = this.transactionRepository.findAll({ where: { companyId, status: TransactionStatus.Payed }});
+    const response = this.transactionRepository.findAll({ where: { companyId, status: TransactionStatus.Payed }, raw: true});
     return from(response);
   }
 
   getAllRejected(companyId: string): Observable<Array<Transaction>> {
-    const response = this.transactionRepository.findAll({ where: { companyId, status: TransactionStatus.Rejected }});
+    const response = this.transactionRepository.findAll({ where: { companyId, status: TransactionStatus.Rejected }, raw: true});
     return from(response);
   }
 
@@ -42,13 +45,13 @@ export class TransactionService {
     page = +page || 0;
     const offset = limit ? (limit * (page > 0 ? page - 1 : 0)) : null;
     const ownerId = user && user.id;
-    const response = this.transactionRepository.findAll({ where: { ownerId }, limit, offset });
+    const response = this.transactionRepository.findAll({ where: { ownerId }, limit, offset, raw: true });
     return from(response);
   }
 
   getById(id: string): Observable<Transaction> {
     return from (
-      this.transactionRepository.findById(id)
+      this.transactionRepository.findById(id, { raw: true })
     );
   }
 
