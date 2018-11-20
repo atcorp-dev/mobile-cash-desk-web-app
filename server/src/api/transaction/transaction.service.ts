@@ -131,13 +131,13 @@ export class TransactionService {
       switchMap(transaction => {
         const body = `Ціни переаховані`;
         const title = `Кошик`;
-        const dto = (<any>transaction).attributes
-          .filter(key => key != 'extras')
-          .reduce((aggr, key) => {
-            aggr[key] = transaction[key];
-            return aggr;
-          }, {});
-        return this.sentPushMessage(transaction.extras && transaction.extras.recipientId, dto, body, title, showPush)
+        const dto = {transactionId: transaction.id, caertId: transaction.cartId };
+        const recipientId = transaction.extras && transaction.extras.recipientId;
+        if (recipientId) {
+          return this.sentPushMessage(recipientId, dto, body, title, showPush)
+        } else {
+          of('cannot notify recipient')
+        }
       })
     );
   }
