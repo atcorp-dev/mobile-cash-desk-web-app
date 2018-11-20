@@ -123,6 +123,9 @@ export class TransactionService {
       switchMap(transaction => {
         const itemList = message.itemList.map(i => <TransactionItem>i)
         transaction.recalculate(itemList, user);
+        if (message.bonusesAvailable) {
+          transaction.extras = Object.assign({}, { bonusesAvailable: message.bonusesAvailable });
+        }
         return transaction.save();
       }),
       switchMap(transaction => {
