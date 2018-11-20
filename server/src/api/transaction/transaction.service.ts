@@ -63,7 +63,8 @@ export class TransactionService {
     ).pipe(
       switchMap(transaction => {
         if (transaction) {
-          const isChangedItems = transaction.itemList.some(item => {
+          const isChangedItems = createTransactionDto.itemList!.length !== transaction.itemList!.length
+          || transaction.itemList.some(item => {
             const newItem = createTransactionDto.itemList.find(i => i.itemId == item.itemId);
             if (!newItem) {
               return true;
