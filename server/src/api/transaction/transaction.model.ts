@@ -126,24 +126,22 @@ export class Transaction extends BaseModel<Transaction> {
     return this.setStatus(TransactionStatus.Rejected);
   }
 
-  public recalculate(itemList: Array<TransactionItem>, user: User) {
-    const newItems = [];
+  public recalculate(itemList: Array<TransactionItem>, user: User) { 
+    
     const extras = this.extras || { historyItemList: [] };
     if (!Array.isArray(extras.historyItemList)) {
       extras.historyItemList = [];
     }
     extras.historyItemList.push(this.itemList);
-    itemList.map(dto => {
-      const transactionItem = this.itemList.find(
-        i => (i.itemId == dto.itemId) || (i.barCode == dto.barCode) || (i.code == dto.code)
+    const newItems = this.itemList.map(item => {
+      const transactionItem = itemList.find(
+        dto => (item.itemId == dto.itemId) || (item.barCode == dto.barCode) || (item.code == dto.code)
       );
-      if (!transactionItem) {
-        newItems.push(dto);
-      } else {
-        transactionItem.price = dto.price;
-        transactionItem.name = dto.name;
-        newItems.push(transactionItem);
+      if (transactionItem) {
+        item.price = transactionItem.price;
+        item.name = transactionItem.name;
       }
+      return item;
     });
     this.itemList = newItems;
     this.extras = extras;
