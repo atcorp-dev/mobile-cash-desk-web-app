@@ -26,7 +26,7 @@ export class TransactionService {
     const response = this.transactionRepository.scope('full').findAll({ where: { companyId, status: TransactionStatus.Pending }, raw: true});
     return from(response).pipe(
       map(transactions => transactions.map(
-        transaction => Object.assign(transaction, { clientInfo: transaction.extras!.clientInfo}, { extras: undefined })))
+        transaction => Object.assign(transaction, { clientInfo: transaction.extras && transaction.extras.clientInfo}, { extras: undefined })))
     );
   }
 
@@ -53,7 +53,7 @@ export class TransactionService {
     return from (
       this.transactionRepository.findById(id, { raw: true })
     ).pipe(
-      map(transaction => Object.assign(transaction, { clientInfo: transaction.extras!.clientInfo }, { extras: undefined }))
+      map(transaction => Object.assign(transaction, { clientInfo: transaction.extras && transaction.extras.clientInfo }, { extras: undefined }))
     );
   }
 
@@ -137,7 +137,7 @@ export class TransactionService {
             aggr[key] = transaction[key];
             return aggr;
           }, {});
-        return this.sentPushMessage(transaction.extras!.recipientId, dto, body, title, showPush)
+        return this.sentPushMessage(transaction.extras && transaction.extras.recipientId, dto, body, title, showPush)
       })
     );
   }
