@@ -1,3 +1,4 @@
+import { ParseDatePipe } from './../pipes/date.pipe';
 import { NotifyTransactionDto } from './notify-transaction.dto';
 import { UserRole, User } from './../user/user.model';
 import { ReqUser } from './../user/user.decorator';
@@ -43,8 +44,15 @@ export class TransactionController {
   @ApiOperation({
     title: 'Get all payed transactions'
   })
-  getAllPayed(@Param('companyId') companyId: string): Observable<Array<Transaction>> {
-    return this.transactionService.getAllPayed(companyId);
+
+  @ApiImplicitQuery({ name: 'dateFrom', required: false, type: 'string' })
+  @ApiImplicitQuery({ name: 'dateTo', required: false, type: 'string' })
+  getAllPayed(
+    @Param('companyId') companyId: string,
+    @Query('dateFrom', new ParseDatePipe(false)) dateFrom: Date,
+    @Query('dateTo', new ParseDatePipe(false)) dateTo: Date
+  ): Observable<Array<Transaction>> {
+    return this.transactionService.getAllPayed(companyId, dateFrom, dateTo);
   }
 
   @Get(':companyId/rejected')

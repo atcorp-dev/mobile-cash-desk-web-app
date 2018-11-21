@@ -30,8 +30,23 @@ export class TransactionService {
     );
   }
 
-  getAllPayed(companyId: string): Observable<Array<Transaction>> {
-    const response = this.transactionRepository.findAll({ where: { companyId, status: TransactionStatus.Payed }, raw: true});
+  getAllPayed(companyId: string, dateFrom: Date, dateTo: Date): Observable<Array<Transaction>> {
+    const opts = <any>{
+      where: {
+        companyId,
+        status: TransactionStatus.Payed,
+      },
+      raw: true
+    }
+    if (dateFrom) {
+      opts.where.dateTime = opts.where.dateTime || {};
+      Object.assign(opts.where.dateTime, { [Op.gte]: dateFrom })
+    }
+    if (dateTo) {
+      opts.where.dateTime = opts.where.dateTime || {};
+      Object.assign(opts.where.dateTime, { [Op.lte]: dateTo })
+    }
+    const response = this.transactionRepository.findAll(opts);
     return from(response);
   }
 
