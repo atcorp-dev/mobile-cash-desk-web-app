@@ -126,6 +126,10 @@ export class InventoryService {
       map(() => {
         return <ImportResult>{ rowsAffected: createItemsDto.length }
       }),
+      catchError(err => {
+        GateItem.destroy({ where: { key } })
+        throw err;
+      })
     );
   }
 
