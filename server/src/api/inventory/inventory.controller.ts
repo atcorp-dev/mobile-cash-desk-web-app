@@ -75,7 +75,7 @@ export class InventoryController {
     return this.inventoryService.makeImport(companyId, req.user)
       .pipe(
         catchError(err => {
-          console.dir(err);
+          //console.dir(err);
           console.error(err);
           throw new BadRequestException(err.message);
         })
@@ -94,7 +94,7 @@ export class InventoryController {
     return this.inventoryService.bulkCreateItems(createItemsDto, companyId, user)
     .pipe(
       catchError (err => {
-        console.dir(err);
+        //console.dir(err);
         console.error(err);
         throw new BadRequestException(err.message);
       })
@@ -107,11 +107,11 @@ export class InventoryController {
   bulkUpsertItems(
     @Res() res, @Body() createItemsDto: Array<CreateItemDto>, @Query('companyId') companyId: string, @ReqUser() user: User
   ) {
-    return this.inventoryService.bulkUpsertItems(createItemsDto, companyId, user)
+    this.inventoryService.bulkUpsertItems(createItemsDto, companyId, user)
     .subscribe(
       result => res.status(HttpStatus.OK).send(result),
       err => {
-        console.dir(err);
+        //console.dir(err);
         console.error(err);
         throw new BadRequestException(err.message);
       }
