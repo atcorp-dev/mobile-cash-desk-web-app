@@ -116,7 +116,7 @@ export class InventoryService {
       companyId: companyId || (user && user.companyId),
       extCode: dto.extCode || dto.code || dto.barCode
     }));
-    return from(this.gateItemRepository.bulkCreate(records, { individualHooks: true })).pipe(
+    return from(this.gateItemRepository.bulkCreate(records, { individualHooks: true, returning: false })).pipe(
       switchMap(() => {
         return GateItem.upsertItems(key)
       }),
