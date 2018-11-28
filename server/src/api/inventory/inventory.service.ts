@@ -108,15 +108,15 @@ export class InventoryService {
       throw new BadRequestException(`User->Company not specified`);
     }
     const key = Guid.create().toString();
-    const records = createItemsDto.map(dto => Object.assign({}, dto, {
-      id: Guid.create().toString(),
-      createdById: user && user.id,
-      modifiedById: user && user.id,
-      key,
-      companyId: companyId || (user && user.companyId),
-      extCode: dto.extCode || dto.code || dto.barCode
-    }));
-    return from(this.gateItemRepository.bulkCreate(records, { individualHooks: true, returning: false })).pipe(
+    createItemsDto.forEach((dto: any) => {
+      dto.id = Guid.create().toString();
+      dto.createdById = user && user.id;
+      dto.modifiedById = user && user.id;
+      dto.key = key;
+      dto.companyId = companyId || (user && user.companyId);
+      dto.extCode = dto.extCode || dto.code || dto.barCod;
+    });
+    return from(this.gateItemRepository.bulkCreate(createItemsDto, { individualHooks: true, returning: false })).pipe(
       switchMap(() => {
         return GateItem.upsertItems(key)
       }),
