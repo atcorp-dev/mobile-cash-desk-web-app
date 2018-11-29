@@ -23,7 +23,16 @@ export class TransactionService {
   ) { }
 
   getAllPending(companyId: string): Observable<Array<Transaction>> {
-    const response = this.transactionRepository.scope('full').findAll({ where: { companyId, status: TransactionStatus.Pending }, raw: true});
+    const response = this.transactionRepository.scope('full').findAll({
+      where: {
+        companyId,
+        status: TransactionStatus.Pending,
+        totalPrice: {
+          [Op.gt]: 0
+        }
+      }, 
+      raw: true
+    });
     return from(response).pipe(
       map(transactions => transactions.map(
         transaction => Object.assign(transaction, { clientInfo: transaction.extras && transaction.extras.clientInfo}, { extras: undefined })))
@@ -39,12 +48,12 @@ export class TransactionService {
       raw: true
     }
     if (dateFrom) {
-      opts.where.dateTime = opts.where.dateTime || {};
-      Object.assign(opts.where.dateTime, { [Op.gte]: dateFrom })
+      opts.where.modifiedOn = opts.where.modifiedOn || {};
+      Object.assign(opts.where.modifiedOn, { [Op.gte]: dateFrom })
     }
     if (dateTo) {
-      opts.where.dateTime = opts.where.dateTime || {};
-      Object.assign(opts.where.dateTime, { [Op.lte]: dateTo })
+      opts.where.modifiedOn = opts.where.modifiedOn || {};
+      Object.assign(opts.where.modifiedOn, { [Op.lte]: dateTo })
     }
     const response = this.transactionRepository.findAll(opts);
     return from(response);
