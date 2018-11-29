@@ -48,12 +48,12 @@ export class TransactionService {
       raw: true
     }
     if (dateFrom) {
-      opts.where.modifiedOn = opts.where.modifiedOn || {};
-      Object.assign(opts.where.modifiedOn, { [Op.gte]: dateFrom })
+      opts.where.dateTime = opts.where.dateTime || {};
+      Object.assign(opts.where.dateTime, { [Op.gte]: dateFrom })
     }
     if (dateTo) {
-      opts.where.modifiedOn = opts.where.modifiedOn || {};
-      Object.assign(opts.where.modifiedOn, { [Op.lte]: dateTo })
+      opts.where.dateTime = opts.where.dateTime || {};
+      Object.assign(opts.where.dateTime, { [Op.lte]: dateTo })
     }
     const response = this.transactionRepository.findAll(opts);
     return from(response);

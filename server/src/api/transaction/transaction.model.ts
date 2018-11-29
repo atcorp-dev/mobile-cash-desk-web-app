@@ -155,6 +155,7 @@ export class Transaction extends BaseModel<Transaction> {
       throw new StatusCannotBeChangedException()
     }*/
     this.set('status', status);
+    this.set('dateTime', new Date());
     return this;
   }
   // #endregion
