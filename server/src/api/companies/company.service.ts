@@ -38,6 +38,12 @@ export class CompanyService {
     return from(response$);
   }
 
+  getByCode(code: string, user: User): Observable<Company> {
+    const where = { code };
+    const response = this.companyRepository.findOne({ where, logging: true });
+    return from(response);
+  }
+
   getById(id: string): Observable<Company> {
     const response = this.companyRepository.findById<Company>(id);
     return from(response);

@@ -33,6 +33,12 @@ export class CompanyController {
     return this.companyService.getAll(page, req.user);
   }
 
+  @Get('byCode/:code')
+  @ApiOperation({ title: 'Get company by code' })
+  getByCode(@Param('code') code: string, @ReqUser() user: User): Observable<Company> {
+    return this.companyService.getByCode(code, user);
+  }
+
   @Get(':id')
   @ApiOperation({ title: 'Get company by Id'})
   getById(@Param('id') id: string): Observable<Company> {
