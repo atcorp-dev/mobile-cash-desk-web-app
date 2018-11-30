@@ -1,3 +1,4 @@
+import { AppService } from './../app.service';
 import { GateItem } from './../api/inventory/gate-item.model';
 import { Transaction } from './../api/transaction/transaction.model';
 import { Category } from './../api/categories/category.model';
@@ -24,6 +25,7 @@ export const databaseProviders = [
         GateItem
       ]);
       // await sequelize.sync({ force: false });
+      AppService.initCompanies();
       return sequelize;
     },
   },

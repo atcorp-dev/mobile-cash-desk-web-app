@@ -1,3 +1,4 @@
+import { CompanyIdPipe } from './../pipes/company-id.pipe';
 import { Company } from './../companies/company.model';
 import { catchError, switchMap } from 'rxjs/operators';
 import { 
@@ -71,7 +72,7 @@ export class InventoryController {
   }
 
   @Post('makeImport/:companyId')
-  makeImport(@Param('companyId') companyId: string, @Req() req, @Res() res) {
+  makeImport(@Param('companyId', new CompanyIdPipe()) companyId: string, @Req() req, @Res() res) {
     return this.inventoryService.makeImport(companyId, req.user)
       .pipe(
         catchError(err => {
@@ -89,7 +90,7 @@ export class InventoryController {
   // @ApiImplicitBody({ name: 'createItemsDto', required: true, isArray: true, type: 'array'})
   @ApiImplicitQuery({ name: 'companyId', required: true, type: 'string'})
   bulkCreateItems(
-    @Body() createItemsDto: Array<CreateItemDto>, @Query('companyId') companyId: string, @ReqUser() user: User
+    @Body() createItemsDto: Array<CreateItemDto>, @Query('companyId', new CompanyIdPipe()) companyId: string, @ReqUser() user: User
   ): Observable<any> {
     return this.inventoryService.bulkCreateItems(createItemsDto, companyId, user)
     .pipe(
@@ -105,7 +106,7 @@ export class InventoryController {
   // @ApiImplicitBody({ name: 'createItemsDto', required: true, isArray: true, type: 'array'})
   @ApiImplicitQuery({ name: 'companyId', required: true, type: 'string'})
   bulkUpsertItems(
-    @Res() res, @Body() createItemsDto: Array<CreateItemDto>, @Query('companyId') companyId: string, @ReqUser() user: User
+    @Res() res, @Body() createItemsDto: Array<CreateItemDto>, @Query('companyId', new CompanyIdPipe()) companyId: string, @ReqUser() user: User
   ) {
     this.inventoryService.bulkUpsertItems(createItemsDto, companyId, user)
     .subscribe(

@@ -40,7 +40,7 @@ export class CompanyService {
 
   getByCode(code: string, user: User): Observable<Company> {
     const where = { code };
-    const response = this.companyRepository.findOne({ where, logging: true });
+    const response = this.companyRepository.findOne({ where });
     return from(response);
   }
 

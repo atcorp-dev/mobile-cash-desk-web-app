@@ -1,3 +1,4 @@
+import { CompanyIdPipe } from './../pipes/company-id.pipe';
 import { CreateItemDto } from './create-item.dto';
 import { AppAuthGuard } from './../auth/auth.guard';
 import { Item } from './item.model';
@@ -24,13 +25,13 @@ export class ItemController {
   })
   @ApiImplicitQuery({ name: 'page', required: false, type: 'Number', description: 'uses for pagination' })
   @ApiImplicitQuery({ name: 'companyId', required: true, type: 'string', description: 'id of company' })
-  getAll(@Query('companyId') companyId: string, @Query('page') page?: number): Observable<Item[]> {
+  getAll(@Query('companyId', new CompanyIdPipe()) companyId: string, @Query('page') page?: number): Observable<Item[]> {
     const where = companyId ? { companyId } : null;
     return this.itemService.getAll(where, page);
   }
 
   @Get('count')
-  getCount(@Query('companyId') companyId: string): Observable<number> {
+  getCount(@Query('companyId', new CompanyIdPipe()) companyId: string): Observable<number> {
     const where = companyId ? { companyId } : null;
     return this.itemService.getCount(where);
   }
@@ -42,7 +43,7 @@ export class ItemController {
   })
   @ApiImplicitParam({ name: 'companyId', required: true, type: 'string', description: 'id of company' })
   @ApiImplicitParam({ name: 'code', required: true, type: 'String', description: 'Item code' })
-  getAvailableByCode(@Param('companyId') companyId: string, @Param('code') code: string): Observable<Item[]> {
+  getAvailableByCode(@Param('companyId', new CompanyIdPipe()) companyId: string, @Param('code') code: string): Observable<Item[]> {
     return this.itemService.getAvailableByCode(companyId, code);
   }
 
@@ -74,7 +75,7 @@ export class ItemController {
   })
   @ApiImplicitQuery({ name: 'companyId', required: true, type: 'string', description: 'id of company' })
   @ApiImplicitQuery({ name: 'code', required: true, type: 'String', description: 'code of item' })
-  getByCode(@Param('companyId') companyId: string, @Param('code') code: string): Observable<Item> {
+  getByCode(@Param('companyId', new CompanyIdPipe()) companyId: string, @Param('code') code: string): Observable<Item> {
     return this.itemService.getItemByCode(companyId, code);
   }
 
@@ -85,7 +86,7 @@ export class ItemController {
   })
   @ApiImplicitQuery({ name: 'companyId', required: true, type: 'string', description: 'id of company' })
   @ApiImplicitQuery({ name: 'barCode', required: true, type: 'String', description: 'barCode of item' })
-  getByBarCode(@Param('companyId') companyId: string, @Param('barCode') barCode: string): Observable<Item> {
+  getByBarCode(@Param('companyId', new CompanyIdPipe()) companyId: string, @Param('barCode') barCode: string): Observable<Item> {
     return this.itemService.getItemByBarCode(companyId, barCode);
   }
 
@@ -96,7 +97,7 @@ export class ItemController {
   })
   @ApiImplicitQuery({ name: 'companyId', required: true, type: 'string', description: 'id of company' })
   @ApiImplicitQuery({ name: 'name', required: true, type: 'String', description: 'name of item' })
-  getByName(@Param('companyId') companyId: string, @Param('name') name: string): Observable<Item[]> {
+  getByName(@Param('companyId', new CompanyIdPipe()) companyId: string, @Param('name') name: string): Observable<Item[]> {
     return this.itemService.getItemsByName(companyId, name);
   }
 

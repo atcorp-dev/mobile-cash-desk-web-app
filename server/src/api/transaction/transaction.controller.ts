@@ -1,3 +1,4 @@
+import { CompanyIdPipe } from './../pipes/company-id.pipe';
 import { ParseDatePipe } from './../pipes/date.pipe';
 import { NotifyTransactionDto } from './notify-transaction.dto';
 import { UserRole, User } from './../user/user.model';
@@ -36,7 +37,7 @@ export class TransactionController {
   @ApiOperation({
     title: 'Get all pending transactions'
   })
-  getAllPending(@Param('companyId') companyId: string): Observable<Array<Transaction>> {
+  getAllPending(@Param('companyId', new CompanyIdPipe()) companyId: string): Observable<Array<Transaction>> {
     return this.transactionService.getAllPending(companyId);
   }
 
@@ -44,11 +45,10 @@ export class TransactionController {
   @ApiOperation({
     title: 'Get all payed transactions'
   })
-
   @ApiImplicitQuery({ name: 'dateFrom', required: false, type: 'string' })
   @ApiImplicitQuery({ name: 'dateTo', required: false, type: 'string' })
   getAllPayed(
-    @Param('companyId') companyId: string,
+    @Param('companyId', new CompanyIdPipe()) companyId: string,
     @Query('dateFrom', new ParseDatePipe(false)) dateFrom: Date,
     @Query('dateTo', new ParseDatePipe(false)) dateTo: Date
   ): Observable<Array<Transaction>> {
@@ -59,7 +59,7 @@ export class TransactionController {
   @ApiOperation({
     title: 'Get all rejected transactions'
   })
-  getAllRejected(@Param('companyId') companyId: string): Observable<Array<Transaction>> {
+  getAllRejected(@Param('companyId', new CompanyIdPipe()) companyId: string): Observable<Array<Transaction>> {
     return this.transactionService.getAllRejected(companyId);
   }
 
@@ -85,7 +85,7 @@ export class TransactionController {
     This id or token will be printed out for customer
     `
   })
-  create(@Param('companyId') companyId: string, @Body() createTransactionDto: CreateTransactionDto, @Res() res, @ReqUser() user: User) {
+  create(@Param('companyId', new CompanyIdPipe()) companyId: string, @Body() createTransactionDto: CreateTransactionDto, @Res() res, @ReqUser() user: User) {
     return this.transactionService.create(companyId, createTransactionDto, user)
       /*.pipe(
         catchError(err => {

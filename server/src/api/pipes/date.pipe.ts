@@ -1,5 +1,5 @@
 
-import { PipeTransform, Injectable, ArgumentMetadata, HttpStatus, BadRequestException } from '@nestjs/common';
+import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class ParseDatePipe implements PipeTransform<string, Date> {
