@@ -5,5 +5,6 @@ export class NotifyTransactionDto {
   @ApiModelProperty({ required: true, type: TransactionItemDto, isArray: true })
   itemList: Array<TransactionItemDto>;
   @ApiModelProperty({ required: false })
-  bonusesAvailable: number
+  bonusesAvailable: number;
+  [key: string]: any;
 }

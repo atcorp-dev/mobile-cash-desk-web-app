@@ -2,6 +2,7 @@ import { Company } from './../companies/company.model';
 import { User } from './../user/user.model';
 import { Table, Column, Sequelize, BelongsTo, ForeignKey, BeforeCreate, DefaultScope, Scopes } from 'sequelize-typescript';
 import { BaseModel } from '../base/base.model';
+import { Item } from '../inventory/item.model';
 
 export enum PaymentType {
   Card = 0,
@@ -44,6 +45,7 @@ export class StatusCannotBeChangedException extends Error {
 @Scopes({ 
   full: {
     attributes: ['id', 'companyId', 'dateTime', 'type', 'status', 'ownerId', 'itemList', 'totalPrice', 'cartId', 'orderNum', 'extras'],
+    include: [{ model: () => User, as: 'owner' }]
   }
 })
 @Table
@@ -140,12 +142,36 @@ export class Transaction extends BaseModel<Transaction> {
       if (transactionItem) {
         item.price = transactionItem.price;
         item.name = transactionItem.name;
+        const keys = Object.keys(transactionItem);
+        const extraData = {};
+        const itemAttributes = Object.keys(Item.attributes);
+        keys
+          .filter(attribute => itemAttributes.indexOf(attribute) === -1
+            && attribute != 'itemId'
+            && attribute != 'qty')
+          .forEach(key => extraData[key] = transactionItem[key]);
+        const itemExtras = item.extras || {};
+        item.extras = Object.assign({}, itemExtras, extraData);
       }
       return item;
     });
     this.itemList = newItems;
     this.extras = extras;
     this.setStatus(TransactionStatus.Recalculated);
+  }
+
+  public setExtraData(data) {
+    if (!data) {
+      return;
+    }
+    const attributes = (<any>this).attributes;
+    const keys = Object.keys(data);
+    const extraData = {};
+    keys
+      .filter(attribute => attributes.indexOf(attribute) === -1)
+      .forEach(key => extraData[key] = data[key]);
+    const extras = this.extras || {};
+    this.extras = Object.assign({}, extras, { extraData });
   }
   // #endregion
 

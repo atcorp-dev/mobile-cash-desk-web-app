@@ -1,5 +1,5 @@
 import { Guid } from 'guid-typescript';
-import { Table, Column, Model, PrimaryKey, Sequelize, BelongsTo, ForeignKey, IsUUID, BeforeCreate } from 'sequelize-typescript';
+import { Table, Column, Model, PrimaryKey, Sequelize, BelongsTo, ForeignKey, IsUUID, BeforeCreate, DefaultScope } from 'sequelize-typescript';
 import { Company } from '../companies/company.model';
 
 export enum UserRole {
@@ -9,6 +9,9 @@ export enum UserRole {
   Operator = 8
 }
 
+@DefaultScope({
+  attributes: ['id', 'login', 'email'],
+})
 @Table
 export class User extends Model<User> {
   

@@ -9,6 +9,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { Observable, from, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
 import { AxiosRequestConfig } from 'axios';
+import _ = require('lodash');
 
 const Op = Sequelize.Op
 
@@ -30,12 +31,22 @@ export class TransactionService {
         totalPrice: {
           [Op.gt]: 0
         }
-      }, 
-      raw: true
+      }
     });
     return from(response).pipe(
       map(transactions => transactions.map(
-        transaction => Object.assign(transaction, { clientInfo: transaction.extras && transaction.extras.clientInfo}, { extras: undefined })))
+          transaction => {
+            const extraData = transaction.extras && transaction.extras.extraData || {};
+            extraData.clientInfo = transaction.extras && transaction.extras.clientInfo
+            const res = Object.assign(
+              transaction,
+              { clientInfo: transaction.extras && transaction.extras.clientInfo },
+              { extras: extraData }
+            );
+            return res;
+          }
+        )
+      )
     );
   }
 
@@ -44,8 +55,7 @@ export class TransactionService {
       where: {
         companyId,
         status: TransactionStatus.Payed,
-      },
-      raw: true
+      }
     }
     if (dateFrom) {
       opts.where.dateTime = opts.where.dateTime || {};
@@ -55,12 +65,27 @@ export class TransactionService {
       opts.where.dateTime = opts.where.dateTime || {};
       Object.assign(opts.where.dateTime, { [Op.lte]: dateTo })
     }
-    const response = this.transactionRepository.findAll(opts);
-    return from(response);
+    const response = this.transactionRepository.scope('full').findAll(opts);
+    return from(response).pipe(
+      map(transactions => transactions
+        .map(
+          transaction => {
+            const extraData = transaction.extras && transaction.extras.extraData || {};
+            extraData.clientInfo = transaction.extras && transaction.extras.clientInfo
+            const res = Object.assign(
+              transaction,
+              { clientInfo: transaction.extras && transaction.extras.clientInfo},
+              { extras: extraData }
+            );
+            return res;
+          }
+        )
+      )
+    );
   }
 
   getAllRejected(companyId: string): Observable<Array<Transaction>> {
-    const response = this.transactionRepository.findAll({ where: { companyId, status: TransactionStatus.Rejected }, raw: true});
+    const response = this.transactionRepository.findAll({ where: { companyId, status: TransactionStatus.Rejected }});
     return from(response);
   }
 
@@ -69,13 +94,13 @@ export class TransactionService {
     page = +page || 0;
     const offset = limit ? (limit * (page > 0 ? page - 1 : 0)) : null;
     const ownerId = user && user.id;
-    const response = this.transactionRepository.findAll({ where: { ownerId }, limit, offset, raw: true });
+    const response = this.transactionRepository.findAll({ where: { ownerId }, limit, offset });
     return from(response);
   }
 
   getById(id: string): Observable<Transaction> {
     return from (
-      this.transactionRepository.scope('full').findById(id, { raw: true })
+      this.transactionRepository.scope('full').findById(id)
     )
     .pipe(
       map(transaction => {
@@ -155,6 +180,7 @@ export class TransactionService {
       switchMap(transaction => {
         const itemList = message.itemList.map(i => <TransactionItem>i)
         transaction.recalculate(itemList, user);
+        transaction.setExtraData(message);
         if (message.bonusesAvailable) {
           transaction.extras = Object.assign({}, transaction.extras, { bonusesAvailable: message.bonusesAvailable });
         }

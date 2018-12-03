@@ -7,11 +7,11 @@ import { PipeTransform, Injectable, ArgumentMetadata, BadRequestException } from
 export class CompanyIdPipe implements PipeTransform<string, string> {
 
   transform(value: string, metadata: ArgumentMetadata): string {
-    if (Guid.isGuid(value)) {
+    if (value && Guid.isGuid(value)) {
       return value as string;
     }
     const companyId = AppService.getCompanyId(value);
-    if (Guid.isGuid(companyId)) {
+    if (companyId && Guid.isGuid(companyId)) {
       return companyId;
     }
     throw new BadRequestException(
