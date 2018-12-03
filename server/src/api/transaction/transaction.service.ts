@@ -37,10 +37,11 @@ export class TransactionService {
       map(transactions => transactions.map(
           transaction => {
             const extraData = transaction.extras && transaction.extras.extraData || {};
-            extraData.clientInfo = transaction.extras && transaction.extras.clientInfo
-            const res = Object.assign(
-              transaction,
-              { clientInfo: transaction.extras && transaction.extras.clientInfo },
+            const clientInfo = transaction.extras && transaction.extras.clientInfo;
+            const transactionDto = transaction.get({ plain: true });
+            let res = Object.assign(
+              transactionDto,
+              { clientInfo },
               { extras: extraData }
             );
             return res;
@@ -71,13 +72,15 @@ export class TransactionService {
         .map(
           transaction => {
             const extraData = transaction.extras && transaction.extras.extraData || {};
-            extraData.clientInfo = transaction.extras && transaction.extras.clientInfo
+            extraData.clientInfo = transaction.extras && transaction.extras.clientInfo;
+            const clientInfo = transaction.extras && transaction.extras.clientInfo;
+            const transactionDto = transaction.get({ plain: true });
             const res = Object.assign(
-              transaction,
-              { clientInfo: transaction.extras && transaction.extras.clientInfo},
+              transactionDto,
+              { clientInfo },
               { extras: extraData }
             );
-            return res;
+            return res.get({ plain: true });
           }
         )
       )
