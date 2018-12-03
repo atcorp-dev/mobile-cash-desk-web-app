@@ -1,9 +1,9 @@
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
 import { map, switchMap } from 'rxjs/operators';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Observable, from, combineLatest, of } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { User } from './user.model';
-import { Injectable, Inject, NotImplementedException } from '@nestjs/common';
+import { Injectable, Inject, BadRequestException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { UserDto } from './dto/user-dto';
 
@@ -83,8 +83,27 @@ export class UserService {
   }
 
   public changePassword(userId: string, changeUserPasswordDto: ChangeUserPasswordDto): Observable<UserDto> {
-    //TODO: Implement
-    throw new NotImplementedException('Not implemented');
+    const { password, newPassword } = changeUserPasswordDto;
+    const userQuery = this.userRepository.scope('full').findById(userId);
+    let currentUser: User = null;
+    return from(userQuery)
+    .pipe(
+      switchMap(user => {
+        currentUser = user;
+        return this.checkPassword(password, user);
+      }),
+      switchMap(res => {
+        if (!res) {
+          throw new BadRequestException("Password is invalid");
+        }
+        return this.getEncryptedPassword(newPassword);
+      }),
+      switchMap(encryptedPassword => {
+        currentUser.password = encryptedPassword;
+        return currentUser.save();
+      }),
+      map(res => this.getUserDto(res))
+    );
   }
 
   public authenticateUser(user: { username: string, password: string }): Observable<UserDto | null> {
