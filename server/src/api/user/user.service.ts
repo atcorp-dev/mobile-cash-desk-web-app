@@ -89,7 +89,7 @@ export class UserService {
 
   public authenticateUser(user: { username: string, password: string }): Observable<UserDto | null> {
     const { username, password } = user;
-    const userQuery = this.userRepository.findOne({ where: { login: username, active: true } });
+    const userQuery = this.userRepository.scope('full').findOne({ where: { login: username, active: true } });
     return from(
       userQuery
     ).pipe(

@@ -1,5 +1,5 @@
 import { Guid } from 'guid-typescript';
-import { Table, Column, Model, PrimaryKey, Sequelize, BelongsTo, ForeignKey, IsUUID, BeforeCreate, DefaultScope } from 'sequelize-typescript';
+import { Table, Column, Model, PrimaryKey, Sequelize, BelongsTo, ForeignKey, IsUUID, BeforeCreate, DefaultScope, Scopes } from 'sequelize-typescript';
 import { Company } from '../companies/company.model';
 
 export enum UserRole {
@@ -11,6 +11,11 @@ export enum UserRole {
 
 @DefaultScope({
   attributes: ['id', 'login', 'email'],
+})
+@Scopes({
+  full: {
+    attributes: ['id', 'login', 'password', 'email', 'active', 'role', 'companyId']
+  }
 })
 @Table
 export class User extends Model<User> {
