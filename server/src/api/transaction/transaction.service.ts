@@ -41,8 +41,9 @@ export class TransactionService {
             const transactionDto = transaction.get({ plain: true });
             let res = Object.assign(
               transactionDto,
+              extraData,
               { clientInfo },
-              { extras: extraData }
+              { userLogin: transaction.owner && transaction.owner.login }
             );
             return res;
           }
@@ -77,8 +78,9 @@ export class TransactionService {
             const transactionDto = transaction.get({ plain: true });
             const res = Object.assign(
               transactionDto,
+              extraData,
               { clientInfo },
-              { extras: extraData }
+              { userLogin: transaction.owner && transaction.owner.login }
             );
             return res;
           }
