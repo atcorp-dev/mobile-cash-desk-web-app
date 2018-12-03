@@ -80,7 +80,7 @@ export class TransactionService {
               { clientInfo },
               { extras: extraData }
             );
-            return res.get({ plain: true });
+            return res;
           }
         )
       )
