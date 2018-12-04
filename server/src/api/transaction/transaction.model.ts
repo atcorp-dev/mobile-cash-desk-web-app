@@ -40,11 +40,11 @@ export class StatusCannotBeChangedException extends Error {
 }
 
 @DefaultScope({
-  attributes: ['id', 'companyId', 'dateTime', 'type', 'status', 'ownerId', 'itemList', 'totalPrice', 'cartId', 'orderNum'],
+  attributes: ['id', 'documentNumber', 'companyId', 'dateTime', 'type', 'status', 'ownerId', 'itemList', 'totalPrice', 'cartId', 'orderNum'],
 })
 @Scopes({ 
   full: {
-    attributes: ['id', 'companyId', 'dateTime', 'type', 'status', 'ownerId', 'itemList', 'totalPrice', 'cartId', 'orderNum', 'extras'],
+    attributes: ['id', 'documentNumber', 'companyId', 'dateTime', 'type', 'status', 'ownerId', 'itemList', 'totalPrice', 'cartId', 'orderNum', 'extras'],
     include: [{ model: () => User, as: 'owner' }]
   }
 })
