@@ -14,7 +14,17 @@ export const databaseProviders = [
   {
     provide: 'SequelizeToken',
     useFactory: async () => {
-      const sequelize = new Sequelize(connectionConfig);
+      const sequelize = new Sequelize({
+        host: 'ec2-54-83-27-162.compute-1.amazonaws.com',
+        database: 'd9i4hf6uh9rlri',
+        username: 'anyrhrldemwpeu',
+        port: 5432,
+        password: 'cab7997b3110fa5ce3593caa78153a337d983368077efaae560a593d123ab74b',
+        dialect: 'postgres',
+        dialectOptions: {
+          ssl: true
+        }
+      });
       sequelize.options.logging = false;
       sequelize.addModels([
         User,
