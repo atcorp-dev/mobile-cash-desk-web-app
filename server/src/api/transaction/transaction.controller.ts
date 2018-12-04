@@ -1,6 +1,6 @@
+import { OutputTransactionDto } from './dto/output-transaction.dto';
 import { CompanyIdPipe } from './../pipes/company-id.pipe';
 import { ParseDatePipe } from './../pipes/date.pipe';
-import { NotifyTransactionDto } from './notify-transaction.dto';
 import { UserRole, User } from './../user/user.model';
 import { ReqUser } from './../user/user.decorator';
 import { TransactionService } from './transaction.service';
@@ -9,8 +9,8 @@ import { Controller, UseGuards, Get, Query, Patch, Param, Post, Body, ForbiddenE
 import { AppAuthGuard } from '../auth/auth.guard';
 import { Observable } from 'rxjs';
 import { Transaction } from './transaction.model';
-import { CreateTransactionDto } from './create-transaction.dto';
-import { catchError, map } from 'rxjs/operators';
+import { NotifyTransactionDto } from './dto/notify-transaction.dto';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
 
 @ApiUseTags('Transactions')
 @ApiBearerAuth()
@@ -37,7 +37,7 @@ export class TransactionController {
   @ApiOperation({
     title: 'Get all pending transactions'
   })
-  getAllPending(@Param('companyId', new CompanyIdPipe()) companyId: string): Observable<Array<Transaction>> {
+  getAllPending(@Param('companyId', new CompanyIdPipe()) companyId: string): Observable<Array<OutputTransactionDto>> {
     return this.transactionService.getAllPending(companyId);
   }
 
@@ -51,7 +51,7 @@ export class TransactionController {
     @Param('companyId', new CompanyIdPipe()) companyId: string,
     @Query('dateFrom', new ParseDatePipe(false)) dateFrom: Date,
     @Query('dateTo', new ParseDatePipe(false)) dateTo: Date
-  ): Observable<Array<Transaction>> {
+  ): Observable<Array<OutputTransactionDto>> {
     return this.transactionService.getAllPayed(companyId, dateFrom, dateTo);
   }
 
@@ -59,7 +59,7 @@ export class TransactionController {
   @ApiOperation({
     title: 'Get all rejected transactions'
   })
-  getAllRejected(@Param('companyId', new CompanyIdPipe()) companyId: string): Observable<Array<Transaction>> {
+  getAllRejected(@Param('companyId', new CompanyIdPipe()) companyId: string): Observable<Array<OutputTransactionDto>> {
     return this.transactionService.getAllRejected(companyId);
   }
 

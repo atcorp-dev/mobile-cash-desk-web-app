@@ -1,7 +1,8 @@
+import { OutputTransactionDto } from './dto/output-transaction.dto';
 import { HttpService } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
-import { NotifyTransactionDto } from './notify-transaction.dto';
-import { CreateTransactionDto } from './create-transaction.dto';
+import { NotifyTransactionDto } from './dto/notify-transaction.dto';
+import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { User } from './../user/user.model';
 import { Transaction, TransactionStatus, TransactionItem } from './transaction.model';
 import { Sequelize } from 'sequelize-typescript';
@@ -23,7 +24,7 @@ export class TransactionService {
     private readonly httpService: HttpService
   ) { }
 
-  getAllPending(companyId: string): Observable<Array<Transaction>> {
+  getAllPending(companyId: string): Observable<Array<OutputTransactionDto>> {
     const response = this.transactionRepository.scope('full').findAll({
       where: {
         companyId,
@@ -33,26 +34,17 @@ export class TransactionService {
         }
       }
     });
-    return from(response).pipe(
-      map(transactions => transactions.map(
-          transaction => {
-            const extraData = transaction.extras && transaction.extras.extraData || {};
-            const clientInfo = transaction.extras && transaction.extras.clientInfo;
-            const transactionDto = transaction.get({ plain: true });
-            let res = Object.assign(
-              transactionDto,
-              extraData,
-              { clientInfo },
-              { userLogin: transaction.owner && transaction.owner.login }
-            );
-            return res;
-          }
+    return from(response)
+      .pipe(
+        map(transactions => transactions
+          .map(
+            transaction => this.getOutputTransaction(transaction)
+          )
         )
-      )
-    );
+      );
   }
 
-  getAllPayed(companyId: string, dateFrom: Date, dateTo: Date): Observable<Array<Transaction>> {
+  getAllPayed(companyId: string, dateFrom: Date, dateTo: Date): Observable<Array<OutputTransactionDto>> {
     const opts = <any>{
       where: {
         companyId,
@@ -68,30 +60,26 @@ export class TransactionService {
       Object.assign(opts.where.dateTime, { [Op.lte]: dateTo })
     }
     const response = this.transactionRepository.scope('full').findAll(opts);
-    return from(response).pipe(
-      map(transactions => transactions
-        .map(
-          transaction => {
-            const extraData = transaction.extras && transaction.extras.extraData || {};
-            extraData.clientInfo = transaction.extras && transaction.extras.clientInfo;
-            const clientInfo = transaction.extras && transaction.extras.clientInfo;
-            const transactionDto = transaction.get({ plain: true });
-            const res = Object.assign(
-              transactionDto,
-              extraData,
-              { clientInfo },
-              { userLogin: transaction.owner && transaction.owner.login }
-            );
-            return res;
-          }
+    return from(response)
+      .pipe(
+        map(transactions => transactions
+          .map(
+            transaction => this.getOutputTransaction(transaction)
+          )
         )
-      )
-    );
+      );
   }
 
-  getAllRejected(companyId: string): Observable<Array<Transaction>> {
+  getAllRejected(companyId: string): Observable<Array<OutputTransactionDto>> {
     const response = this.transactionRepository.findAll({ where: { companyId, status: TransactionStatus.Rejected }});
-    return from(response);
+    return from(response)
+      .pipe(
+        map(transactions => transactions
+          .map(
+            transaction => this.getOutputTransaction(transaction)
+          )
+        )
+      );
   }
 
   getAll(page?: number, user?: User): Observable<Array<Transaction>> {
@@ -233,5 +221,28 @@ export class TransactionService {
         throw new BadRequestException(err);
       })
     );
+  }
+
+  private getOutputTransaction(transaction: Transaction): OutputTransactionDto {
+    const clientInfo = transaction.extras && transaction.extras.clientInfo;
+    const transactionDto = transaction.get({ plain: true });
+    const itemList = transactionDto.itemList.map(item => {
+      return {
+        itemId: item.itemId,
+        barCode: item.barCode,
+        price: item.price,
+        qty: item.qty,
+        DokumentAkciya: item.extras && item.extras.DokumentAkciya,
+        NovayaCenaPostavshika: item.extras && item.extras.NovayaCenaPostavshika,
+      }
+    });
+    const res = <OutputTransactionDto>{
+      id: transactionDto.id,
+      dateTime: transactionDto.dateTime,
+      userLogin: transactionDto.owner && transactionDto.owner.login,
+      clientInfo,
+      itemList,
+    };
+    return res;
   }
 }
