@@ -43,7 +43,6 @@ export class InventoryService {
     const arr: Array<string[]> = CSV.parse(csv);
     const headers = arr.shift();
     const key = Guid.create().toString();
-   // this.validateHeaders(headers);
     const items = arr.map(row => {
       const [name, extCode, code, barCode, price, available, description, ...features] = row;
       return { 
@@ -70,7 +69,7 @@ export class InventoryService {
     ).pipe(
       switchMap(() => GateItem.upsertItems(key)),
       switchMap(() => GateItem.destroy({ where: { key } })),
-      map(() => <ImportResult>{ rowsAffected: items.length }),
+      map(() => <ImportResult>{ rowsAffected: items.length })
     );
   }
 

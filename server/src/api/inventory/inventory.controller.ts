@@ -1,6 +1,6 @@
 import { CompanyIdPipe } from './../pipes/company-id.pipe';
 import { Company } from './../companies/company.model';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, switchMap, map, merge, mergeMap } from 'rxjs/operators';
 import { 
   Controller,
   Post,
@@ -39,30 +39,33 @@ export class InventoryController {
 
   @Post(':companyCode/importFromCsv')
   @UseInterceptors(FileInterceptor('file'))
-  importFromCsvByCompanyCode(@Res() res, @Param('companyCode') code: string, @UploadedFile() file, @SessionUser() user: User): any | Observable<any[]> {
+  importFromCsvByCompanyCode(@Res() res, @Param('companyCode') code: string, @UploadedFile() file, @SessionUser() user: User): any | Observable<any> {
     return from(
       this.companyRepository.findOne({ where: { code }})
     ).pipe(
-      switchMap(company => this.inventoryService.importFromCsv(company, file, user)),
+      switchMap(
+        company => this.inventoryService.importFromCsv(company, file, user)
+      ),
       catchError(err => {
-        console.log(err);
         throw new BadRequestException(err.message);
       })
-    ).subscribe(result => res.send(result));
+    )
+    .subscribe(
+      result => res.status(HttpStatus.OK).send(result)
+    );
   }
 
   @Post('importFromCsv/:companyId')
   @UseInterceptors(FileInterceptor('file'))
-  importFromCsv(@Res() res, @Param('companyId') companyId: string, @UploadedFile() file, @SessionUser() user: User): any | Observable<any[]> {
+  importFromCsv(@Param('companyId') companyId: string, @UploadedFile() file, @SessionUser() user: User): Observable<any[]> {
     return from(
       this.companyRepository.findById(companyId)
     ).pipe(
       switchMap(company => this.inventoryService.importFromCsv(company, file, user)),
       catchError(err => {
-        console.log(err);
         throw new BadRequestException(err.message);
       })
-    ).subscribe(result => res.send(result));
+    );
   }
 
   @Get('template')

@@ -52,6 +52,10 @@ export class StatusCannotBeChangedException extends Error {
 export class Transaction extends BaseModel<Transaction> {
 
   // #region Columns
+
+  @Column
+  number: number;
+
   @BelongsTo(() => Company)
   company: Company;
 
