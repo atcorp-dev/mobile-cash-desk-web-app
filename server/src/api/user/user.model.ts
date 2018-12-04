@@ -46,6 +46,9 @@ export class User extends Model<User> {
   @Column(Sequelize.SMALLINT)
   role: number;
 
+  @Column
+  extras: any
+
   // @ForeignKey(() => Company)
   @Column(Sequelize.UUID)
   companyId: string;
