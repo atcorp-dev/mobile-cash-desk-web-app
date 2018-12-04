@@ -5,6 +5,12 @@ export class CreateUserDto {
   login: string;
 
   @ApiModelProperty()
+  name: string;
+
+  @ApiModelProperty()
+  code: string;
+
+  @ApiModelProperty()
   password: string;
 
   @ApiModelProperty()
@@ -15,5 +21,8 @@ export class CreateUserDto {
 
   @ApiModelProperty({ required: false })
   companyId?: string;
+
+  @ApiModelProperty({ required: false })
+  extras?: any;
 
 }
