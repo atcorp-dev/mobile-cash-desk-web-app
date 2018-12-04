@@ -4,7 +4,10 @@ import { ApiModelProperty } from '@nestjs/swagger';
 export class OutputTransactionDto {
 
   @ApiModelProperty()
-  id: string
+  id: string;
+
+  @ApiModelProperty()
+  documentNumber: string;
 
   @ApiModelProperty()
   userLogin: string;

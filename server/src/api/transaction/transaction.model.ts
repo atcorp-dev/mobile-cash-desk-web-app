@@ -54,7 +54,7 @@ export class Transaction extends BaseModel<Transaction> {
   // #region Columns
 
   @Column
-  number: number;
+  documentNumber: number;
 
   @BelongsTo(() => Company)
   company: Company;

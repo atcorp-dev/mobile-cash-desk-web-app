@@ -1,3 +1,4 @@
+import { Guid } from 'guid-typescript';
 import { OutputTransactionDto } from './dto/output-transaction.dto';
 import { HttpService } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
@@ -5,7 +6,7 @@ import { NotifyTransactionDto } from './dto/notify-transaction.dto';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { User } from './../user/user.model';
 import { Transaction, TransactionStatus, TransactionItem } from './transaction.model';
-import { Sequelize } from 'sequelize-typescript';
+import { Sequelize, IsUUID } from 'sequelize-typescript';
 import { Injectable, Inject } from '@nestjs/common';
 import { Observable, from, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
@@ -166,31 +167,32 @@ export class TransactionService {
     if (!Array.isArray(message && message.itemList)) {
       throw new BadRequestException('message.itemList must be Array of items')
     }
-    showPush = true;
-    return from(
-      this.transactionRepository.scope('full').findById(id)
-    ).pipe(
-      switchMap(transaction => {
-        const itemList = message.itemList.map(i => <TransactionItem>i)
-        transaction.recalculate(itemList, user);
-        transaction.setExtraData(message);
-        if (message.bonusesAvailable) {
-          transaction.extras = Object.assign({}, transaction.extras, { bonusesAvailable: message.bonusesAvailable });
-        }
-        return transaction.save();
-      }),
-      switchMap(transaction => {
-        const body = `Ціни переаховані`;
-        const title = `Кошик`;
-        const dto = {transactionId: transaction.id, caertId: transaction.cartId };
-        const recipientId = transaction.extras && transaction.extras.recipientId;
-        if (recipientId) {
-          return this.sentPushMessage(recipientId, dto, body, title, showPush)
-        } else {
-          return of('cannot notify recipient')
-        }
-      })
-    );
+    const transactionQuery = (id && Guid.isGuid(id))
+      ? this.transactionRepository.scope('full').findById(id)
+      : this.transactionRepository.scope('full').findOne({ where: { documentNumber: id } })
+    return from(transactionQuery)
+      .pipe(
+        switchMap(transaction => {
+          const itemList = message.itemList.map(i => <TransactionItem>i)
+          transaction.recalculate(itemList, user);
+          transaction.setExtraData(message);
+          if (message.bonusesAvailable) {
+            transaction.extras = Object.assign({}, transaction.extras, { bonusesAvailable: message.bonusesAvailable });
+          }
+          return transaction.save();
+        }),
+        switchMap(transaction => {
+          const body = `Ціни переаховані`;
+          const title = `Кошик`;
+          const dto = {transactionId: transaction.id, caertId: transaction.cartId };
+          const recipientId = transaction.extras && transaction.extras.recipientId;
+          if (recipientId) {
+            return this.sentPushMessage(recipientId, dto, body, title, showPush)
+          } else {
+            return of('cannot notify recipient')
+          }
+        })
+      );
   }
 
   sentPushMessage(to: string, payLoad: any, body: string, title: string, showPush: boolean): Observable<any> {
@@ -237,7 +239,8 @@ export class TransactionService {
       }
     });
     const res = <OutputTransactionDto>{
-      id: transactionDto.id,
+      id: transaction.id,
+      documentNumber: transactionDto.documentNumber,
       dateTime: transactionDto.dateTime,
       userLogin: transactionDto.owner && transactionDto.owner.login,
       clientInfo,
