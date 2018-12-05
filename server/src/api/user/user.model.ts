@@ -46,7 +46,7 @@ export class User extends Model<User> {
   @Column(Sequelize.SMALLINT)
   role: number;
 
-  @Column
+  @Column(Sequelize.JSONB)
   extras: any
 
   // @ForeignKey(() => Company)
