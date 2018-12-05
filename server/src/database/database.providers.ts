@@ -5,26 +5,30 @@ import { Category } from './../api/categories/category.model';
 import { User } from './../api/user/user.model';
 import { Item } from './../api/inventory/item.model';
 import { Company } from './../api/companies/company.model';
-import { Sequelize, ISequelizeConfig } from 'sequelize-typescript';
+import { Sequelize } from 'sequelize-typescript';
 
 const config = require('../../config/sequelize-config.json');
-const connectionConfig = process.env.DATABASE_URL || config.development;
+let connectionConfig = process.env.DATABASE_URL || config.development;
+const { DB_HOST, DB_PORT, DB_DATABASE, DB_USERNAME, DB_PASSWORD } = process.env;
+if (DB_HOST && DB_DATABASE && DB_USERNAME && DB_PASSWORD) {
+  connectionConfig = {
+    host: DB_HOST,
+    port: 5432,
+    database: DB_DATABASE,
+    username: DB_USERNAME,
+    password: DB_PASSWORD,
+    dialect: 'postgres',
+    dialectOptions: {
+      ssl: true
+    }
+  }
+}
 
 export const databaseProviders = [
   {
     provide: 'SequelizeToken',
     useFactory: async () => {
-      const sequelize = new Sequelize({
-        host: 'ec2-54-83-27-162.compute-1.amazonaws.com',
-        database: 'd9i4hf6uh9rlri',
-        username: 'anyrhrldemwpeu',
-        port: 5432,
-        password: 'cab7997b3110fa5ce3593caa78153a337d983368077efaae560a593d123ab74b',
-        dialect: 'postgres',
-        dialectOptions: {
-          ssl: true
-        }
-      });
+      const sequelize = new Sequelize(connectionConfig);
       sequelize.options.logging = false;
       sequelize.addModels([
         User,
