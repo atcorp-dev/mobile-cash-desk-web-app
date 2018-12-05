@@ -238,11 +238,12 @@ export class TransactionService {
         NovayaCenaPostavshika: item.extras && item.extras.NovayaCenaPostavshika,
       }
     });
+    const owner = transactionDto.owner || {};
     const res = <OutputTransactionDto>{
       id: transaction.id,
       documentNumber: transactionDto.documentNumber,
       dateTime: transactionDto.dateTime,
-      userLogin: transactionDto.owner && transactionDto.owner.login,
+      userLogin: owner.login || owner.code,
       clientInfo,
       itemList,
     };
