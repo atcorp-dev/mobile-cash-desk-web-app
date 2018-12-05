@@ -40,12 +40,10 @@ export class InventoryService {
   public importFromCsv(company: Company, file, user: User): Observable<any> {
     const data: Buffer = file.buffer;
     const csv = data.toString();
-    const arr: Array<string[]> = CSV.parse(csv);
-    const headers = arr.shift();
     const key = Guid.create().toString();
-    const items = arr.map(row => {
+    const getRow = row => {
       const [name, extCode, code, barCode, price, available, description, ...features] = row;
-      return { 
+      return {
         key,
         id: Guid.create().toString(),
         createdById: user && user.id,
@@ -63,7 +61,10 @@ export class InventoryService {
         additionalFields: features && this.getCsvFeatures(features),
         source: row
       }
-    });
+    }
+    const items = [];
+    CSV.forEach(csv, ';', '`', row => items.push(getRow(row)));
+    const headers = items.shift();
     return from(
       this.gateItemRepository.bulkCreate(items)
     ).pipe(
