@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
 export abstract class DataService {
   abstract apiPath: string;
 
-  constructor(protected httpClient: HttpClient) {}
+  constructor(public httpClient: HttpClient) {}
 
   public get<T>(c: new () => T, filter?): Observable<T[]> {
     return this.httpClient.get(this.apiPath, { params: filter })

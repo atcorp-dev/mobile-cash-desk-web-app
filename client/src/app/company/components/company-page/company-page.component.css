@@ -17,3 +17,11 @@
   align-self: center;
   cursor: pointer;
 }
+.table {
+  width: 100%;
+}
+
+.table-wrap {
+  max-height: 320px;
+  overflow: auto;
+}

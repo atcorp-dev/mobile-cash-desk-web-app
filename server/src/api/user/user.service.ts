@@ -72,6 +72,11 @@ export class UserService {
     return from(response);
   }
 
+  public getAllByCompany(companyId: string): Observable<Array<User>> {
+    const response = this.userRepository.findAll({ where: { companyId } });
+    return from(response);
+  }
+
   public register(createUser: CreateUserDto): Observable<UserDto> {
     createUser.companyId = createUser.companyId ? createUser.companyId : null;
     return this.getEncryptedPassword(createUser.password).pipe(

@@ -1,3 +1,4 @@
+import { CompanyIdPipe } from './../pipes/company-id.pipe';
 import { ReqUser } from './user.decorator';
 import { ChangeUserPasswordDto } from './dto/change-user-password.dto';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -26,6 +27,16 @@ export class UserController {
       throw new ForbiddenException('Not enough permission');
     }
     return this.userService.getAll();
+  }
+
+  @Get(':companyId')
+  @UseGuards(AppAuthGuard)
+  @ApiOperation({
+    title: 'Get List of Users for specified company'
+  })
+  @ApiBearerAuth()
+  getAllByCompany(@Param('companyId', new CompanyIdPipe()) companyId: string): Observable<Array<User>> {
+    return this.userService.getAllByCompany(companyId);
   }
 
   @Post('')

@@ -10,11 +10,11 @@ export enum UserRole {
 }
 
 @DefaultScope({
-  attributes: ['id', 'code', 'login', 'email'],
+  attributes: ['id', 'code', 'login', 'name'],
 })
 @Scopes({
   full: {
-    attributes: ['id', 'code', 'login', 'password', 'email', 'active', 'role', 'companyId']
+    attributes: ['id', 'code', 'login', 'name', 'password', 'email', 'active', 'role', 'companyId']
   }
 })
 @Table

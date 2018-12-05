@@ -23,6 +23,8 @@ export class CompanyPageComponent implements OnDestroy, OnInit {
   companyList: Array<Company>;
   loading: boolean;
   company: Company;
+  userList: Array<any> = [];
+  userDisplayedColumns: string[] = ['name', 'code', 'login'];
   mobileQuery: MediaQueryList;
   private _mobileQueryListener: () => void;
 
@@ -52,6 +54,7 @@ export class CompanyPageComponent implements OnDestroy, OnInit {
       switchMap(id => {
         if (id) {
           this.loadCompanies(id);
+          this.loadUsers(id);
         }
         return this.loadCompany(id);
       })
@@ -118,6 +121,13 @@ export class CompanyPageComponent implements OnDestroy, OnInit {
     this.dataService.get(Company)
       .subscribe(
         data => this.companyList = data.filter(x => id ? x.id !== id : true)
+      );
+  }
+
+  loadUsers(companyId: string) {
+    this.dataService.httpClient.get(`api/users/${companyId}`)
+      .subscribe(
+        data => this.userList = <any[]>data
       );
   }
 
