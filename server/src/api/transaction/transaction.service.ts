@@ -243,7 +243,7 @@ export class TransactionService {
       id: transaction.id,
       documentNumber: transactionDto.documentNumber,
       dateTime: transactionDto.dateTime,
-      userLogin: owner.login || owner.code,
+      userLogin: owner.code || owner.login,
       clientInfo,
       itemList,
     };
