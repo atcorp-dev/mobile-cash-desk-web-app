@@ -9,7 +9,7 @@ export interface AdditionalField {
 }
 
 @DefaultScope({
-  attributes: ['id', 'name', 'code', 'barCode', 'price', 'companyId', 'categoryId', 'available']
+  attributes: ['id', 'name', 'code', 'barCode', 'price', 'companyId', 'categoryId', 'available', 'additionalFields']
 })
 @Scopes({
   full: {
