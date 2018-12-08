@@ -3,7 +3,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Observable, from, of } from 'rxjs';
 import { User } from './user.model';
-import { Injectable, Inject, BadRequestException } from '@nestjs/common';
+import { Injectable, Inject, BadRequestException, Logger } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { UserDto } from './dto/user-dto';
 
@@ -48,7 +48,7 @@ export class UserService {
   }
 
   protected checkPassword(password: string, user: User): Observable<UserDto | null> {
-    if (!user) {
+    if (!user) { 
       return of(null);
     }
     return from(
@@ -58,6 +58,7 @@ export class UserService {
         if(match) {
           return this.getUserDto(user);
         }
+        Logger.log(`Password [${password}] is incorect for User [${user.name}]`, 'AuthModule');
         return null;
       })
     );
@@ -117,7 +118,11 @@ export class UserService {
     return from(
       userQuery
     ).pipe(
-      switchMap((user) => this.checkPassword(password, user)),
+      switchMap(user => {
+        if (!user)
+          Logger.log(`Cannot find user with login ${username}`, 'AuthModule');
+        return this.checkPassword(password, user);
+      }),
       map(res => res)
     )
   }
