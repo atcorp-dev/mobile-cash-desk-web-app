@@ -11,6 +11,9 @@ export class UserDto {
   @ApiModelProperty()
   email: string;
 
+  @ApiModelProperty()
+  name: string;
+
   @ApiModelProperty({ required: false })
   role?: number;
 
