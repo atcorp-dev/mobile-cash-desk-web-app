@@ -122,8 +122,9 @@ export class Transaction extends BaseModel<Transaction> {
     this.modifiedById = user.id;
     return this.setStatus(TransactionStatus.Pending);
   }
-  public markAsPayed(user: User): Transaction {
+  public markAsPayed(user: User, payload): Transaction {
     this.modifiedById = user.id;
+    this.extras = Object.assign({}, this.extras, payload);
     return this.setStatus(TransactionStatus.Payed);
   }
 

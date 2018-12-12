@@ -145,11 +145,11 @@ export class TransactionService {
     )
   }
 
-  markAsPayed(id: string, user: User): Observable<Transaction> {
+  markAsPayed(id: string, user: User, payload): Observable<Transaction> {
     return from(
       this.transactionRepository.scope('full').findById(id)
     ).pipe(
-      map(transaction => transaction.markAsPayed(user)),
+      map(transaction => transaction.markAsPayed(user, payload)),
       switchMap(transaction => transaction.save())
     )
   }

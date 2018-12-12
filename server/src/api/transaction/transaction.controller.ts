@@ -107,8 +107,8 @@ export class TransactionController {
     After call this method will be provide info to company server to create order etc
     `
   })
-  markAsPayed(@Param('id') id: string, @Res() res, @ReqUser() user: User) {
-    return this.transactionService.markAsPayed(id, user)
+  markAsPayed(@Param('id') id: string, @Res() res, @Body() payload, @ReqUser() user: User) {
+    return this.transactionService.markAsPayed(id, user, payload)
     /*.pipe(
       catchError(err => {
         console.dir(err);
