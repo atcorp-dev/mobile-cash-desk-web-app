@@ -1,3 +1,4 @@
+import { ParseBooleanPipe } from './../pipes/boolean.pipe';
 import { OutputTransactionDto } from './dto/output-transaction.dto';
 import { CompanyIdPipe } from './../pipes/company-id.pipe';
 import { ParseDatePipe } from './../pipes/date.pipe';
@@ -11,6 +12,7 @@ import { Observable } from 'rxjs';
 import { Transaction } from './transaction.model';
 import { NotifyTransactionDto } from './dto/notify-transaction.dto';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
+import { catchError } from 'rxjs/operators';
 
 @ApiUseTags('Transactions')
 @ApiBearerAuth()
@@ -50,9 +52,18 @@ export class TransactionController {
   getAllPayed(
     @Param('companyId', new CompanyIdPipe()) companyId: string,
     @Query('dateFrom', new ParseDatePipe(false)) dateFrom: Date,
-    @Query('dateTo', new ParseDatePipe(false)) dateTo: Date
+    @Query('dateTo', new ParseDatePipe(false)) dateTo: Date,
+    @Query('sort') sort: string,
+    @Query('direction') direction: string,
+    @Query('showReceipt', new ParseBooleanPipe()) showReceipt: boolean
   ): Observable<Array<OutputTransactionDto>> {
-    return this.transactionService.getAllPayed(companyId, dateFrom, dateTo);
+    const opts = {sort, direction, showReceipt };
+    return this.transactionService.getAllPayed(companyId, dateFrom, dateTo, opts).pipe(
+      catchError(err => {
+        console.error(err);
+        throw new BadRequestException(err.message);
+      })
+    );
   }
 
   @Get(':companyId/rejected')

@@ -6,7 +6,7 @@ import { NotifyTransactionDto } from './dto/notify-transaction.dto';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
 import { User } from './../user/user.model';
 import { Transaction, TransactionStatus, TransactionItem } from './transaction.model';
-import { Sequelize, IsUUID } from 'sequelize-typescript';
+import { Sequelize, IsUUID, IFindOptions } from 'sequelize-typescript';
 import { Injectable, Inject } from '@nestjs/common';
 import { Observable, from, of } from 'rxjs';
 import { switchMap, map } from 'rxjs/operators';
@@ -45,27 +45,28 @@ export class TransactionService {
       );
   }
 
-  getAllPayed(companyId: string, dateFrom: Date, dateTo: Date): Observable<Array<OutputTransactionDto>> {
-    const opts = <any>{
+  getAllPayed(companyId: string, dateFrom: Date, dateTo: Date, config): Observable<Array<OutputTransactionDto>> {
+    const opts = <IFindOptions<Transaction>>{
       where: {
         companyId,
         status: TransactionStatus.Payed,
-      }
+      },
+      order: config.sort ? [[config.sort, config.direction || 'ASC']] : null
     }
     if (dateFrom) {
-      opts.where.dateTime = opts.where.dateTime || {};
-      Object.assign(opts.where.dateTime, { [Op.gte]: dateFrom })
+      opts.where['dateTime'] = opts.where['dateTime'] || {};
+      Object.assign(opts.where['dateTime'], { [Op.gte]: dateFrom })
     }
     if (dateTo) {
-      opts.where.dateTime = opts.where.dateTime || {};
-      Object.assign(opts.where.dateTime, { [Op.lte]: dateTo })
+      opts.where['dateTime'] = opts.where['dateTime'] || {};
+      Object.assign(opts.where['dateTime'], { [Op.lte]: dateTo })
     }
     const response = this.transactionRepository.scope('full').findAll(opts);
     return from(response)
       .pipe(
         map(transactions => transactions
           .map(
-            transaction => this.getOutputTransaction(transaction)
+            transaction => this.getOutputTransaction(transaction, config.showReceipt)
           )
         )
       );
@@ -225,9 +226,11 @@ export class TransactionService {
     );
   }
 
-  private getOutputTransaction(transaction: Transaction): OutputTransactionDto {
+  private getOutputTransaction(transaction: Transaction, showReceipt?: boolean): OutputTransactionDto {
     const clientInfo = transaction.extras && transaction.extras.clientInfo;
     const transactionDto = transaction.get({ plain: true });
+    const receipt = showReceipt ? transactionDto.extras && transactionDto.extras.receipt : undefined;
+    const extras = receipt ? { receipt } : undefined;
     const itemList = transactionDto.itemList.map(item => {
       return {
         itemId: item.itemId,
@@ -235,7 +238,7 @@ export class TransactionService {
         price: item.price,
         qty: item.qty,
         DokumentAkciya: item.extras && item.extras.DokumentAkciya,
-        NovayaCenaPostavshika: item.extras && item.extras.NovayaCenaPostavshika,
+        NovayaCenaPostavshika: item.extras && item.extras.NovayaCenaPostavshika
       }
     });
     const owner = transactionDto.owner || {};
@@ -246,6 +249,7 @@ export class TransactionService {
       userLogin: owner.code || owner.login,
       clientInfo,
       itemList,
+      extras
     };
     return res;
   }
