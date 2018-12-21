@@ -43,6 +43,28 @@ export class TransactionController {
     return this.transactionService.getAllPending(companyId);
   }
 
+  @Get(':companyId/finished')
+  @ApiOperation({
+    title: 'Get all finished transactions'
+  })
+  @ApiImplicitQuery({ name: 'dateFrom', required: false, type: 'string' })
+  @ApiImplicitQuery({ name: 'dateTo', required: false, type: 'string' })
+  getAllFinished(
+    @Param('companyId', new CompanyIdPipe()) companyId: string,
+    @Query('dateFrom', new ParseDatePipe(false)) dateFrom: Date,
+    @Query('dateTo', new ParseDatePipe(false)) dateTo: Date,
+    @Query('sort') sort: string,
+    @Query('direction') direction: string
+  ): Observable<Array<OutputTransactionDto>> {
+    const opts = { sort, direction };
+    return this.transactionService.getAllFinished(companyId, dateFrom, dateTo, opts).pipe(
+      catchError(err => {
+        console.error(err);
+        throw new BadRequestException(err.message);
+      })
+    );
+  }
+
   @Get(':companyId/payed')
   @ApiOperation({
     title: 'Get all payed transactions'

@@ -45,6 +45,33 @@ export class TransactionService {
       );
   }
 
+  getAllFinished(companyId: string, dateFrom: Date, dateTo: Date, config): Observable<Array<OutputTransactionDto>> {
+    const opts = <IFindOptions<Transaction>>{
+      where: {
+        companyId,
+        status: [TransactionStatus.Payed, TransactionStatus.Rejected]
+      },
+      order: config.sort ? [[config.sort, config.direction || 'ASC']] : null
+    }
+    if (dateFrom) {
+      opts.where['dateTime'] = opts.where['dateTime'] || {};
+      Object.assign(opts.where['dateTime'], { [Op.gte]: dateFrom })
+    }
+    if (dateTo) {
+      opts.where['dateTime'] = opts.where['dateTime'] || {};
+      Object.assign(opts.where['dateTime'], { [Op.lte]: dateTo })
+    }
+    const response = this.transactionRepository.scope('full').findAll(opts);
+    return from(response)
+      .pipe(
+        map(transactions => transactions
+          .map(
+            transaction => this.getOutputTransactionFull(transaction)
+          )
+        )
+      );
+  }
+
   getAllPayed(companyId: string, dateFrom: Date, dateTo: Date, config): Observable<Array<OutputTransactionDto>> {
     const opts = <IFindOptions<Transaction>>{
       where: {
@@ -253,4 +280,34 @@ export class TransactionService {
     };
     return res;
   }
+  private getOutputTransactionFull(transaction: Transaction): OutputTransactionDto {
+    const clientInfo = transaction.extras && transaction.extras.clientInfo;
+    const transactionDto = transaction.get({ plain: true });
+    const extras = transactionDto.extras;
+    const itemList = transactionDto.itemList.map(item => {
+      return {
+        itemId: item.itemId,
+        barCode: item.barCode,
+        price: item.price,
+        qty: item.qty,
+        DokumentAkciya: item.extras && item.extras.DokumentAkciya,
+        NovayaCenaPostavshika: item.extras && item.extras.NovayaCenaPostavshika
+      }
+    });
+    const owner = transactionDto.owner || {};
+    const res = <OutputTransactionDto>{
+      id: transaction.id,
+      documentNumber: transactionDto.documentNumber,
+      dateTime: transactionDto.dateTime,
+      userLogin: owner.code || owner.login,
+      totalPrice: transactionDto.totalPrice,
+      status: transactionDto.status,
+      clientInfo,
+      itemList,
+      extras
+    };
+    return res;
+  }
+
+
 }
