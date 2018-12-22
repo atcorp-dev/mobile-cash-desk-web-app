@@ -14,10 +14,10 @@ export class OutputTransactionDto {
   userLogin: string;
 
   @ApiModelProperty()
-  totalPrice: number;
+  totalPrice?: number;
 
   @ApiModelProperty()
-  status: TransactionStatus;
+  status?: TransactionStatus;
 
   @ApiModelProperty()
   dateTime: Date;
