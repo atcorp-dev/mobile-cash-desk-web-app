@@ -1,3 +1,4 @@
+import { CartModule } from './cart/cart.module';
 import { TransactionModule } from './transaction/transaction.module';
 import { AuthModule } from './auth/auth.module';
 import { CategoryModule } from './categories/category.module';
@@ -13,7 +14,8 @@ const modules = [
   // CategoryModule,
   InventoryModule,
   CompanyModule,
-  TransactionModule
+  TransactionModule,
+  CartModule
 ]
 
 const routes: Routes = modules.map(module => <Route>{

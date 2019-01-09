@@ -6,6 +6,7 @@ import { User } from './../api/user/user.model';
 import { Item } from './../api/inventory/item.model';
 import { Company } from './../api/companies/company.model';
 import { Sequelize } from 'sequelize-typescript';
+import { Cart } from '../api/cart/cart.model';
 
 const config = require('../../config/sequelize-config.json');
 let connectionConfig = process.env.DATABASE_URL || config.development;
@@ -36,7 +37,8 @@ export const databaseProviders = [
         Item,
         Company,
         Transaction,
-        GateItem
+        GateItem,
+        Cart
       ]);
       // await sequelize.sync({ force: false });
       AppService.initCompanies();
