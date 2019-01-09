@@ -6,9 +6,9 @@ import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Cart } from './cart.model';
 import { CartDto } from './cart.dto';
 
-@ApiUseTags('Categories (not implemented)')
+@ApiUseTags('Carts')
 @ApiBearerAuth()
-@Controller('categories')
+@Controller('carts')
 @UseGuards(AppAuthGuard)
 export class CartController {
 

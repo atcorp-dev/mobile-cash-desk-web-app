@@ -40,15 +40,15 @@ export class Cart extends BaseModel<Cart> {
   history: Array<any>;
 
   @BeforeUpdate
-  saveHistory() {
-    const history = this.history || [];
+  public static saveHistory(instance: Cart) {
+    const history = instance.history || [];
     history.push({
       date: new Date(),
-      type: this.type,
-      clientInfo: this.clientInfo,
-      items: this.items,
-      extras: this.extras
+      type: instance.type,
+      clientInfo: instance.clientInfo,
+      items: instance.items,
+      extras: instance.extras
     });
-    this.history = history;
+    instance.history = history;
   }
 }
