@@ -23,23 +23,37 @@ export class CartService {
     return from(response);
   }
 
-  create(cart: CartDto): Observable<Cart> {
-    const response = this.cartRepository.create(cart);
-    return from(response);
+  create(dto: CartDto): Observable<Cart> {
+    if (dto.id) {
+      return from(this.cartRepository.findById(dto.id))
+        .pipe(switchMap(cart => {
+          if (!cart) {
+            return from(this.cartRepository.create(dto));
+          }
+          Object.keys(dto)
+            .forEach(key => {
+              cart.set(key, dto[key])
+            });
+          return cart.save();
+        }));
+    } else {
+      const response = this.cartRepository.create(dto);
+      return from(response);
+    }
   }
 
-  modify(id: string, dto: CartDto): Observable<Item> {
-    return from(this.itemRepository.findById(id))
-      .pipe(switchMap(item => {
+  modify(id: string, dto: CartDto): Observable<Cart> {
+    return from(this.cartRepository.findById(id))
+      .pipe(switchMap(cart => {
         if (!dto) {
-          return of(item);
+          return of(cart);
         }
         Object.keys(dto)
-          .filter(key => ['id'].indexOf(key) === -1)
+          .filter(key => ['id', 'history'].indexOf(key) === -1)
           .forEach(key => {
-            item.set(key, dto[key])
+            cart.set(key, dto[key])
           });
-        return item.save();
+        return cart.save();
       }));
   }
 
