@@ -162,6 +162,7 @@ export class Transaction extends BaseModel<Transaction> {
     });
     this.itemList = newItems;
     this.extras = extras;
+    this.totalPrice = this.itemList.reduce((p, c) => p = p + c.price, 0);
     this.setStatus(TransactionStatus.Recalculated);
   }
 
