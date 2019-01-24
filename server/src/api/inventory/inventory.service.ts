@@ -114,7 +114,8 @@ export class InventoryService {
       dto.modifiedById = user && user.id;
       dto.key = key;
       dto.companyId = companyId || (user && user.companyId);
-      dto.extCode = dto.extCode || dto.code || dto.barCod;
+      dto.extCode = dto.extCode || dto.code || dto.barCode;
+      dto.code = dto.code || dto.barCode
     });
     return from(this.gateItemRepository.bulkCreate(createItemsDto, { individualHooks: true, returning: false })).pipe(
       switchMap(() => {
