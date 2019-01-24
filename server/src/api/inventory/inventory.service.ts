@@ -120,9 +120,9 @@ export class InventoryService {
       switchMap(() => {
         return GateItem.upsertItems(key)
       }),
-      switchMap(() => {
+      /*switchMap(() => {
         return GateItem.destroy({ where: { key } })
-      }),
+      }),*/
       map(() => {
         return <ImportResult>{ rowsAffected: createItemsDto.length }
       }),
