@@ -1,10 +1,12 @@
 import { AppAuthGuard } from './../auth/auth.guard';
 import { Observable } from 'rxjs';
 import { CartService } from './cart.service';
-import { Controller, Get, Post, Param, Body, UseGuards, Patch } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, UseGuards, Patch, Query } from '@nestjs/common';
 import { ApiUseTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Cart } from './cart.model';
 import { CartDto } from './cart.dto';
+import { CompanyIdPipe } from '../pipes/company-id.pipe';
+import { ParseDatePipe } from '../pipes/date.pipe';
 
 @ApiUseTags('Carts')
 @ApiBearerAuth()
@@ -15,8 +17,15 @@ export class CartController {
   constructor(private cartService: CartService) { }
 
   @Get()
-  getAll(): Observable<Array<Cart>> {
-    return this.cartService.getAll();
+  getAll(
+    @Query('companyId', new CompanyIdPipe()) companyId: string,
+    @Query('dateFrom', new ParseDatePipe(false)) dateFrom: Date,
+    @Query('dateTo', new ParseDatePipe(false)) dateTo: Date,
+    @Query('sort') sort: string,
+    @Query('direction') direction: string,
+  ): Observable<Array<Cart>> {
+    const opts = { sort, direction };
+    return this.cartService.getAll(companyId, dateFrom, dateTo, opts);
   }
 
   @Get(':id')

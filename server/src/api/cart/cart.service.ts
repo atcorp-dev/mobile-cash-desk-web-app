@@ -4,6 +4,9 @@ import { Observable, from, of } from 'rxjs';
 import { Item } from '../inventory/item.model';
 import { switchMap } from 'rxjs/operators';
 import { CartDto } from './cart.dto';
+import { IFindOptions, Sequelize } from 'sequelize-typescript';
+
+const Op = Sequelize.Op
 
 @Injectable()
 export class CartService {
@@ -13,8 +16,22 @@ export class CartService {
     @Inject('ItemRepository') private readonly itemRepository: typeof Item
   ) { }
 
-  getAll(): Observable<Array<Cart>> {
-    const response = this.cartRepository.findAll();
+  getAll(companyId: string, dateFrom: Date, dateTo: Date, config): Observable<Array<Cart>> {
+    const opts = <IFindOptions<Cart>>{
+      where: {
+        companyId
+      },
+      order: config.sort ? [[config.sort, config.direction || 'ASC']] : null
+    }
+    if (dateFrom) {
+      opts.where['modifiedOn'] = opts.where['modifiedOn'] || {};
+      Object.assign(opts.where['modifiedOn'], { [Op.gte]: dateFrom })
+    }
+    if (dateTo) {
+      opts.where['modifiedOn'] = opts.where['modifiedOn'] || {};
+      Object.assign(opts.where['modifiedOn'], { [Op.lte]: dateTo })
+    }
+    const response = this.cartRepository.findAll(opts);
     return from(response);
   }
 
