@@ -1,4 +1,4 @@
-import { Table, Column, Sequelize, BeforeUpdate } from 'sequelize-typescript';
+import { Table, Column, Sequelize, BeforeUpdate, BelongsTo, ForeignKey } from 'sequelize-typescript';
 import { BaseModel } from '../base/base.model';
 import { Company } from '../companies/company.model';
 
@@ -21,6 +21,13 @@ export class CartItemDto {
 
 @Table
 export class Cart extends BaseModel<Cart> {
+
+  @BelongsTo(() => Company)
+  company: Company;
+
+  @ForeignKey(() => Company)
+  @Column(Sequelize.UUID)
+  companyId: string;
 
   @Column
   type?: number;

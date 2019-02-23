@@ -5,6 +5,7 @@ import { Item } from '../inventory/item.model';
 import { switchMap } from 'rxjs/operators';
 import { CartDto } from './cart.dto';
 import { IFindOptions, Sequelize } from 'sequelize-typescript';
+import { User } from '../user/user.model';
 
 const Op = Sequelize.Op
 
@@ -40,7 +41,9 @@ export class CartService {
     return from(response);
   }
 
-  create(dto: CartDto): Observable<Cart> {
+  create(dto: CartDto, user: User): Observable<Cart> {
+    dto.createdById = user.id;
+    dto.modifiedById = user.id;
     if (dto.id) {
       return from(this.cartRepository.findById(dto.id))
         .pipe(switchMap(cart => {
@@ -59,10 +62,10 @@ export class CartService {
     }
   }
 
-  modify(id: string, dto: CartDto): Observable<Cart> {
+  modify(id: string, dto: CartDto, user: User): Observable<Cart> {
     return from(this.cartRepository.findById(id))
       .pipe(switchMap(cart => {
-        if (!dto) {
+        if (!dto || !cart) {
           return of(cart);
         }
         Object.keys(dto)
@@ -70,6 +73,7 @@ export class CartService {
           .forEach(key => {
             cart.set(key, dto[key])
           });
+        cart.modifiedById = user.id;
         return cart.save();
       }));
   }

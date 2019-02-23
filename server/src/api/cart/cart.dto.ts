@@ -45,6 +45,15 @@ export class CartDto {
   @ApiModelProperty()
   id: string;
 
+  @ApiModelProperty()
+  companyId: string;
+
+  @ApiModelProperty({ required: false })
+  createdById: string;
+  
+  @ApiModelProperty({ required: false })
+  modifiedById: string;
+
   @ApiModelProperty({ required: false })
   type?: number;
 

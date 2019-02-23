@@ -7,6 +7,8 @@ import { Cart } from './cart.model';
 import { CartDto } from './cart.dto';
 import { CompanyIdPipe } from '../pipes/company-id.pipe';
 import { ParseDatePipe } from '../pipes/date.pipe';
+import { SessionUser } from '../user/user.decorator';
+import { User } from '../user/user.model';
 
 @ApiUseTags('Carts')
 @ApiBearerAuth()
@@ -34,13 +36,13 @@ export class CartController {
   }
 
   @Post()
-  create(@Body() createCart: CartDto): Observable<any> {
-    return this.cartService.create(createCart);
+  create(@Body() createCart: CartDto, @SessionUser() user: User): Observable<any> {
+    return this.cartService.create(createCart, user);
   }
 
   @Patch(':id')
-  modify(@Param('id') id: string, @Body() cart: CartDto): Observable<any> {
-    return this.cartService.modify(id, cart);
-  }
+  modify(@Param('id') id: string, @Body() cart: CartDto, @SessionUser() user: User): Observable<any> {
+    return this.cartService.modify(id, cart, user);
+  } h
 
 }
