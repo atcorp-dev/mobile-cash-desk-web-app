@@ -1,6 +1,7 @@
-import { Table, Column, Sequelize, BeforeUpdate, BelongsTo, ForeignKey } from 'sequelize-typescript';
+import { Table, Column, Sequelize, BeforeUpdate, BelongsTo, ForeignKey, Scopes, DefaultScope } from 'sequelize-typescript';
 import { BaseModel } from '../base/base.model';
 import { Company } from '../companies/company.model';
+import { User } from '../user/user.model';
 
 export class CartItemDto {
 
@@ -18,7 +19,9 @@ export class CartItemDto {
   image?: string;
 }
 
-
+@DefaultScope({
+  include: [{model: () => User, as: 'createdBy'}]
+})
 @Table
 export class Cart extends BaseModel<Cart> {
 
