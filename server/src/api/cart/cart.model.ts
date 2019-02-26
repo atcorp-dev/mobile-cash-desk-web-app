@@ -20,7 +20,14 @@ export class CartItemDto {
 }
 
 @DefaultScope({
+  attributes: ['id', 'createdOn', 'createdById', 'createdBy', 'companyId', 'type', 'items', 'extras'],
   include: [{model: () => User, as: 'createdBy'}]
+})
+@Scopes({
+  full: {
+    include: [{ model: () => User, as: 'createdBy' }]
+  },
+  raw: {}
 })
 @Table
 export class Cart extends BaseModel<Cart> {

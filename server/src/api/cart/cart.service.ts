@@ -37,7 +37,7 @@ export class CartService {
   }
 
   getById(id: string): Observable<Cart> {
-    const response = this.cartRepository.findById<Cart>(id);
+    const response = this.cartRepository.scope('full').findById<Cart>(id);
     return from(response);
   }
 
@@ -45,7 +45,7 @@ export class CartService {
     dto.createdById = user.id;
     dto.modifiedById = user.id;
     if (dto.id) {
-      return from(this.cartRepository.findById(dto.id))
+      return from(this.cartRepository.scope('raw').findById(dto.id))
         .pipe(switchMap(cart => {
           if (!cart) {
             return from(this.cartRepository.create(dto));
@@ -63,7 +63,7 @@ export class CartService {
   }
 
   modify(id: string, dto: CartDto, user: User): Observable<Cart> {
-    return from(this.cartRepository.findById(id))
+    return from(this.cartRepository.scope('raw').findById(id))
       .pipe(switchMap(cart => {
         if (!dto || !cart) {
           return of(cart);
