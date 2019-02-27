@@ -2,6 +2,7 @@ import { Table, Column, Sequelize, BeforeUpdate, BelongsTo, ForeignKey, Scopes, 
 import { BaseModel } from '../base/base.model';
 import { Company } from '../companies/company.model';
 import { User } from '../user/user.model';
+import { hash } from 'bcryptjs';
 
 export class CartItemDto {
 
@@ -17,6 +18,16 @@ export class CartItemDto {
   company?: Company;
   companyId: string;
   image?: string;
+}
+
+const getObjectHash = (object): string => {
+  let hash = null;
+  if (object) {
+    const { type, clientInfo, items, extras } = object;
+    const json = JSON.stringify({ type, clientInfo, items, extras });
+    hash = Buffer.from(json).toString('base64');
+  }
+  return hash;
 }
 
 @DefaultScope({
@@ -59,13 +70,21 @@ export class Cart extends BaseModel<Cart> {
   @BeforeUpdate
   public static saveHistory(instance: Cart) {
     const history = instance.history || [];
-    history.push({
-      date: new Date(),
+    const currentDate = new Date();
+    const historyItem = {
+      date: currentDate,
       type: instance.type,
       clientInfo: instance.clientInfo,
       items: instance.items,
       extras: instance.extras
-    });
+    };
+    const historyItemHash = getObjectHash(historyItem);
+    const lastHistoryItem = Object.assign({}, history[history.length - 1]);
+    lastHistoryItem.date = currentDate;
+    const lastHistoryItemHash = getObjectHash(lastHistoryItem);
+    if (lastHistoryItemHash !== historyItemHash) {
+      history.push(historyItem);
+    }
     instance.history = history;
   }
 }

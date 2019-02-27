@@ -59,7 +59,7 @@ export class UserService {
         if(match) {
           return this.getUserDto(user);
         }
-        Logger.log(`Password [${password}] is incorect for User [${user.name}]`, 'AuthModule');
+        Logger.log(`Password [${password}] is incorrect for User [${user.name}]`, 'AuthModule');
         return null;
       })
     );
