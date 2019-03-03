@@ -8,7 +8,7 @@ export enum CompanyType {
 }
 
 @DefaultScope({
-  attributes: ['id', 'name', 'code', 'phone', 'email', 'address', 'parentId', 'active'],
+  attributes: ['id', 'name', 'code', 'phone', 'email', 'address', 'parentId', 'active', 'extras'],
   include: [{ model: () => Company.scope('lookup'), as: 'parent' }]
 })
 @Scopes({
