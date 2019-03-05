@@ -31,7 +31,7 @@ const getObjectHash = (object): string => {
 }
 
 @DefaultScope({
-  attributes: ['id', 'createdOn', 'createdById', 'createdBy', 'companyId', 'type', 'items', 'extras'],
+  attributes: ['id', 'createdOn', 'createdById', 'companyId', 'type', 'items', 'extras'],
   include: [{model: () => User, as: 'createdBy'}]
 })
 @Scopes({
